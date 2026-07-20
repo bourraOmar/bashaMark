@@ -203,6 +203,33 @@ a {
   gap: 24px;
   align-items: start;
   flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 40px; /* Add some padding at the bottom for scrolling */
+}
+
+/* Custom Scrollbar for Dashboard Grid */
+.dashboard-grid::-webkit-scrollbar {
+  width: 8px;
+}
+.dashboard-grid::-webkit-scrollbar-track {
+  background: transparent;
+}
+.dashboard-grid::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+.dashboard-grid::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+@media (prefers-color-scheme: dark) {
+  .dashboard-grid::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+  }
+  .dashboard-grid::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
 }
 
 /* Board Styling */
@@ -211,7 +238,6 @@ a {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  max-height: calc(100vh - 160px);
 }
 
 .board-header {
@@ -235,33 +261,10 @@ a {
   display: flex;
   flex-direction: column;
   gap: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow-y: visible;
   flex: 1;
 }
 
-/* Custom Scrollbar for Bookmark List */
-.bookmark-list::-webkit-scrollbar {
-  width: 6px;
-}
-.bookmark-list::-webkit-scrollbar-track {
-  background: transparent;
-}
-.bookmark-list::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.15);
-  border-radius: 4px;
-}
-.bookmark-list::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.25);
-}
-@media (prefers-color-scheme: dark) {
-  .bookmark-list::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.15);
-  }
-  .bookmark-list::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.25);
-  }
-}
 
 .bookmark-item {
   display: flex;
