@@ -26,14 +26,11 @@ export default function PomodoroWidget({ id, onDelete }) {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 1000 : 1,
     cursor: 'default',
     display: 'flex',
     flexDirection: 'column',
-    padding: '16px',
-    backgroundColor: 'rgba(235, 238, 245, 0.95)',
-    backdropFilter: 'blur(10px)',
-    borderRadius: '16px',
-    boxShadow: isDragging ? '0 12px 40px rgba(0,0,0,0.3)' : '0 4px 12px rgba(0,0,0,0.1)'
+    padding: '16px'
   };
 
   useEffect(() => {
@@ -82,7 +79,7 @@ export default function PomodoroWidget({ id, onDelete }) {
   };
 
   return (
-    <div ref={setNodeRef} style={style}>
+    <div ref={setNodeRef} style={style} className="board glass-panel">
       {/* Header / Drag Handle */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
         <div 
@@ -91,7 +88,7 @@ export default function PomodoroWidget({ id, onDelete }) {
           style={{ 
             cursor: 'grab', 
             fontWeight: 600, 
-            color: '#4a5568', 
+            color: 'var(--text-color)', 
             fontSize: '1.1rem',
             flex: 1
           }}
@@ -113,9 +110,9 @@ export default function PomodoroWidget({ id, onDelete }) {
               padding: '4px 12px',
               borderRadius: '12px',
               cursor: 'pointer',
-              color: mode === key ? '#4a5568' : '#a0aec0',
-              backgroundColor: mode === key ? 'rgba(0,0,0,0.05)' : 'transparent',
-              fontWeight: mode === key ? 600 : 500,
+              color: mode === key ? 'var(--text-color)' : 'var(--text-muted)',
+              backgroundColor: mode === key ? 'rgba(0,0,0,0.1)' : 'transparent',
+              fontWeight: mode === key ? 700 : 500,
               transition: 'all 0.2s'
             }}
           >
@@ -125,7 +122,7 @@ export default function PomodoroWidget({ id, onDelete }) {
       </div>
 
       {/* Timer Display */}
-      <div style={{ textAlign: 'center', fontSize: '3rem', fontWeight: 300, color: '#2d3748', marginBottom: '16px' }}>
+      <div style={{ textAlign: 'center', fontSize: '3rem', fontWeight: 300, color: 'var(--text-color)', marginBottom: '16px' }}>
         {formatTime(timeLeft)}
       </div>
 
@@ -148,7 +145,7 @@ export default function PomodoroWidget({ id, onDelete }) {
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '16px' }}>
         <button 
           onClick={resetTimer}
-          style={{ width: '40px', height: '40px', borderRadius: '50%', border: 'none', backgroundColor: 'rgba(0,0,0,0.05)', color: '#4a5568', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+          style={{ width: '40px', height: '40px', borderRadius: '50%', border: 'none', backgroundColor: 'rgba(0,0,0,0.05)', color: 'var(--text-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
         >
           <RotateCcw size={16} />
         </button>
@@ -162,7 +159,7 @@ export default function PomodoroWidget({ id, onDelete }) {
 
         <button 
           onClick={skipTimer}
-          style={{ width: '40px', height: '40px', borderRadius: '50%', border: 'none', backgroundColor: 'rgba(0,0,0,0.05)', color: '#4a5568', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+          style={{ width: '40px', height: '40px', borderRadius: '50%', border: 'none', backgroundColor: 'rgba(0,0,0,0.05)', color: 'var(--text-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
         >
           <SkipForward size={16} />
         </button>

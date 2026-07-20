@@ -17,15 +17,12 @@ export default function NotesWidget({ id, initialText = '', onUpdate, onDelete }
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 1000 : 1,
     cursor: 'default',
+    padding: '16px',
     display: 'flex',
     flexDirection: 'column',
-    height: '200px', // matches screenshot roughly
-    padding: '16px',
-    backgroundColor: 'rgba(235, 238, 245, 0.95)',
-    backdropFilter: 'blur(10px)',
-    borderRadius: '16px',
-    boxShadow: isDragging ? '0 12px 40px rgba(0,0,0,0.3)' : '0 4px 12px rgba(0,0,0,0.1)'
+    height: '240px'
   };
 
   // Debounced auto-save
@@ -47,8 +44,8 @@ export default function NotesWidget({ id, initialText = '', onUpdate, onDelete }
           style={{ 
             cursor: 'grab', 
             fontWeight: 600, 
-            color: '#4a5568', 
-            fontSize: '0.9rem',
+            color: 'var(--text-color)', 
+            fontSize: '1rem',
             flex: 1
           }}
         >
@@ -69,11 +66,12 @@ export default function NotesWidget({ id, initialText = '', onUpdate, onDelete }
           background: 'transparent',
           border: 'none',
           outline: 'none',
-          color: '#2d3748',
+          color: 'var(--text-color)',
           fontSize: '0.95rem',
           lineHeight: 1.5,
           fontFamily: 'inherit'
         }}
+        placeholder="Write your notes here..."
       />
       
       <ConfirmModal 

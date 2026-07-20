@@ -17,14 +17,9 @@ export default function CalendarWidget({ id, onDelete }) {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 1000 : 1,
     cursor: 'default',
-    display: 'flex',
-    flexDirection: 'column',
-    padding: '16px',
-    backgroundColor: 'rgba(235, 238, 245, 0.95)',
-    backdropFilter: 'blur(10px)',
-    borderRadius: '16px',
-    boxShadow: isDragging ? '0 12px 40px rgba(0,0,0,0.3)' : '0 4px 12px rgba(0,0,0,0.1)'
+    padding: '16px'
   };
 
   const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
@@ -46,7 +41,7 @@ export default function CalendarWidget({ id, onDelete }) {
   const isCurrentMonth = today.getMonth() === currentDate.getMonth() && today.getFullYear() === currentDate.getFullYear();
 
   return (
-    <div ref={setNodeRef} style={style}>
+    <div ref={setNodeRef} style={style} className="board glass-panel">
       {/* Header / Drag Handle */}
       <div 
         {...attributes} 
@@ -72,7 +67,7 @@ export default function CalendarWidget({ id, onDelete }) {
         <div 
           {...attributes} 
           {...listeners} 
-          style={{ flex: 1, cursor: 'grab', fontWeight: 600, color: '#2d3748', fontSize: '1rem', textAlign: 'center' }}
+          style={{ flex: 1, cursor: 'grab', fontWeight: 600, color: 'var(--text-color)', fontSize: '1rem', textAlign: 'center' }}
         >
           {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
         </div>
@@ -84,7 +79,7 @@ export default function CalendarWidget({ id, onDelete }) {
       {/* Days of Week */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', marginBottom: '8px' }}>
         {['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'].map(day => (
-          <div key={day} style={{ textAlign: 'center', fontSize: '0.8rem', color: '#a0aec0', fontWeight: 500 }}>
+          <div key={day} style={{ textAlign: 'center', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)' }}>
             {day}
           </div>
         ))}
@@ -104,11 +99,11 @@ export default function CalendarWidget({ id, onDelete }) {
               style={{ 
                 textAlign: 'center', 
                 fontSize: '0.85rem', 
-                color: isToday ? 'white' : '#718096',
                 padding: '4px 0',
                 backgroundColor: isToday ? '#5c8c9e' : 'transparent',
                 borderRadius: '6px',
-                fontWeight: isToday ? 600 : 400
+                color: isToday ? 'white' : 'var(--text-color)',
+                fontWeight: isToday ? 700 : 400
               }}
             >
               {day}
