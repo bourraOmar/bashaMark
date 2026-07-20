@@ -14,7 +14,6 @@ export default function BookmarkItem({ id, title, url, iconUrl }) {
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
     opacity: isDragging ? 0.4 : 1,
   };
 

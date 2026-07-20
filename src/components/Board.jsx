@@ -20,7 +20,6 @@ export default function Board({ id, title, bookmarks, onAddBookmark, onRenameBoa
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
     opacity: isDragging ? 0.4 : 1,
   };
 
