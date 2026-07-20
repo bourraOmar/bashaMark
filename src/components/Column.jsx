@@ -6,6 +6,7 @@ import Board from './Board';
 import NotesWidget from './widgets/NotesWidget';
 import CalendarWidget from './widgets/CalendarWidget';
 import PomodoroWidget from './widgets/PomodoroWidget';
+import { PenTool, Calendar, Clock } from 'lucide-react';
 
 export default function Column({ id, slotIndex, boards, addBoard, addBookmark, renameBoard, updateBoard, deleteBoard }) {
   const [isAdding, setIsAdding] = useState(false);
@@ -53,16 +54,16 @@ export default function Column({ id, slotIndex, boards, addBoard, addBookmark, r
       </SortableContext>
       
       {isAdding ? (
-        <div className="board glass-panel" style={{ padding: '8px 0', marginTop: boards.length > 0 ? '0' : '0' }}>
-          <div className="board-header">
+        <div className="board glass-panel" style={{ padding: '12px', marginTop: boards.length > 0 ? '0' : '0', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <div className="board-header" style={{ padding: 0 }}>
             <input
               autoFocus
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
-              placeholder="New Board"
+              placeholder="New Board title..."
               style={{ 
                 width: '100%', 
-                padding: '2px 0', 
+                padding: '4px 0', 
                 background: 'transparent', 
                 border: 'none',
                 borderBottom: '1px solid rgba(255,255,255,0.2)', 
@@ -78,11 +79,27 @@ export default function Column({ id, slotIndex, boards, addBoard, addBookmark, r
                   setIsAdding(false);
                 }
               }}
-              onBlur={handleCreateBoard}
             />
-            <div className="board-header-actions" style={{ marginLeft: '12px' }}>
-               <Plus size={14} />
-               <MoreHorizontal size={14} />
+          </div>
+          
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '4px' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)' }}>OR ADD WIDGET:</span>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button 
+                onClick={() => { addBoard({ type: 'notes' }, slotIndex); setIsAdding(false); }}
+                style={{ padding: '6px', borderRadius: '8px', backgroundColor: 'rgba(0,0,0,0.05)', color: 'var(--text-color)' }}
+                title="Notes"
+              ><PenTool size={16} /></button>
+              <button 
+                onClick={() => { addBoard({ type: 'calendar' }, slotIndex); setIsAdding(false); }}
+                style={{ padding: '6px', borderRadius: '8px', backgroundColor: 'rgba(0,0,0,0.05)', color: 'var(--text-color)' }}
+                title="Calendar"
+              ><Calendar size={16} /></button>
+              <button 
+                onClick={() => { addBoard({ type: 'pomodoro' }, slotIndex); setIsAdding(false); }}
+                style={{ padding: '6px', borderRadius: '8px', backgroundColor: 'rgba(0,0,0,0.05)', color: 'var(--text-color)' }}
+                title="Pomodoro"
+              ><Clock size={16} /></button>
             </div>
           </div>
         </div>
