@@ -1,12 +1,22 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { MoreHorizontal } from 'lucide-react';
+import { MoreHorizontal, Trash2 } from 'lucide-react';
 import ConfirmModal from '../ConfirmModal';
 
 export default function NotesWidget({ id, initialText = '', onUpdate, onDelete }) {
   const [text, setText] = useState(initialText);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (menuRef.current && !menuRef.current.contains(event.target)) setIsMenuOpen(false);
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id,
@@ -51,9 +61,19 @@ export default function NotesWidget({ id, initialText = '', onUpdate, onDelete }
         >
           Notes
         </div>
-        <button onClick={() => setIsConfirmOpen(true)} style={{ color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', opacity: 0.7 }}>
-          <MoreHorizontal size={16} />
-        </button>
+        <div style={{ position: 'relative' }} ref={menuRef} onPointerDown={(e) => e.stopPropagation()}>
+          <button onClick={() => setIsMenuOpen(!isMenuOpen)} style={{ color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', opacity: 0.7 }}>
+            <MoreHorizontal size={16} />
+          </button>
+          {isMenuOpen && (
+            <div className="dropdown-menu" style={{ right: 0 }}>
+              <button className="dropdown-item danger" onClick={() => { setIsConfirmOpen(true); setIsMenuOpen(false); }}>
+                <Trash2 size={16} />
+                Delete board
+              </button>
+            </div>
+          )}
+        </div>
       </div>
       <textarea
         value={text}

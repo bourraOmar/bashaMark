@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Play, Pause, RotateCcw, SkipForward, Settings, MoreHorizontal } from 'lucide-react';
+import { Play, Pause, RotateCcw, SkipForward, Settings, MoreHorizontal, Trash2 } from 'lucide-react';
 import ConfirmModal from '../ConfirmModal';
+import { useRef } from 'react';
 
 const MODES = {
   FOCUS: { label: 'Focus', time: 25 * 60 },
@@ -16,6 +17,27 @@ export default function PomodoroWidget({ id, onDelete }) {
   const [isRunning, setIsRunning] = useState(false);
   const [sessionsCompleted, setSessionsCompleted] = useState(0);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  
+  const [settings, setSettings] = useState({
+    focus: 25,
+    shortBreak: 5,
+    longBreak: 15,
+    longBreakAfter: 4
+  });
+
+  const menuRef = useRef(null);
+  const settingsRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (menuRef.current && !menuRef.current.contains(event.target)) setIsMenuOpen(false);
+      if (settingsRef.current && !settingsRef.current.contains(event.target)) setIsSettingsOpen(false);
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id,
@@ -59,7 +81,27 @@ export default function PomodoroWidget({ id, onDelete }) {
   
   const resetTimer = () => {
     setIsRunning(false);
-    setTimeLeft(MODES[mode].time);
+    setTimeLeft(mode === 'FOCUS' ? settings.focus * 60 : mode === 'SHORT_BREAK' ? settings.shortBreak * 60 : settings.longBreak * 60);
+  };
+
+  const saveSettings = (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const newSettings = {
+      focus: parseInt(formData.get('focus')) || 25,
+      shortBreak: parseInt(formData.get('shortBreak')) || 5,
+      longBreak: parseInt(formData.get('longBreak')) || 15,
+      longBreakAfter: parseInt(formData.get('longBreakAfter')) || 4
+    };
+    setSettings(newSettings);
+    
+    // Update current time if timer is not running
+    if (!isRunning) {
+      if (mode === 'FOCUS') setTimeLeft(newSettings.focus * 60);
+      else if (mode === 'SHORT_BREAK') setTimeLeft(newSettings.shortBreak * 60);
+      else if (mode === 'LONG_BREAK') setTimeLeft(newSettings.longBreak * 60);
+    }
+    setIsSettingsOpen(false);
   };
 
   const skipTimer = () => {
@@ -69,7 +111,7 @@ export default function PomodoroWidget({ id, onDelete }) {
   const changeMode = (newMode) => {
     setIsRunning(false);
     setMode(newMode);
-    setTimeLeft(MODES[newMode].time);
+    setTimeLeft(newMode === 'FOCUS' ? settings.focus * 60 : newMode === 'SHORT_BREAK' ? settings.shortBreak * 60 : settings.longBreak * 60);
   };
 
   const formatTime = (seconds) => {
@@ -96,12 +138,51 @@ export default function PomodoroWidget({ id, onDelete }) {
           Pomodoro
         </div>
         <div style={{ display: 'flex', gap: '8px', color: 'var(--text-muted)', opacity: 0.7 }}>
-          <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit' }}>
-            <Settings size={16} />
-          </button>
-          <button onClick={() => setIsConfirmOpen(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit' }}>
-            <MoreHorizontal size={16} />
-          </button>
+          <div style={{ position: 'relative' }} ref={settingsRef} onPointerDown={(e) => e.stopPropagation()}>
+            <button onClick={() => setIsSettingsOpen(!isSettingsOpen)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit' }}>
+              <Settings size={16} />
+            </button>
+            {isSettingsOpen && (
+              <div className="dropdown-menu" style={{ width: '220px', padding: '16px', right: 0, cursor: 'default' }}>
+                <form onSubmit={saveSettings} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {[
+                    { id: 'focus', label: 'Focus (min)', value: settings.focus },
+                    { id: 'shortBreak', label: 'Short break (min)', value: settings.shortBreak },
+                    { id: 'longBreak', label: 'Long break (min)', value: settings.longBreak },
+                    { id: 'longBreakAfter', label: 'Long break after', value: settings.longBreakAfter }
+                  ].map(field => (
+                    <div key={field.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <label style={{ fontSize: '0.85rem', color: 'var(--text-color)' }}>{field.label}</label>
+                      <input 
+                        name={field.id}
+                        type="number" 
+                        defaultValue={field.value}
+                        style={{ width: '48px', padding: '4px', borderRadius: '4px', border: '1px solid var(--glass-border)', background: 'rgba(0,0,0,0.05)', color: 'var(--text-color)', textAlign: 'center' }}
+                      />
+                    </div>
+                  ))}
+                  <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                    <button type="button" onClick={() => setIsSettingsOpen(false)} style={{ flex: 1, padding: '6px', borderRadius: '6px', border: '1px solid var(--glass-border)', background: 'rgba(0,0,0,0.05)', color: 'var(--text-muted)', cursor: 'pointer' }}>Cancel</button>
+                    <button type="submit" style={{ flex: 1, padding: '6px', borderRadius: '6px', border: 'none', background: '#5c8c9e', color: 'white', cursor: 'pointer' }}>Save</button>
+                  </div>
+                </form>
+              </div>
+            )}
+          </div>
+
+          <div style={{ position: 'relative' }} ref={menuRef} onPointerDown={(e) => e.stopPropagation()}>
+            <button onClick={() => setIsMenuOpen(!isMenuOpen)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit' }}>
+              <MoreHorizontal size={16} />
+            </button>
+            {isMenuOpen && (
+              <div className="dropdown-menu" style={{ right: 0 }}>
+                <button className="dropdown-item danger" onClick={() => { setIsConfirmOpen(true); setIsMenuOpen(false); }}>
+                  <Trash2 size={16} />
+                  Delete board
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -133,15 +214,15 @@ export default function PomodoroWidget({ id, onDelete }) {
       </div>
 
       {/* Dots (Sessions) */}
-      <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', marginBottom: '24px' }}>
-        {[0, 1, 2, 3].map(i => (
+      <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginBottom: '24px' }}>
+        {Array.from({ length: settings.longBreakAfter }).map((_, i) => (
           <div 
             key={i}
             style={{
               width: '8px',
               height: '8px',
               borderRadius: '50%',
-              backgroundColor: i < (sessionsCompleted % 4) ? '#5c8c9e' : 'rgba(0,0,0,0.2)'
+              backgroundColor: i < (sessionsCompleted % settings.longBreakAfter) ? '#5c8c9e' : 'rgba(0,0,0,0.2)'
             }}
           />
         ))}

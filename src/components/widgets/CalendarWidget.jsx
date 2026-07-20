@@ -1,12 +1,22 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react';
+import { ChevronLeft, ChevronRight, MoreHorizontal, Trash2 } from 'lucide-react';
 import ConfirmModal from '../ConfirmModal';
 
 export default function CalendarWidget({ id, onDelete }) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (menuRef.current && !menuRef.current.contains(event.target)) setIsMenuOpen(false);
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id,
@@ -66,9 +76,19 @@ export default function CalendarWidget({ id, onDelete }) {
           <button onClick={nextMonth} style={{ padding: '4px', borderRadius: '8px', cursor: 'pointer', border: 'none', background: 'transparent', color: 'var(--text-muted)' }}>
             <ChevronRight size={16} />
           </button>
-          <button onClick={() => setIsConfirmOpen(true)} style={{ padding: '4px', borderRadius: '8px', cursor: 'pointer', border: 'none', background: 'transparent', opacity: 0.7, color: 'var(--text-muted)' }}>
-            <MoreHorizontal size={16} />
-          </button>
+          <div style={{ position: 'relative' }} ref={menuRef} onPointerDown={(e) => e.stopPropagation()}>
+            <button onClick={() => setIsMenuOpen(!isMenuOpen)} style={{ padding: '4px', borderRadius: '8px', cursor: 'pointer', border: 'none', background: 'transparent', opacity: 0.7, color: 'var(--text-muted)' }}>
+              <MoreHorizontal size={16} />
+            </button>
+            {isMenuOpen && (
+              <div className="dropdown-menu" style={{ right: 0 }}>
+                <button className="dropdown-item danger" onClick={() => { setIsConfirmOpen(true); setIsMenuOpen(false); }}>
+                  <Trash2 size={16} />
+                  Delete board
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
