@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Search } from 'lucide-react';
 import { useBoards } from '../hooks/useBoards';
+import { getFaviconUrl } from '../utils/favicon';
 
 export default function BookmarkSearchModal({ isOpen, onClose }) {
   const [query, setQuery] = useState('');
@@ -94,13 +95,7 @@ export default function BookmarkSearchModal({ isOpen, onClose }) {
             <div style={{ height: '1px', background: 'rgba(255,255,255,0.1)', margin: '4px 0' }} />
             {results.map((bm, idx) => {
               // Ensure we have a valid URL before attempting to parse it
-              let domain = '';
-              try {
-                domain = new URL(bm.url).hostname;
-              } catch (e) {
-                // Ignore invalid URLs
-              }
-              
+              const favicon = getFaviconUrl(bm.url);
               const fallbackIcon = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>';
               
               return (
@@ -121,7 +116,7 @@ export default function BookmarkSearchModal({ isOpen, onClose }) {
                   className="search-result-item"
                 >
                   <img 
-                    src={domain ? `https://icons.duckduckgo.com/ip3/${domain}.ico` : fallbackIcon} 
+                    src={favicon} 
                     alt="" 
                     style={{ width: '24px', height: '24px', borderRadius: '4px' }} 
                     onError={(e) => {
@@ -131,7 +126,9 @@ export default function BookmarkSearchModal({ isOpen, onClose }) {
                   />
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
                     <span style={{ fontSize: '0.95rem' }}>{bm.title}</span>
-                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{bm.boardTitle} {domain ? `• ${domain}` : ''}</span>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                      {bm.boardTitle} {bm.url ? `• ${new URL(bm.url).hostname}` : ''}
+                    </span>
                   </div>
                 </a>
               );
