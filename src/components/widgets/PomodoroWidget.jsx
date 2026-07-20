@@ -143,7 +143,7 @@ export default function PomodoroWidget({ id, onDelete }) {
               <Settings size={16} />
             </button>
             {isSettingsOpen && (
-              <div className="dropdown-menu" style={{ width: '220px', padding: '16px', right: 'auto', left: '100%', top: 0, marginLeft: '8px', marginTop: 0, cursor: 'default' }}>
+              <div className="dropdown-menu" style={{ width: '220px', padding: '16px', right: 'auto', left: '100%', top: '24px', marginLeft: '8px', marginTop: 0, cursor: 'default' }}>
                 <form onSubmit={saveSettings} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   {[
                     { id: 'focus', label: 'Focus (min)', value: settings.focus },
@@ -175,7 +175,7 @@ export default function PomodoroWidget({ id, onDelete }) {
               <MoreHorizontal size={16} />
             </button>
             {isMenuOpen && (
-              <div className="dropdown-menu" style={{ right: 'auto', left: '100%', top: 0, marginLeft: '8px', marginTop: 0 }}>
+              <div className="dropdown-menu" style={{ right: 'auto', left: '100%', top: '24px', marginLeft: '8px', marginTop: 0 }}>
                 <button className="dropdown-item danger" onClick={() => { setIsConfirmOpen(true); setIsMenuOpen(false); }}>
                   <Trash2 size={16} />
                   Delete board
