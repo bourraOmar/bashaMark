@@ -5,6 +5,7 @@ import { Plus, Settings, X, Search, Image as ImageIcon, Grid, Bookmark, Trash2, 
 import SearchBar from './components/widgets/SearchBar';
 import Column from './components/Column';
 import Modal from './components/Modal';
+import BookmarkSearchModal from './components/BookmarkSearchModal';
 import { useBoards } from './hooks/useBoards';
 
 const TOTAL_SLOTS = 15;
@@ -15,6 +16,7 @@ function App() {
   const [targetSlotIndex, setTargetSlotIndex] = useState(null);
   const [bookmarkFolders, setBookmarkFolders] = useState([]);
   const [isFabMenuOpen, setIsFabMenuOpen] = useState(false);
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
 
   useEffect(() => {
     if (isModalOpen && typeof chrome !== 'undefined' && chrome.bookmarks) {
@@ -255,7 +257,10 @@ function App() {
       <div className="fab-container">
         {isFabMenuOpen && (
           <div className="fab-menu-items">
-            <button className="fab" title="Search"><Search size={20} /></button>
+            <button className="fab" title="Search" onClick={() => {
+              setIsFabMenuOpen(false);
+              setIsSearchModalOpen(true);
+            }}><Search size={20} /></button>
             <button className="fab" title="Background"><ImageIcon size={20} /></button>
             <button className="fab" title="Grid Layout"><Grid size={20} /></button>
             <button className="fab" title="Import Bookmarks" onClick={() => {
@@ -270,6 +275,8 @@ function App() {
         </button>
         <button className="fab fab-primary" title="Settings"><Settings size={20} /></button>
       </div>
+
+      <BookmarkSearchModal isOpen={isSearchModalOpen} onClose={() => setIsSearchModalOpen(false)} />
     </div>
   );
 }
