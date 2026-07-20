@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Play, Pause, RotateCcw, SkipForward } from 'lucide-react';
+import { Play, Pause, RotateCcw, SkipForward, Trash2 } from 'lucide-react';
+import ConfirmModal from '../ConfirmModal';
 
 const MODES = {
   FOCUS: { label: 'Focus', time: 25 * 60 },
@@ -9,11 +10,12 @@ const MODES = {
   LONG_BREAK: { label: 'Long Break', time: 15 * 60 }
 };
 
-export default function PomodoroWidget({ id }) {
+export default function PomodoroWidget({ id, onDelete }) {
   const [mode, setMode] = useState('FOCUS');
   const [timeLeft, setTimeLeft] = useState(MODES.FOCUS.time);
   const [isRunning, setIsRunning] = useState(false);
   const [sessionsCompleted, setSessionsCompleted] = useState(0);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id,
@@ -82,19 +84,23 @@ export default function PomodoroWidget({ id }) {
   return (
     <div ref={setNodeRef} style={style}>
       {/* Header / Drag Handle */}
-      <div 
-        {...attributes} 
-        {...listeners} 
-        style={{ 
-          cursor: 'grab', 
-          fontWeight: 600, 
-          color: '#4a5568', 
-          fontSize: '1.1rem',
-          marginBottom: '16px',
-          paddingBottom: '4px'
-        }}
-      >
-        Pomodoro
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+        <div 
+          {...attributes} 
+          {...listeners} 
+          style={{ 
+            cursor: 'grab', 
+            fontWeight: 600, 
+            color: '#4a5568', 
+            fontSize: '1.1rem',
+            flex: 1
+          }}
+        >
+          Pomodoro
+        </div>
+        <button onClick={() => setIsConfirmOpen(true)} style={{ color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', opacity: 0.5 }}>
+          <Trash2 size={16} />
+        </button>
       </div>
 
       {/* Tabs */}
@@ -161,6 +167,14 @@ export default function PomodoroWidget({ id }) {
           <SkipForward size={16} />
         </button>
       </div>
+      
+      <ConfirmModal 
+        isOpen={isConfirmOpen} 
+        onClose={() => setIsConfirmOpen(false)}
+        onConfirm={onDelete}
+        title="Delete Pomodoro"
+        message="Are you sure you want to delete this Pomodoro widget?"
+      />
     </div>
   );
 }

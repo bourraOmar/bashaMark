@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
+import ConfirmModal from '../ConfirmModal';
 
-export default function CalendarWidget({ id }) {
+export default function CalendarWidget({ id, onDelete }) {
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id,
@@ -62,22 +64,21 @@ export default function CalendarWidget({ id }) {
         <button 
           onClick={prevMonth}
           onPointerDown={(e) => e.stopPropagation()} // Prevent drag when clicking button
-          style={{ position: 'absolute', left: 0, background: 'none', border: 'none', cursor: 'pointer', color: 'inherit' }}
+          style={{ padding: '4px', borderRadius: '8px', cursor: 'pointer', border: 'none', background: 'transparent' }}
         >
-          <ChevronLeft size={16} />
+          <ChevronLeft size={18} />
         </button>
         
-        <span style={{ fontWeight: 600, fontSize: '1.05rem' }}>
-          {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
-        </span>
-
-        <button 
-          onClick={nextMonth}
-          onPointerDown={(e) => e.stopPropagation()}
-          style={{ position: 'absolute', right: 0, background: 'none', border: 'none', cursor: 'pointer', color: 'inherit' }}
+        <div 
+          {...attributes} 
+          {...listeners} 
+          style={{ flex: 1, cursor: 'grab', fontWeight: 600, color: '#2d3748', fontSize: '1rem', textAlign: 'center' }}
         >
-          <ChevronRight size={16} />
-        </button>
+          {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
+        </div>
+
+        <button onClick={nextMonth} style={{ padding: '4px', borderRadius: '8px', cursor: 'pointer', border: 'none', background: 'transparent' }}><ChevronRight size={18} /></button>
+        <button onClick={() => setIsConfirmOpen(true)} style={{ marginLeft: '4px', padding: '4px', borderRadius: '8px', cursor: 'pointer', border: 'none', background: 'transparent', opacity: 0.5, color: 'var(--text-muted)' }}><Trash2 size={16} /></button>
       </div>
 
       {/* Days of Week */}
@@ -115,6 +116,14 @@ export default function CalendarWidget({ id }) {
           );
         })}
       </div>
+      
+      <ConfirmModal 
+        isOpen={isConfirmOpen} 
+        onClose={() => setIsConfirmOpen(false)}
+        onConfirm={onDelete}
+        title="Delete Calendar"
+        message="Are you sure you want to delete this Calendar widget?"
+      />
     </div>
   );
 }

@@ -30,13 +30,13 @@ export default function Column({ id, slotIndex, boards, addBoard, addBookmark, r
       <SortableContext items={boards.map(b => b.id)} strategy={verticalListSortingStrategy}>
         {boards.map(board => {
           if (board.type === 'notes') {
-            return <NotesWidget key={board.id} id={board.id} initialText={board.text} onUpdate={updateBoard} />;
+            return <NotesWidget key={board.id} id={board.id} initialText={board.text} onUpdate={updateBoard} onDelete={() => deleteBoard(board.id)} />;
           }
           if (board.type === 'calendar') {
-            return <CalendarWidget key={board.id} id={board.id} />;
+            return <CalendarWidget key={board.id} id={board.id} onDelete={() => deleteBoard(board.id)} />;
           }
           if (board.type === 'pomodoro') {
-            return <PomodoroWidget key={board.id} id={board.id} />;
+            return <PomodoroWidget key={board.id} id={board.id} onDelete={() => deleteBoard(board.id)} />;
           }
           
           return (

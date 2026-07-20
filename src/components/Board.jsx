@@ -3,11 +3,13 @@ import { SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-
 import { CSS } from '@dnd-kit/utilities';
 import BookmarkItem from './BookmarkItem';
 import { Plus, MoreHorizontal, Type, Layers, Trash2 } from 'lucide-react';
+import ConfirmModal from './ConfirmModal';
 
 export default function Board({ id, title, bookmarks, onAddBookmark, onRenameBoard, onDeleteBoard }) {
   const [isAdding, setIsAdding] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isRenaming, setIsRenaming] = useState(false);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [newUrl, setNewUrl] = useState('');
   const [newTitle, setNewTitle] = useState('');
   const [renameTitle, setRenameTitle] = useState(title);
@@ -60,9 +62,7 @@ export default function Board({ id, title, bookmarks, onAddBookmark, onRenameBoa
   };
 
   const handleDelete = () => {
-    if (window.confirm(`Are you sure you want to delete "${title}"?`)) {
-      onDeleteBoard(id);
-    }
+    setIsConfirmOpen(true);
     setIsMenuOpen(false);
   };
 
@@ -143,6 +143,13 @@ export default function Board({ id, title, bookmarks, onAddBookmark, onRenameBoa
           ))}
         </SortableContext>
       </div>
+      <ConfirmModal 
+        isOpen={isConfirmOpen} 
+        onClose={() => setIsConfirmOpen(false)}
+        onConfirm={() => onDeleteBoard(id)}
+        title="Delete Board"
+        message={`Are you sure you want to delete "${title}"? All bookmarks inside will be lost.`}
+      />
     </div>
   );
 }
