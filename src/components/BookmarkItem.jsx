@@ -19,10 +19,19 @@ export default function BookmarkItem({ id, title, url, iconUrl }) {
   };
 
   const faviconUrl = iconUrl || `https://www.google.com/s2/favicons?domain=${new URL(url).hostname}&sz=32`;
+  const fallbackIcon = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>';
 
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners} className="bookmark-item glass-item">
-      <img src={faviconUrl} alt="" className="bookmark-icon" />
+      <img 
+        src={faviconUrl} 
+        alt="" 
+        className="bookmark-icon" 
+        onError={(e) => {
+          e.target.onerror = null;
+          e.target.src = fallbackIcon;
+        }}
+      />
       <a href={url} target="_blank" rel="noopener noreferrer">
         {title}
       </a>
