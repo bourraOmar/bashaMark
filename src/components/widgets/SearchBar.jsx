@@ -18,6 +18,7 @@ export default function SearchBar() {
         type="text" 
         value={query}
         onChange={(e) => setQuery(e.target.value)}
+        onKeyDown={(e) => e.stopPropagation()}
         placeholder="Search Google..." 
         autoFocus
       />

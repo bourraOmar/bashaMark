@@ -75,6 +75,7 @@ export default function Board({ id, title, bookmarks, onAddBookmark, onRenameBoa
               type="text"
               value={renameTitle}
               onChange={(e) => setRenameTitle(e.target.value)}
+              onKeyDown={(e) => e.stopPropagation()}
               className="glass-input"
               autoFocus
               onBlur={handleRenameSubmit}
@@ -119,6 +120,7 @@ export default function Board({ id, title, bookmarks, onAddBookmark, onRenameBoa
             placeholder="Title" 
             value={newTitle} 
             onChange={(e) => setNewTitle(e.target.value)} 
+            onKeyDown={(e) => e.stopPropagation()}
             className="glass-input" 
             autoFocus
           />
@@ -127,6 +129,7 @@ export default function Board({ id, title, bookmarks, onAddBookmark, onRenameBoa
             placeholder="URL (https://...)" 
             value={newUrl} 
             onChange={(e) => setNewUrl(e.target.value)} 
+            onKeyDown={(e) => e.stopPropagation()}
             className="glass-input" 
           />
           <button type="submit" className="glass-btn">Save</button>
