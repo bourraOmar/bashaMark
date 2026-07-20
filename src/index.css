@@ -4,11 +4,11 @@
   --font-family: 'Inter', system-ui, sans-serif;
   
   /* Glassmorphism Variables */
-  --glass-bg: rgba(255, 255, 255, 0.25);
-  --glass-bg-hover: rgba(255, 255, 255, 0.4);
-  --glass-border: rgba(255, 255, 255, 0.18);
-  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15);
-  --glass-blur: blur(16px);
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-bg-hover: rgba(255, 255, 255, 0.95);
+  --glass-border: rgba(255, 255, 255, 0.4);
+  --glass-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  --glass-blur: blur(24px);
   
   --text-color: #222;
   --text-muted: #555;
@@ -25,9 +25,9 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --glass-bg: rgba(0, 0, 0, 0.15);
-    --glass-bg-hover: rgba(0, 0, 0, 0.25);
-    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-bg: rgba(15, 23, 42, 0.85);
+    --glass-bg-hover: rgba(15, 23, 42, 0.95);
+    --glass-border: rgba(255, 255, 255, 0.1);
     --text-color: #f1f1f1;
     --text-muted: #aaa;
   }
