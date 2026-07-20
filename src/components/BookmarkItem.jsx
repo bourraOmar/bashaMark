@@ -60,34 +60,6 @@ export default function BookmarkItem({ id, title, url, iconUrl, onEdit, onDelete
     }
   };
 
-  if (isEditing) {
-    return (
-      <div ref={setNodeRef} style={style} className="bookmark-item glass-item">
-        <form onSubmit={handleEditSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '4px', width: '100%' }}>
-          <input 
-            type="text" 
-            value={editTitle} 
-            onChange={(e) => setEditTitle(e.target.value)} 
-            className="glass-input" 
-            autoFocus 
-            style={{ padding: '2px 4px', fontSize: '0.9rem' }}
-          />
-          <input 
-            type="url" 
-            value={editUrl} 
-            onChange={(e) => setEditUrl(e.target.value)} 
-            className="glass-input" 
-            style={{ padding: '2px 4px', fontSize: '0.8rem' }}
-          />
-          <div style={{ display: 'flex', gap: '4px', marginTop: '4px' }}>
-            <button type="submit" className="glass-btn" style={{ padding: '2px 8px', fontSize: '0.8rem', flex: 1 }}>Save</button>
-            <button type="button" onClick={() => setIsEditing(false)} className="glass-btn" style={{ padding: '2px 8px', fontSize: '0.8rem', flex: 1, background: 'rgba(0,0,0,0.1)' }}>Cancel</button>
-          </div>
-        </form>
-      </div>
-    );
-  }
-
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners} className="bookmark-item glass-item">
       <img 
@@ -106,18 +78,67 @@ export default function BookmarkItem({ id, title, url, iconUrl, onEdit, onDelete
         <button 
           onClick={(e) => {
             e.preventDefault();
-            if (!isMenuOpen && menuRef.current) {
+            if (!isMenuOpen && !isEditing && menuRef.current) {
               const rect = menuRef.current.getBoundingClientRect();
-              setDropdownPosition(window.innerWidth - rect.right < 200 ? 'left' : 'right');
+              setDropdownPosition(window.innerWidth - rect.right < 250 ? 'left' : 'right');
             }
-            setIsMenuOpen(!isMenuOpen);
+            if (isEditing) {
+              setIsEditing(false);
+            } else {
+              setIsMenuOpen(!isMenuOpen);
+            }
           }} 
           style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit', display: 'flex', padding: '4px' }}
         >
           <MoreVertical size={14} />
         </button>
 
-        {isMenuOpen && (
+        {isEditing && (
+          <div className="dropdown-menu" style={{ 
+            right: dropdownPosition === 'left' ? '100%' : 'auto', 
+            left: dropdownPosition === 'right' ? '100%' : 'auto', 
+            top: '0', 
+            marginLeft: dropdownPosition === 'right' ? '8px' : 0, 
+            marginRight: dropdownPosition === 'left' ? '8px' : 0, 
+            marginTop: 0,
+            width: '240px',
+            padding: '12px',
+            zIndex: 1000,
+            cursor: 'default'
+          }}>
+            <form onSubmit={handleEditSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <input 
+                type="url" 
+                value={editUrl} 
+                onChange={(e) => setEditUrl(e.target.value)} 
+                className="glass-input" 
+                placeholder="URL"
+                style={{ padding: '6px 8px', fontSize: '0.85rem', width: '100%', background: 'rgba(0,0,0,0.05)', border: '1px solid var(--glass-border)' }}
+              />
+              <input 
+                type="text" 
+                value={editTitle} 
+                onChange={(e) => setEditTitle(e.target.value)} 
+                className="glass-input" 
+                placeholder="Title"
+                autoFocus 
+                style={{ padding: '6px 8px', fontSize: '0.85rem', width: '100%', background: 'rgba(0,0,0,0.05)', border: '1px solid var(--glass-border)' }}
+              />
+              <input 
+                type="text" 
+                placeholder="Description (optional)"
+                className="glass-input" 
+                style={{ padding: '6px 8px', fontSize: '0.85rem', width: '100%', background: 'rgba(0,0,0,0.05)', border: '1px solid var(--glass-border)' }}
+              />
+              <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
+                <button type="button" onClick={() => setIsEditing(false)} style={{ padding: '6px', fontSize: '0.85rem', flex: 1, borderRadius: '6px', border: '1px solid var(--glass-border)', background: 'rgba(0,0,0,0.05)', color: 'var(--text-muted)', cursor: 'pointer' }}>Cancel</button>
+                <button type="submit" style={{ padding: '6px', fontSize: '0.85rem', flex: 1, borderRadius: '6px', border: 'none', background: '#5c8c9e', color: 'white', cursor: 'pointer' }}>Save</button>
+              </div>
+            </form>
+          </div>
+        )}
+
+        {isMenuOpen && !isEditing && (
           <div className="dropdown-menu" style={{ 
             right: dropdownPosition === 'left' ? '100%' : 'auto', 
             left: dropdownPosition === 'right' ? '100%' : 'auto', 
