@@ -81,7 +81,7 @@ export default function CalendarWidget({ id, onDelete }) {
               <MoreHorizontal size={16} />
             </button>
             {isMenuOpen && (
-              <div className="dropdown-menu" style={{ right: 0 }}>
+              <div className="dropdown-menu" style={{ right: 'auto', left: '100%', top: 0, marginLeft: '8px', marginTop: 0 }}>
                 <button className="dropdown-item danger" onClick={() => { setIsConfirmOpen(true); setIsMenuOpen(false); }}>
                   <Trash2 size={16} />
                   Delete board
