@@ -393,6 +393,19 @@ a {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  align-items: center;
+}
+
+.fab-menu-items {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: slideUpFade 0.2s ease-out;
+}
+
+@keyframes slideUpFade {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .fab {

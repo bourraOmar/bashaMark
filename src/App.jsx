@@ -14,6 +14,7 @@ function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [targetSlotIndex, setTargetSlotIndex] = useState(null);
   const [bookmarkFolders, setBookmarkFolders] = useState([]);
+  const [isFabMenuOpen, setIsFabMenuOpen] = useState(false);
 
   useEffect(() => {
     if (isModalOpen && typeof chrome !== 'undefined' && chrome.bookmarks) {
@@ -252,7 +253,21 @@ function App() {
       </Modal>
 
       <div className="fab-container">
-        <button className="fab" title="Menu"><Menu size={20} /></button>
+        {isFabMenuOpen && (
+          <div className="fab-menu-items">
+            <button className="fab" title="Search"><Search size={20} /></button>
+            <button className="fab" title="Background"><ImageIcon size={20} /></button>
+            <button className="fab" title="Grid Layout"><Grid size={20} /></button>
+            <button className="fab" title="Import Bookmarks" onClick={() => {
+              setIsFabMenuOpen(false);
+              setIsModalOpen(true);
+            }}><Bookmark size={20} /></button>
+            <button className="fab" title="Clear Data"><Trash2 size={20} /></button>
+          </div>
+        )}
+        <button className="fab" title="Menu" onClick={() => setIsFabMenuOpen(!isFabMenuOpen)}>
+          {isFabMenuOpen ? <X size={20} /> : <Menu size={20} />}
+        </button>
         <button className="fab fab-primary" title="Settings"><Settings size={20} /></button>
       </div>
     </div>
