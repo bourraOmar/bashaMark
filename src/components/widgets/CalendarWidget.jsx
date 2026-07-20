@@ -27,7 +27,8 @@ export default function CalendarWidget({ id, onDelete }) {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
-    zIndex: isDragging ? 1000 : 1,
+    zIndex: isDragging ? 1000 : (isMenuOpen || isConfirmOpen) ? 100 : undefined,
+    position: 'relative',
     cursor: 'default',
     padding: '16px'
   };

@@ -1,9 +1,10 @@
 import { AlertCircle } from 'lucide-react';
+import { createPortal } from 'react-dom';
 
 export default function ConfirmModal({ isOpen, onClose, onConfirm, title, message }) {
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <div 
       style={{
         position: 'fixed',
@@ -93,6 +94,7 @@ export default function ConfirmModal({ isOpen, onClose, onConfirm, title, messag
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

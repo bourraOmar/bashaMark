@@ -24,6 +24,8 @@ export default function Board({ id, title, bookmarks, onAddBookmark, onRenameBoa
     transform: CSS.Translate.toString(transform),
     transition,
     opacity: isDragging ? 0.4 : 1,
+    zIndex: isDragging ? 1000 : (isMenuOpen || isConfirmOpen) ? 100 : undefined,
+    position: 'relative',
   };
 
   useEffect(() => {
