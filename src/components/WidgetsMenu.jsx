@@ -8,10 +8,10 @@ export default function WidgetsMenu({ isOpen, onClose, addBoard }) {
       className="widgets-menu glass-panel"
       style={{
         position: 'absolute',
-        right: '70px', // to the left of the FAB menu
-        bottom: '80px', // aligned with the 3rd icon roughly
+        right: '70px',
+        bottom: '80px',
         width: '280px',
-        backgroundColor: 'rgba(235, 238, 245, 0.95)', // light grey/blue matching the image
+        backgroundColor: 'rgba(235, 238, 245, 0.95)',
         backdropFilter: 'blur(10px)',
         borderRadius: '16px',
         padding: '16px',
@@ -22,15 +22,24 @@ export default function WidgetsMenu({ isOpen, onClose, addBoard }) {
         zIndex: 1000
       }}
     >
+      {/* Click outside detection helper */}
+      <div 
+        style={{ position: 'fixed', inset: 0, zIndex: -1 }} 
+        onClick={(e) => {
+          e.stopPropagation();
+          onClose();
+        }}
+      />
+      
       <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#8892a0', letterSpacing: '0.05em', marginBottom: '4px', marginLeft: '4px' }}>
         WIDGETS
       </span>
 
       {/* Addable Widgets */}
-      <WidgetItem icon={<LayoutTemplate size={18} />} title="Board" type="add" onAdd={() => addBoard({ type: 'board', title: 'New Board' })} />
-      <WidgetItem icon={<PenTool size={18} />} title="Notes" type="add" onAdd={() => addBoard({ type: 'notes' })} />
-      <WidgetItem icon={<Calendar size={18} />} title="Calendar" type="add" onAdd={() => addBoard({ type: 'calendar' })} />
-      <WidgetItem icon={<Clock size={18} />} title="Pomodoro" type="add" onAdd={() => addBoard({ type: 'pomodoro' })} />
+      <WidgetItem icon={<LayoutTemplate size={18} />} title="Board" type="add" onAdd={() => { addBoard({ type: 'board', title: 'New Board' }); onClose(); }} />
+      <WidgetItem icon={<PenTool size={18} />} title="Notes" type="add" onAdd={() => { addBoard({ type: 'notes' }); onClose(); }} />
+      <WidgetItem icon={<Calendar size={18} />} title="Calendar" type="add" onAdd={() => { addBoard({ type: 'calendar' }); onClose(); }} />
+      <WidgetItem icon={<Clock size={18} />} title="Pomodoro" type="add" onAdd={() => { addBoard({ type: 'pomodoro' }); onClose(); }} />
 
       {/* Togglable Widgets */}
       <WidgetItem icon={<Clock size={18} />} title="Clock" type="toggle" defaultChecked={false} />
