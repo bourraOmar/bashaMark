@@ -1,36 +1,13 @@
 import { useState, useCallback, useEffect } from 'react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
-import { arrayMove, sortableKeyboardCoordinates, SortableContext, rectSwappingStrategy, useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
+import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { Plus, Settings, X, Search, Image as ImageIcon, Grid, Bookmark, Trash2, Menu } from 'lucide-react';
 import SearchBar from './components/widgets/SearchBar';
-import Board from './components/Board';
+import Column from './components/Column';
 import Modal from './components/Modal';
 import { useBoards } from './hooks/useBoards';
 
 const TOTAL_SLOTS = 15;
-
-function EmptySlot({ id, onClick }) {
-  const { setNodeRef, attributes, listeners, transform, transition } = useSortable({ id, data: { type: 'slot' } });
-  
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
-
-  return (
-    <div 
-      ref={setNodeRef} 
-      style={style} 
-      {...attributes} 
-      {...listeners}
-      className="placeholder-board" 
-      onClick={onClick}
-    >
-      <Plus size={32} />
-    </div>
-  );
-}
 
 function App() {
   const { boards, setBoards, addBoard, addBookmark, renameBoard, deleteBoard } = useBoards();
@@ -38,11 +15,9 @@ function App() {
   const [targetSlotIndex, setTargetSlotIndex] = useState(null);
   const [bookmarkFolders, setBookmarkFolders] = useState([]);
 
-  // Fetch bookmarks when modal opens
   useEffect(() => {
     if (isModalOpen && typeof chrome !== 'undefined' && chrome.bookmarks) {
       chrome.bookmarks.getTree((tree) => {
-        // Collect all folders recursively
         const folders = [];
         const processNode = (node) => {
           if (node.children) {
@@ -56,7 +31,6 @@ function App() {
           }
         };
         processNode(tree[0]);
-        // Filter out empty folders to keep it clean
         setBookmarkFolders(folders.filter(f => f.count > 0 && f.title !== 'Root'));
       });
     }
@@ -69,54 +43,75 @@ function App() {
 
   const customCollisionDetection = useCallback((args) => {
     const { active, droppableContainers } = args;
-    const isDraggingBoard = active.id.toString().startsWith('board-') || active.id.toString().startsWith('slot-');
+    const isDraggingBoard = active.id.toString().startsWith('board-');
     
     if (isDraggingBoard) {
-      // Boards only collide with other boards or slots
       const filtered = droppableContainers.filter(c => 
-        c.id.toString().startsWith('board-') || c.id.toString().startsWith('slot-')
+        c.id.toString().startsWith('board-') || c.id.toString().startsWith('column-')
       );
       return closestCenter({ ...args, droppableContainers: filtered });
     } else {
-      // Bookmarks don't collide with empty slots, only with bookmarks or boards
       const filtered = droppableContainers.filter(c => 
-        !c.id.toString().startsWith('slot-')
+        !c.id.toString().startsWith('column-')
       );
       return closestCenter({ ...args, droppableContainers: filtered });
     }
   }, []);
 
+  const handleDragOver = useCallback((event) => {
+    const { active, over } = event;
+    if (!over) return;
+    
+    const activeId = active.id.toString();
+    const overId = over.id.toString();
+    if (activeId === overId) return;
+
+    if (activeId.startsWith('board-')) {
+      const activeBoard = boards.find(b => b.id === activeId);
+      if (!activeBoard) return;
+
+      let overColumnIndex = null;
+      if (overId.startsWith('column-')) {
+        overColumnIndex = over.data.current.slotIndex;
+      } else if (overId.startsWith('board-')) {
+        const overBoard = boards.find(b => b.id === overId);
+        if (overBoard) overColumnIndex = overBoard.slotIndex;
+      }
+
+      if (overColumnIndex !== null && activeBoard.slotIndex !== overColumnIndex) {
+        setBoards(prev => {
+          const activeIndex = prev.findIndex(b => b.id === activeId);
+          const newBoards = [...prev];
+          newBoards[activeIndex] = { ...newBoards[activeIndex], slotIndex: overColumnIndex };
+          
+          if (overId.startsWith('board-')) {
+            const overIndex = prev.findIndex(b => b.id === overId);
+            return arrayMove(newBoards, activeIndex, overIndex);
+          }
+          return newBoards;
+        });
+      }
+    }
+  }, [boards, setBoards]);
+
   const handleDragEnd = useCallback((event) => {
     const { active, over } = event;
     if (!over) return;
     
-    // Check if dragging a board (or empty slot) in the grid
-    if (active.id.toString().startsWith('slot-') || active.id.toString().startsWith('board-')) {
+    if (active.id.toString().startsWith('board-')) {
       if (active.id === over.id) return;
+      const overId = over.id.toString();
       
-      const isBoard = (id) => id.toString().startsWith('board-');
-      const getSlotIndex = (id) => {
-        if (id.toString().startsWith('slot-')) return parseInt(id.split('-')[1]);
-        const board = boards.find(b => b.id === id);
-        return board ? board.slotIndex : -1;
-      };
-
-      const activeSlotIndex = getSlotIndex(active.id);
-      const overSlotIndex = getSlotIndex(over.id);
-
-      if (activeSlotIndex !== -1 && overSlotIndex !== -1) {
-        // Swap their slot indices
-        const newBoards = boards.map(board => {
-          if (board.slotIndex === activeSlotIndex) return { ...board, slotIndex: overSlotIndex };
-          if (board.slotIndex === overSlotIndex) return { ...board, slotIndex: activeSlotIndex };
-          return board;
-        });
-        setBoards(newBoards);
+      if (overId.startsWith('board-')) {
+         const activeIndex = boards.findIndex(b => b.id === active.id);
+         const overIndex = boards.findIndex(b => b.id === over.id);
+         if (activeIndex !== -1 && overIndex !== -1) {
+            setBoards(arrayMove(boards, activeIndex, overIndex));
+         }
       }
       return;
     }
 
-    // Otherwise, dragging a bookmark
     let activeBoardId = null;
     let overBoardId = null;
     
@@ -162,11 +157,7 @@ function App() {
 
   const handleImportFolder = (folder) => {
     let newSlot = targetSlotIndex;
-    if (newSlot === null) {
-      const usedSlots = new Set(boards.map(b => b.slotIndex));
-      newSlot = 0;
-      while (usedSlots.has(newSlot)) newSlot++;
-    }
+    if (newSlot === null) newSlot = 0;
 
     const newBoard = {
       id: `board-imported-${folder.id}-${Date.now()}`,
@@ -198,92 +189,72 @@ function App() {
 
   if (!boards) return null;
 
-  // Prepare grid items (mix of boards and empty slots)
-  const gridItems = Array.from({ length: TOTAL_SLOTS }, (_, i) => {
-    const board = boards.find(b => b.slotIndex === i);
-    return board ? board : { id: `slot-${i}`, isEmpty: true, slotIndex: i };
-  });
-
   return (
     <div className="app-container">
-      {/* Top Header */}
       <header className="top-header">
-        {/* Left: Pages Tabs */}
         <div className="tabs-container">
           <button className="tab-btn active">Home</button>
           <button className="tab-add-btn" title="Add Page">
             <Plus size={18} />
           </button>
         </div>
-        
-        {/* Center: Search */}
         <div className="search-container">
           <SearchBar />
         </div>
-        
-        {/* Right empty spacing to balance the flex */}
         <div style={{ width: '100px' }}></div>
       </header>
       
-      {/* Main Grid */}
       <main className="dashboard-grid">
-        <DndContext sensors={sensors} collisionDetection={customCollisionDetection} onDragEnd={handleDragEnd}>
-          <SortableContext items={gridItems.map(item => item.id)} strategy={rectSwappingStrategy}>
-            {gridItems.map(item => {
-              if (item.isEmpty) {
-                return <EmptySlot key={item.id} id={item.id} onClick={() => openModalForSlot(item.slotIndex)} />;
-              }
-              return (
-                <Board 
-                  key={item.id} 
-                  id={item.id} 
-                  title={item.title} 
-                  bookmarks={item.bookmarks} 
-                  onAddBookmark={addBookmark} 
-                  onRenameBoard={renameBoard}
-                  onDeleteBoard={deleteBoard}
-                />
-              );
-            })}
-          </SortableContext>
+        <DndContext 
+          sensors={sensors} 
+          collisionDetection={customCollisionDetection} 
+          onDragOver={handleDragOver}
+          onDragEnd={handleDragEnd}
+        >
+          {Array.from({ length: TOTAL_SLOTS }).map((_, i) => {
+            const columnBoards = boards.filter(b => b.slotIndex === i);
+            return (
+              <Column 
+                key={`column-${i}`} 
+                id={`column-${i}`}
+                slotIndex={i}
+                boards={columnBoards}
+                addBookmark={addBookmark}
+                renameBoard={renameBoard}
+                deleteBoard={deleteBoard}
+                onAddBoardClick={openModalForSlot}
+              />
+            );
+          })}
         </DndContext>
       </main>
 
-      {/* Right FABs */}
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Add Board or Bookmark Folder">
+        <div className="folder-list">
+          <button className="folder-item create-empty" onClick={handleCreateEmptyBoard}>
+            <Plus size={16} style={{ marginRight: '8px' }} />
+            Create Empty Board
+          </button>
+          <div className="dropdown-divider"></div>
+          <h4 style={{ margin: '8px 12px', fontSize: '0.9rem', opacity: 0.7 }}>Import from Chrome</h4>
+          {bookmarkFolders.map(folder => (
+            <div key={folder.id} className="folder-item">
+              <div className="folder-info">
+                <span className="folder-name">{folder.title}</span>
+                <span className="folder-count">{folder.count} links</span>
+              </div>
+              <button className="glass-btn add-folder-btn" onClick={() => handleImportFolder(folder)}>
+                Add
+              </button>
+            </div>
+          ))}
+        </div>
+      </Modal>
+
       <div className="fab-container">
         <button className="fab" title="Menu"><Menu size={20} /></button>
         <button className="fab fab-primary" title="Settings"><Settings size={20} /></button>
       </div>
-
-      {/* Add Board Modal */}
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Add Board or Bookmark Folder">
-        <button onClick={handleCreateEmptyBoard} className="folder-item" style={{ marginBottom: '16px', background: 'rgba(255,255,255,0.1)' }}>
-          <div className="folder-info">
-            <span className="folder-name">+ Create Empty Board</span>
-            <span className="folder-count">Start fresh</span>
-          </div>
-        </button>
-
-        <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginBottom: '8px', paddingLeft: '4px' }}>
-          Import from Chrome
-        </div>
-        
-        {bookmarkFolders.length === 0 && (
-          <div style={{ padding: '12px', color: 'var(--text-muted)' }}>No folders found or API unavailable.</div>
-        )}
-        
-        {bookmarkFolders.map(folder => (
-          <div key={folder.id} className="folder-item">
-            <div className="folder-info">
-              <span className="folder-name">{folder.title}</span>
-              <span className="folder-count">{folder.count} links</span>
-            </div>
-            <button onClick={() => handleImportFolder(folder)} className="glass-btn">
-              Add
-            </button>
-          </div>
-        ))}
-      </Modal>
     </div>
   );
 }
