@@ -538,3 +538,10 @@ a {
   outline: none;
 }
 .glass-input::placeholder { color: var(--text-muted); }
+
+.search-result-item {
+  transition: background 0.2s ease;
+}
+.search-result-item:hover {
+  background: rgba(255,255,255,0.1);
+}
