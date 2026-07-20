@@ -14,7 +14,7 @@ import { useBackground } from './hooks/useBackground';
 const TOTAL_SLOTS = 15;
 
 function App() {
-  const { boards, setBoards, addBoard, addBookmark, renameBoard, deleteBoard } = useBoards();
+  const { boards, setBoards, addBoard, addBookmark, renameBoard, updateBoard, deleteBoard } = useBoards();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [targetSlotIndex, setTargetSlotIndex] = useState(null);
   const [bookmarkFolders, setBookmarkFolders] = useState([]);
@@ -233,6 +233,7 @@ function App() {
                 addBoard={addBoard}
                 addBookmark={addBookmark}
                 renameBoard={renameBoard}
+                updateBoard={updateBoard}
                 deleteBoard={deleteBoard}
               />
             );
@@ -292,7 +293,7 @@ function App() {
 
       <BookmarkSearchModal isOpen={isSearchModalOpen} onClose={() => setIsSearchModalOpen(false)} />
       <WallpaperModal isOpen={isWallpaperModalOpen} onClose={() => setIsWallpaperModalOpen(false)} />
-      <WidgetsMenu isOpen={isWidgetsMenuOpen} onClose={() => setIsWidgetsMenuOpen(false)} />
+      <WidgetsMenu isOpen={isWidgetsMenuOpen} onClose={() => setIsWidgetsMenuOpen(false)} addBoard={addBoard} />
     </div>
   );
 }

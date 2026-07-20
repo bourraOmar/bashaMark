@@ -20,8 +20,12 @@ export function useBoards() {
     if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
       chrome.storage.local.get(['boards'], (result) => {
         if (result.boards) {
-          // Migration: Ensure all boards have a slotIndex
-          const migrated = result.boards.map((b, i) => b.slotIndex !== undefined ? b : { ...b, slotIndex: i });
+          // Migration: Ensure all boards have a slotIndex and type
+          const migrated = result.boards.map((b, i) => {
+            const res = b.slotIndex !== undefined ? b : { ...b, slotIndex: i };
+            if (!res.type) res.type = 'board';
+            return res;
+          });
           setBoards(migrated);
         } else {
           setBoards(defaultBoards);
@@ -32,7 +36,11 @@ export function useBoards() {
       const local = localStorage.getItem('boards');
       if (local) {
         const parsed = JSON.parse(local);
-        const migrated = parsed.map((b, i) => b.slotIndex !== undefined ? b : { ...b, slotIndex: i });
+        const migrated = parsed.map((b, i) => {
+          const res = b.slotIndex !== undefined ? b : { ...b, slotIndex: i };
+          if (!res.type) res.type = 'board';
+          return res;
+        });
         setBoards(migrated);
       } else {
         setBoards(defaultBoards);
@@ -49,7 +57,9 @@ export function useBoards() {
     }
   };
 
-  const addBoard = (title, slotIndex = null) => {
+  const addBoard = (titleOrConfig, slotIndex = null) => {
+    let config = typeof titleOrConfig === 'string' ? { title: titleOrConfig, type: 'board' } : titleOrConfig;
+
     // Find first available slot if not provided
     let newSlot = slotIndex;
     if (newSlot === null) {
@@ -60,9 +70,9 @@ export function useBoards() {
 
     const newBoard = {
       id: `board-${Date.now()}`,
-      title,
       slotIndex: newSlot,
-      bookmarks: []
+      bookmarks: [],
+      ...config
     };
     saveBoards([...boards, newBoard]);
   };
@@ -87,10 +97,17 @@ export function useBoards() {
     saveBoards(newBoards);
   };
 
+  const updateBoard = (boardId, updates) => {
+    const newBoards = boards.map(board => 
+      board.id === boardId ? { ...board, ...updates } : board
+    );
+    saveBoards(newBoards);
+  };
+
   const deleteBoard = (boardId) => {
     const newBoards = boards.filter(board => board.id !== boardId);
     saveBoards(newBoards);
   };
 
-  return { boards, setBoards: saveBoards, addBoard, addBookmark, renameBoard, deleteBoard };
+  return { boards, setBoards: saveBoards, addBoard, addBookmark, renameBoard, updateBoard, deleteBoard };
 }

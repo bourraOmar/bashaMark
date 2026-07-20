@@ -1,6 +1,6 @@
 import { LayoutTemplate, PenTool, Calendar, Clock, Search } from 'lucide-react';
 
-export default function WidgetsMenu({ isOpen, onClose }) {
+export default function WidgetsMenu({ isOpen, onClose, addBoard }) {
   if (!isOpen) return null;
 
   return (
@@ -27,10 +27,10 @@ export default function WidgetsMenu({ isOpen, onClose }) {
       </span>
 
       {/* Addable Widgets */}
-      <WidgetItem icon={<LayoutTemplate size={18} />} title="Board" type="add" />
-      <WidgetItem icon={<PenTool size={18} />} title="Notes" type="add" />
-      <WidgetItem icon={<Calendar size={18} />} title="Calendar" type="add" />
-      <WidgetItem icon={<Clock size={18} />} title="Pomodoro" type="add" />
+      <WidgetItem icon={<LayoutTemplate size={18} />} title="Board" type="add" onAdd={() => addBoard({ type: 'board', title: 'New Board' })} />
+      <WidgetItem icon={<PenTool size={18} />} title="Notes" type="add" onAdd={() => addBoard({ type: 'notes' })} />
+      <WidgetItem icon={<Calendar size={18} />} title="Calendar" type="add" onAdd={() => addBoard({ type: 'calendar' })} />
+      <WidgetItem icon={<Clock size={18} />} title="Pomodoro" type="add" onAdd={() => addBoard({ type: 'pomodoro' })} />
 
       {/* Togglable Widgets */}
       <WidgetItem icon={<Clock size={18} />} title="Clock" type="toggle" defaultChecked={false} />
@@ -39,7 +39,7 @@ export default function WidgetsMenu({ isOpen, onClose }) {
   );
 }
 
-function WidgetItem({ icon, title, type, defaultChecked }) {
+function WidgetItem({ icon, title, type, defaultChecked, onAdd }) {
   return (
     <div style={{
       display: 'flex',
@@ -55,16 +55,19 @@ function WidgetItem({ icon, title, type, defaultChecked }) {
       </div>
       
       {type === 'add' ? (
-        <button style={{
-          backgroundColor: '#5c8c9e', // matching the teal/blue in the screenshot
-          color: 'white',
-          border: 'none',
-          padding: '6px 16px',
-          borderRadius: '8px',
-          fontSize: '0.85rem',
-          fontWeight: 600,
-          cursor: 'pointer'
-        }}>
+        <button 
+          onClick={onAdd}
+          style={{
+            backgroundColor: '#5c8c9e', // matching the teal/blue in the screenshot
+            color: 'white',
+            border: 'none',
+            padding: '6px 16px',
+            borderRadius: '8px',
+            fontSize: '0.85rem',
+            fontWeight: 600,
+            cursor: 'pointer'
+          }}
+        >
           Add
         </button>
       ) : (

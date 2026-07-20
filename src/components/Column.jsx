@@ -3,8 +3,11 @@ import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { Plus, MoreHorizontal } from 'lucide-react';
 import Board from './Board';
+import NotesWidget from './widgets/NotesWidget';
+import CalendarWidget from './widgets/CalendarWidget';
+import PomodoroWidget from './widgets/PomodoroWidget';
 
-export default function Column({ id, slotIndex, boards, addBoard, addBookmark, renameBoard, deleteBoard }) {
+export default function Column({ id, slotIndex, boards, addBoard, addBookmark, renameBoard, updateBoard, deleteBoard }) {
   const [isAdding, setIsAdding] = useState(false);
   const [newTitle, setNewTitle] = useState('');
 
@@ -24,17 +27,29 @@ export default function Column({ id, slotIndex, boards, addBoard, addBookmark, r
   return (
     <div ref={setNodeRef} className="board-column" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <SortableContext items={boards.map(b => b.id)} strategy={verticalListSortingStrategy}>
-        {boards.map(board => (
-          <Board
-            key={board.id}
-            id={board.id}
-            title={board.title}
-            bookmarks={board.bookmarks}
-            onAddBookmark={addBookmark}
-            onRenameBoard={renameBoard}
-            onDeleteBoard={deleteBoard}
-          />
-        ))}
+        {boards.map(board => {
+          if (board.type === 'notes') {
+            return <NotesWidget key={board.id} id={board.id} initialText={board.text} onUpdate={updateBoard} />;
+          }
+          if (board.type === 'calendar') {
+            return <CalendarWidget key={board.id} id={board.id} />;
+          }
+          if (board.type === 'pomodoro') {
+            return <PomodoroWidget key={board.id} id={board.id} />;
+          }
+          
+          return (
+            <Board
+              key={board.id}
+              id={board.id}
+              title={board.title}
+              bookmarks={board.bookmarks}
+              onAddBookmark={addBookmark}
+              onRenameBoard={renameBoard}
+              onDeleteBoard={deleteBoard}
+            />
+          );
+        })}
       </SortableContext>
       
       {isAdding ? (
