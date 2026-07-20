@@ -43,7 +43,7 @@ body {
   font-family: var(--font-family);
   color: var(--text-color);
   /* Matching the beautiful sky background from the screenshot */
-  background: url('/background.jpg') center/cover no-repeat fixed, linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+  background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
   min-height: 100vh;
   margin: 0;
   display: flex;
@@ -54,7 +54,7 @@ body {
 
 @media (prefers-color-scheme: dark) {
   body {
-    background: url('/background.jpg') center/cover no-repeat fixed, linear-gradient(135deg, #1f1c2c 0%, #928dab 100%);
+    background: linear-gradient(135deg, #1f1c2c 0%, #928dab 100%);
   }
 }
 
