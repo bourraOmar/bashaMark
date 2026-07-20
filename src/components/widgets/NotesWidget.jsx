@@ -36,7 +36,7 @@ export default function NotesWidget({ id, initialText = '', onUpdate, onDelete }
   }, [text, id, initialText, onUpdate]);
 
   return (
-    <div ref={setNodeRef} style={style}>
+    <div ref={setNodeRef} style={style} className="board glass-panel">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
         <div 
           {...attributes} 
@@ -71,7 +71,6 @@ export default function NotesWidget({ id, initialText = '', onUpdate, onDelete }
           lineHeight: 1.5,
           fontFamily: 'inherit'
         }}
-        placeholder="Write your notes here..."
       />
       
       <ConfirmModal 
