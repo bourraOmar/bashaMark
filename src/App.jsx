@@ -219,10 +219,10 @@ function App() {
                 id={`column-${i}`}
                 slotIndex={i}
                 boards={columnBoards}
+                addBoard={addBoard}
                 addBookmark={addBookmark}
                 renameBoard={renameBoard}
                 deleteBoard={deleteBoard}
-                onAddBoardClick={openModalForSlot}
               />
             );
           })}
