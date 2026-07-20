@@ -6,7 +6,9 @@ import SearchBar from './components/widgets/SearchBar';
 import Column from './components/Column';
 import Modal from './components/Modal';
 import BookmarkSearchModal from './components/BookmarkSearchModal';
+import WallpaperModal from './components/WallpaperModal';
 import { useBoards } from './hooks/useBoards';
+import { useBackground } from './hooks/useBackground';
 
 const TOTAL_SLOTS = 15;
 
@@ -17,6 +19,10 @@ function App() {
   const [bookmarkFolders, setBookmarkFolders] = useState([]);
   const [isFabMenuOpen, setIsFabMenuOpen] = useState(false);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+  const [isWallpaperModalOpen, setIsWallpaperModalOpen] = useState(false);
+
+  // Initialize background loader
+  useBackground();
 
   useEffect(() => {
     if (isModalOpen && typeof chrome !== 'undefined' && chrome.bookmarks) {
@@ -261,7 +267,10 @@ function App() {
               setIsFabMenuOpen(false);
               setIsSearchModalOpen(true);
             }}><Search size={20} /></button>
-            <button className="fab" title="Background"><ImageIcon size={20} /></button>
+            <button className="fab" title="Background" onClick={() => {
+              setIsFabMenuOpen(false);
+              setIsWallpaperModalOpen(true);
+            }}><ImageIcon size={20} /></button>
             <button className="fab" title="Grid Layout"><Grid size={20} /></button>
             <button className="fab" title="Import Bookmarks" onClick={() => {
               setIsFabMenuOpen(false);
@@ -277,6 +286,7 @@ function App() {
       </div>
 
       <BookmarkSearchModal isOpen={isSearchModalOpen} onClose={() => setIsSearchModalOpen(false)} />
+      <WallpaperModal isOpen={isWallpaperModalOpen} onClose={() => setIsWallpaperModalOpen(false)} />
     </div>
   );
 }
