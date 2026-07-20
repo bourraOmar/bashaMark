@@ -23,7 +23,7 @@ export default function BookmarkItem({ id, title, url, iconUrl }) {
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners} className="bookmark-item glass-item">
       <img src={faviconUrl} alt="" className="bookmark-icon" />
-      <a href={url} target="_blank" rel="noopener noreferrer" onPointerDown={(e) => e.stopPropagation()}>
+      <a href={url} target="_blank" rel="noopener noreferrer">
         {title}
       </a>
       <div className="bookmark-item-actions">
