@@ -7,6 +7,7 @@ import ConfirmModal from '../ConfirmModal';
 export default function CalendarWidget({ id, onDelete }) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [dropdownPosition, setDropdownPosition] = useState('right');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
@@ -78,11 +79,24 @@ export default function CalendarWidget({ id, onDelete }) {
             <ChevronRight size={16} />
           </button>
           <div style={{ position: 'relative' }} ref={menuRef} onPointerDown={(e) => e.stopPropagation()}>
-            <button onClick={() => setIsMenuOpen(!isMenuOpen)} style={{ padding: '4px', borderRadius: '8px', cursor: 'pointer', border: 'none', background: 'transparent', opacity: 0.7, color: 'var(--text-muted)' }}>
+            <button onClick={() => {
+              if (!isMenuOpen && menuRef.current) {
+                const rect = menuRef.current.getBoundingClientRect();
+                setDropdownPosition(window.innerWidth - rect.right < 250 ? 'left' : 'right');
+              }
+              setIsMenuOpen(!isMenuOpen);
+            }} style={{ padding: '4px', borderRadius: '8px', cursor: 'pointer', border: 'none', background: 'transparent', opacity: 0.7, color: 'var(--text-muted)' }}>
               <MoreHorizontal size={16} />
             </button>
             {isMenuOpen && (
-              <div className="dropdown-menu" style={{ right: 'auto', left: '100%', top: '24px', marginLeft: '8px', marginTop: 0 }}>
+              <div className="dropdown-menu" style={{ 
+                right: dropdownPosition === 'left' ? '100%' : 'auto', 
+                left: dropdownPosition === 'right' ? '100%' : 'auto', 
+                top: '24px', 
+                marginLeft: dropdownPosition === 'right' ? '8px' : 0, 
+                marginRight: dropdownPosition === 'left' ? '8px' : 0, 
+                marginTop: 0 
+              }}>
                 <button className="dropdown-item danger" onClick={() => { setIsConfirmOpen(true); setIsMenuOpen(false); }}>
                   <Trash2 size={16} />
                   Delete board

@@ -10,6 +10,7 @@ export default function Board({ id, title, bookmarks, onAddBookmark, onRenameBoa
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isRenaming, setIsRenaming] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [dropdownPosition, setDropdownPosition] = useState('right');
   const [newUrl, setNewUrl] = useState('');
   const [newTitle, setNewTitle] = useState('');
   const [renameTitle, setRenameTitle] = useState(title);
@@ -91,12 +92,25 @@ export default function Board({ id, title, bookmarks, onAddBookmark, onRenameBoa
           <button onClick={() => setIsAdding(!isAdding)} className="add-btn" title="Add Link">
             <Plus size={16} />
           </button>
-          <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="add-btn" title="More options">
+          <button onClick={() => {
+            if (!isMenuOpen && menuRef.current) {
+              const rect = menuRef.current.getBoundingClientRect();
+              setDropdownPosition(window.innerWidth - rect.right < 250 ? 'left' : 'right');
+            }
+            setIsMenuOpen(!isMenuOpen);
+          }} className="add-btn" title="More options">
             <MoreHorizontal size={16} />
           </button>
 
           {isMenuOpen && (
-            <div className="dropdown-menu">
+            <div className="dropdown-menu" style={{ 
+              right: dropdownPosition === 'left' ? '100%' : 'auto', 
+              left: dropdownPosition === 'right' ? '100%' : 'auto', 
+              top: '24px', 
+              marginLeft: dropdownPosition === 'right' ? '8px' : 0, 
+              marginRight: dropdownPosition === 'left' ? '8px' : 0, 
+              marginTop: 0 
+            }}>
               <button className="dropdown-item" onClick={() => { setIsRenaming(true); setIsMenuOpen(false); }}>
                 <Type size={16} />
                 Rename

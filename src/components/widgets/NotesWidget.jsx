@@ -8,6 +8,7 @@ export default function NotesWidget({ id, initialText = '', onUpdate, onDelete }
   const [text, setText] = useState(initialText);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [dropdownPosition, setDropdownPosition] = useState('right');
   const menuRef = useRef(null);
 
   useEffect(() => {
@@ -63,11 +64,24 @@ export default function NotesWidget({ id, initialText = '', onUpdate, onDelete }
           Notes
         </div>
         <div style={{ position: 'relative' }} ref={menuRef} onPointerDown={(e) => e.stopPropagation()}>
-          <button onClick={() => setIsMenuOpen(!isMenuOpen)} style={{ color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', opacity: 0.7 }}>
+          <button onClick={() => {
+            if (!isMenuOpen && menuRef.current) {
+              const rect = menuRef.current.getBoundingClientRect();
+              setDropdownPosition(window.innerWidth - rect.right < 250 ? 'left' : 'right');
+            }
+            setIsMenuOpen(!isMenuOpen);
+          }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit' }}>
             <MoreHorizontal size={16} />
           </button>
           {isMenuOpen && (
-            <div className="dropdown-menu" style={{ right: 'auto', left: '100%', top: '24px', marginLeft: '8px', marginTop: 0 }}>
+            <div className="dropdown-menu" style={{ 
+              right: dropdownPosition === 'left' ? '100%' : 'auto', 
+              left: dropdownPosition === 'right' ? '100%' : 'auto', 
+              top: '24px', 
+              marginLeft: dropdownPosition === 'right' ? '8px' : 0, 
+              marginRight: dropdownPosition === 'left' ? '8px' : 0, 
+              marginTop: 0 
+            }}>
               <button className="dropdown-item danger" onClick={() => { setIsConfirmOpen(true); setIsMenuOpen(false); }}>
                 <Trash2 size={16} />
                 Delete board

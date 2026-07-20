@@ -19,6 +19,7 @@ export default function PomodoroWidget({ id, onDelete }) {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [dropdownPosition, setDropdownPosition] = useState('right');
   
   const [settings, setSettings] = useState({
     focus: 25,
@@ -140,11 +141,26 @@ export default function PomodoroWidget({ id, onDelete }) {
         </div>
         <div style={{ display: 'flex', gap: '8px', color: 'var(--text-muted)', opacity: 0.7 }}>
           <div style={{ position: 'relative' }} ref={settingsRef} onPointerDown={(e) => e.stopPropagation()}>
-            <button onClick={() => setIsSettingsOpen(!isSettingsOpen)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit' }}>
+            <button onClick={() => {
+              if (!isSettingsOpen && settingsRef.current) {
+                const rect = settingsRef.current.getBoundingClientRect();
+                setDropdownPosition(window.innerWidth - rect.right < 250 ? 'left' : 'right');
+              }
+              setIsSettingsOpen(!isSettingsOpen);
+            }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit' }}>
               <Settings size={16} />
             </button>
             {isSettingsOpen && (
-              <div className="dropdown-menu" style={{ width: '220px', padding: '16px', right: 'auto', left: '100%', top: '24px', marginLeft: '8px', marginTop: 0, cursor: 'default' }}>
+              <div className="dropdown-menu" style={{ 
+                width: '220px', padding: '16px', 
+                right: dropdownPosition === 'left' ? '100%' : 'auto', 
+                left: dropdownPosition === 'right' ? '100%' : 'auto', 
+                top: '24px', 
+                marginLeft: dropdownPosition === 'right' ? '8px' : 0, 
+                marginRight: dropdownPosition === 'left' ? '8px' : 0, 
+                marginTop: 0, 
+                cursor: 'default' 
+              }}>
                 <form onSubmit={saveSettings} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   {[
                     { id: 'focus', label: 'Focus (min)', value: settings.focus },
@@ -172,11 +188,24 @@ export default function PomodoroWidget({ id, onDelete }) {
           </div>
 
           <div style={{ position: 'relative' }} ref={menuRef} onPointerDown={(e) => e.stopPropagation()}>
-            <button onClick={() => setIsMenuOpen(!isMenuOpen)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit' }}>
+            <button onClick={() => {
+              if (!isMenuOpen && menuRef.current) {
+                const rect = menuRef.current.getBoundingClientRect();
+                setDropdownPosition(window.innerWidth - rect.right < 250 ? 'left' : 'right');
+              }
+              setIsMenuOpen(!isMenuOpen);
+            }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit' }}>
               <MoreHorizontal size={16} />
             </button>
             {isMenuOpen && (
-              <div className="dropdown-menu" style={{ right: 'auto', left: '100%', top: '24px', marginLeft: '8px', marginTop: 0 }}>
+              <div className="dropdown-menu" style={{ 
+                right: dropdownPosition === 'left' ? '100%' : 'auto', 
+                left: dropdownPosition === 'right' ? '100%' : 'auto', 
+                top: '24px', 
+                marginLeft: dropdownPosition === 'right' ? '8px' : 0, 
+                marginRight: dropdownPosition === 'left' ? '8px' : 0, 
+                marginTop: 0 
+              }}>
                 <button className="dropdown-item danger" onClick={() => { setIsConfirmOpen(true); setIsMenuOpen(false); }}>
                   <Trash2 size={16} />
                   Delete board
