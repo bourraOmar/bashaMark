@@ -4,6 +4,7 @@ const defaultBoards = [
   {
     id: 'board-1',
     title: 'Work',
+    slotIndex: 0,
     bookmarks: [
       { id: 'bm-1', title: 'Gmail', url: 'https://mail.google.com' },
       { id: 'bm-2', title: 'Google Calendar', url: 'https://calendar.google.com' }
@@ -19,7 +20,9 @@ export function useBoards() {
     if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
       chrome.storage.local.get(['boards'], (result) => {
         if (result.boards) {
-          setBoards(result.boards);
+          // Migration: Ensure all boards have a slotIndex
+          const migrated = result.boards.map((b, i) => b.slotIndex !== undefined ? b : { ...b, slotIndex: i });
+          setBoards(migrated);
         } else {
           setBoards(defaultBoards);
         }
@@ -28,7 +31,9 @@ export function useBoards() {
       // Fallback for local dev without extension environment
       const local = localStorage.getItem('boards');
       if (local) {
-        setBoards(JSON.parse(local));
+        const parsed = JSON.parse(local);
+        const migrated = parsed.map((b, i) => b.slotIndex !== undefined ? b : { ...b, slotIndex: i });
+        setBoards(migrated);
       } else {
         setBoards(defaultBoards);
       }
@@ -44,10 +49,19 @@ export function useBoards() {
     }
   };
 
-  const addBoard = (title) => {
+  const addBoard = (title, slotIndex = null) => {
+    // Find first available slot if not provided
+    let newSlot = slotIndex;
+    if (newSlot === null) {
+      const usedSlots = new Set(boards.map(b => b.slotIndex));
+      newSlot = 0;
+      while (usedSlots.has(newSlot)) newSlot++;
+    }
+
     const newBoard = {
       id: `board-${Date.now()}`,
       title,
+      slotIndex: newSlot,
       bookmarks: []
     };
     saveBoards([...boards, newBoard]);

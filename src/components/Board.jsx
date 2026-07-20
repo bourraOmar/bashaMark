@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
-import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import BookmarkItem from './BookmarkItem';
 import { Plus, MoreHorizontal, Type, Layers, Trash2 } from 'lucide-react';
 
@@ -11,6 +12,17 @@ export default function Board({ id, title, bookmarks, onAddBookmark, onRenameBoa
   const [newTitle, setNewTitle] = useState('');
   const [renameTitle, setRenameTitle] = useState(title);
   const menuRef = useRef(null);
+
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ 
+    id, 
+    data: { type: 'board' } 
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.4 : 1,
+  };
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -55,8 +67,8 @@ export default function Board({ id, title, bookmarks, onAddBookmark, onRenameBoa
   };
 
   return (
-    <div className="board glass-panel">
-      <div className="board-header">
+    <div ref={setNodeRef} style={style} className="board glass-panel">
+      <div className="board-header" {...attributes} {...listeners} style={{ cursor: 'grab' }}>
         {isRenaming ? (
           <form onSubmit={handleRenameSubmit} style={{ flex: 1, marginRight: '8px' }}>
             <input
@@ -72,7 +84,7 @@ export default function Board({ id, title, bookmarks, onAddBookmark, onRenameBoa
         ) : (
           <span>{title}</span>
         )}
-        <div className="board-header-actions" style={{ position: 'relative' }} ref={menuRef}>
+        <div className="board-header-actions" style={{ position: 'relative' }} ref={menuRef} onPointerDown={(e) => e.stopPropagation()}>
           <button onClick={() => setIsAdding(!isAdding)} className="add-btn" title="Add Link">
             <Plus size={16} />
           </button>

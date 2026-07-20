@@ -364,9 +364,9 @@ a {
 
 /* Placeholder */
 .placeholder-board {
-  border: 2px dashed rgba(255,255,255,0.1);
+  border: 1px dashed rgba(255,255,255,0.2);
   border-radius: var(--radius-lg);
-  height: 100px;
+  height: calc(100vh - 160px);
   display: flex;
   align-items: center;
   justify-content: center;
