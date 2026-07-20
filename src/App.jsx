@@ -67,6 +67,25 @@ function App() {
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
+  const customCollisionDetection = useCallback((args) => {
+    const { active, droppableContainers } = args;
+    const isDraggingBoard = active.id.toString().startsWith('board-') || active.id.toString().startsWith('slot-');
+    
+    if (isDraggingBoard) {
+      // Boards only collide with other boards or slots
+      const filtered = droppableContainers.filter(c => 
+        c.id.toString().startsWith('board-') || c.id.toString().startsWith('slot-')
+      );
+      return closestCenter({ ...args, droppableContainers: filtered });
+    } else {
+      // Bookmarks don't collide with empty slots, only with bookmarks or boards
+      const filtered = droppableContainers.filter(c => 
+        !c.id.toString().startsWith('slot-')
+      );
+      return closestCenter({ ...args, droppableContainers: filtered });
+    }
+  }, []);
+
   const handleDragEnd = useCallback((event) => {
     const { active, over } = event;
     if (!over) return;
@@ -208,7 +227,7 @@ function App() {
       
       {/* Main Grid */}
       <main className="dashboard-grid">
-        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <DndContext sensors={sensors} collisionDetection={customCollisionDetection} onDragEnd={handleDragEnd}>
           <SortableContext items={gridItems.map(item => item.id)} strategy={rectSwappingStrategy}>
             {gridItems.map(item => {
               if (item.isEmpty) {

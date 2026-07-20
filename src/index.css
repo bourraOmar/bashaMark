@@ -66,12 +66,12 @@ body {
   border: 1px solid var(--glass-border);
   box-shadow: var(--glass-shadow);
   border-radius: var(--radius-lg);
-  transition: all 0.3s ease;
+  transition: box-shadow 0.3s ease, background-color 0.3s ease;
 }
 
 .glass-item {
   background: transparent;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease;
 }
 
 .glass-item:hover {
@@ -371,7 +371,7 @@ a {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: border-color 0.3s ease, background 0.3s ease;
   color: transparent;
 }
 
