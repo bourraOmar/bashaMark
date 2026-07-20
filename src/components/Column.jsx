@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { Plus, MoreHorizontal } from 'lucide-react';
@@ -11,6 +11,17 @@ import { PenTool, Calendar, Clock } from 'lucide-react';
 export default function Column({ id, slotIndex, boards, addBoard, addBookmark, renameBoard, updateBoard, deleteBoard }) {
   const [isAdding, setIsAdding] = useState(false);
   const [newTitle, setNewTitle] = useState('');
+  const addBoardRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (isAdding && addBoardRef.current && !addBoardRef.current.contains(event.target)) {
+        setIsAdding(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isAdding]);
 
   const { setNodeRef } = useDroppable({
     id,
@@ -54,7 +65,7 @@ export default function Column({ id, slotIndex, boards, addBoard, addBookmark, r
       </SortableContext>
       
       {isAdding ? (
-        <div className="board glass-panel" style={{ padding: '12px', marginTop: boards.length > 0 ? '0' : '0', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div ref={addBoardRef} className="board glass-panel" style={{ padding: '12px', marginTop: boards.length > 0 ? '0' : '0', display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <div className="board-header" style={{ padding: 0 }}>
             <input
               autoFocus
