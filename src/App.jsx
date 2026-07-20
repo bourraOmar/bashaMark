@@ -7,6 +7,7 @@ import Column from './components/Column';
 import Modal from './components/Modal';
 import BookmarkSearchModal from './components/BookmarkSearchModal';
 import WallpaperModal from './components/WallpaperModal';
+import WidgetsMenu from './components/WidgetsMenu';
 import { useBoards } from './hooks/useBoards';
 import { useBackground } from './hooks/useBackground';
 
@@ -20,6 +21,7 @@ function App() {
   const [isFabMenuOpen, setIsFabMenuOpen] = useState(false);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [isWallpaperModalOpen, setIsWallpaperModalOpen] = useState(false);
+  const [isWidgetsMenuOpen, setIsWidgetsMenuOpen] = useState(false);
 
   // Initialize background loader
   useBackground();
@@ -271,7 +273,10 @@ function App() {
               setIsFabMenuOpen(false);
               setIsWallpaperModalOpen(true);
             }}><ImageIcon size={20} /></button>
-            <button className="fab" title="Grid Layout"><Grid size={20} /></button>
+            <button className="fab" title="Grid Layout" onClick={() => {
+              setIsFabMenuOpen(false);
+              setIsWidgetsMenuOpen(!isWidgetsMenuOpen);
+            }}><Grid size={20} /></button>
             <button className="fab" title="Import Bookmarks" onClick={() => {
               setIsFabMenuOpen(false);
               setIsModalOpen(true);
@@ -287,6 +292,7 @@ function App() {
 
       <BookmarkSearchModal isOpen={isSearchModalOpen} onClose={() => setIsSearchModalOpen(false)} />
       <WallpaperModal isOpen={isWallpaperModalOpen} onClose={() => setIsWallpaperModalOpen(false)} />
+      <WidgetsMenu isOpen={isWidgetsMenuOpen} onClose={() => setIsWidgetsMenuOpen(false)} />
     </div>
   );
 }
