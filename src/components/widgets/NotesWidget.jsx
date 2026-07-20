@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Trash2 } from 'lucide-react';
+import { MoreHorizontal } from 'lucide-react';
 import ConfirmModal from '../ConfirmModal';
 
 export default function NotesWidget({ id, initialText = '', onUpdate, onDelete }) {
@@ -51,8 +51,8 @@ export default function NotesWidget({ id, initialText = '', onUpdate, onDelete }
         >
           Notes
         </div>
-        <button onClick={() => setIsConfirmOpen(true)} style={{ color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', opacity: 0.5 }}>
-          <Trash2 size={16} />
+        <button onClick={() => setIsConfirmOpen(true)} style={{ color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', opacity: 0.7 }}>
+          <MoreHorizontal size={16} />
         </button>
       </div>
       <textarea

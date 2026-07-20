@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Play, Pause, RotateCcw, SkipForward, Trash2 } from 'lucide-react';
+import { Play, Pause, RotateCcw, SkipForward, Settings, MoreHorizontal } from 'lucide-react';
 import ConfirmModal from '../ConfirmModal';
 
 const MODES = {
@@ -81,23 +81,28 @@ export default function PomodoroWidget({ id, onDelete }) {
   return (
     <div ref={setNodeRef} style={style} className="board glass-panel">
       {/* Header / Drag Handle */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
         <div 
           {...attributes} 
           {...listeners} 
           style={{ 
             cursor: 'grab', 
-            fontWeight: 600, 
+            fontWeight: 500, 
             color: 'var(--text-color)', 
-            fontSize: '1.1rem',
+            fontSize: '1.05rem',
             flex: 1
           }}
         >
           Pomodoro
         </div>
-        <button onClick={() => setIsConfirmOpen(true)} style={{ color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', opacity: 0.5 }}>
-          <Trash2 size={16} />
-        </button>
+        <div style={{ display: 'flex', gap: '8px', color: 'var(--text-muted)', opacity: 0.7 }}>
+          <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit' }}>
+            <Settings size={16} />
+          </button>
+          <button onClick={() => setIsConfirmOpen(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit' }}>
+            <MoreHorizontal size={16} />
+          </button>
+        </div>
       </div>
 
       {/* Tabs */}
@@ -107,12 +112,13 @@ export default function PomodoroWidget({ id, onDelete }) {
             key={key}
             onClick={() => changeMode(key)}
             style={{
-              padding: '4px 12px',
+              padding: '6px 16px',
               borderRadius: '12px',
               cursor: 'pointer',
               color: mode === key ? 'var(--text-color)' : 'var(--text-muted)',
               backgroundColor: mode === key ? 'rgba(0,0,0,0.1)' : 'transparent',
-              fontWeight: mode === key ? 700 : 500,
+              fontWeight: mode === key ? 500 : 400,
+              opacity: mode === key ? 1 : 0.6,
               transition: 'all 0.2s'
             }}
           >
@@ -122,7 +128,7 @@ export default function PomodoroWidget({ id, onDelete }) {
       </div>
 
       {/* Timer Display */}
-      <div style={{ textAlign: 'center', fontSize: '3rem', fontWeight: 300, color: 'var(--text-color)', marginBottom: '16px' }}>
+      <div style={{ textAlign: 'center', fontSize: '4.5rem', fontWeight: 300, color: 'var(--text-color)', marginBottom: '8px', letterSpacing: '-0.02em', lineHeight: 1 }}>
         {formatTime(timeLeft)}
       </div>
 
@@ -132,10 +138,10 @@ export default function PomodoroWidget({ id, onDelete }) {
           <div 
             key={i}
             style={{
-              width: '6px',
-              height: '6px',
+              width: '8px',
+              height: '8px',
               borderRadius: '50%',
-              backgroundColor: i < (sessionsCompleted % 4) ? '#5c8c9e' : 'rgba(0,0,0,0.15)'
+              backgroundColor: i < (sessionsCompleted % 4) ? '#5c8c9e' : 'rgba(0,0,0,0.2)'
             }}
           />
         ))}
@@ -145,23 +151,23 @@ export default function PomodoroWidget({ id, onDelete }) {
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '16px' }}>
         <button 
           onClick={resetTimer}
-          style={{ width: '40px', height: '40px', borderRadius: '50%', border: 'none', backgroundColor: 'rgba(0,0,0,0.05)', color: 'var(--text-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+          style={{ width: '44px', height: '44px', borderRadius: '50%', border: 'none', backgroundColor: 'rgba(0,0,0,0.08)', color: 'var(--text-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
         >
-          <RotateCcw size={16} />
+          <RotateCcw size={18} />
         </button>
         
         <button 
           onClick={toggleTimer}
-          style={{ width: '56px', height: '56px', borderRadius: '50%', border: 'none', backgroundColor: '#5c8c9e', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 12px rgba(92, 140, 158, 0.4)' }}
+          style={{ width: '64px', height: '64px', borderRadius: '50%', border: 'none', backgroundColor: '#5c8c9e', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 12px rgba(92, 140, 158, 0.3)' }}
         >
-          {isRunning ? <Pause size={24} fill="currentColor" /> : <Play size={24} fill="currentColor" style={{ marginLeft: '4px' }} />}
+          {isRunning ? <Pause size={28} fill="currentColor" /> : <Play size={28} fill="currentColor" style={{ marginLeft: '4px' }} />}
         </button>
 
         <button 
           onClick={skipTimer}
-          style={{ width: '40px', height: '40px', borderRadius: '50%', border: 'none', backgroundColor: 'rgba(0,0,0,0.05)', color: 'var(--text-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+          style={{ width: '44px', height: '44px', borderRadius: '50%', border: 'none', backgroundColor: 'rgba(0,0,0,0.08)', color: 'var(--text-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
         >
-          <SkipForward size={16} />
+          <SkipForward size={18} />
         </button>
       </div>
       

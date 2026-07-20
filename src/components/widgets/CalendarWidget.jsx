@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react';
 import ConfirmModal from '../ConfirmModal';
 
 export default function CalendarWidget({ id, onDelete }) {
@@ -43,37 +43,33 @@ export default function CalendarWidget({ id, onDelete }) {
   return (
     <div ref={setNodeRef} style={style} className="board glass-panel">
       {/* Header / Drag Handle */}
-      <div 
-        {...attributes} 
-        {...listeners} 
-        style={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'center', 
-          cursor: 'grab', 
-          marginBottom: '16px',
-          color: '#4a5568',
-          position: 'relative'
-        }}
-      >
-        <button 
-          onClick={prevMonth}
-          onPointerDown={(e) => e.stopPropagation()} // Prevent drag when clicking button
-          style={{ padding: '4px', borderRadius: '8px', cursor: 'pointer', border: 'none', background: 'transparent' }}
-        >
-          <ChevronLeft size={18} />
-        </button>
-        
-        <div 
-          {...attributes} 
-          {...listeners} 
-          style={{ flex: 1, cursor: 'grab', fontWeight: 600, color: 'var(--text-color)', fontSize: '1rem', textAlign: 'center' }}
-        >
-          {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <button 
+            onClick={prevMonth}
+            onPointerDown={(e) => e.stopPropagation()}
+            style={{ padding: '4px', borderRadius: '8px', cursor: 'pointer', border: 'none', background: 'transparent', color: 'var(--text-muted)' }}
+          >
+            <ChevronLeft size={16} />
+          </button>
+          
+          <div 
+            {...attributes} 
+            {...listeners} 
+            style={{ cursor: 'grab', fontWeight: 600, color: 'var(--text-color)', fontSize: '1.05rem' }}
+          >
+            {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
+          </div>
         </div>
 
-        <button onClick={nextMonth} style={{ padding: '4px', borderRadius: '8px', cursor: 'pointer', border: 'none', background: 'transparent' }}><ChevronRight size={18} /></button>
-        <button onClick={() => setIsConfirmOpen(true)} style={{ marginLeft: '4px', padding: '4px', borderRadius: '8px', cursor: 'pointer', border: 'none', background: 'transparent', opacity: 0.5, color: 'var(--text-muted)' }}><Trash2 size={16} /></button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <button onClick={nextMonth} style={{ padding: '4px', borderRadius: '8px', cursor: 'pointer', border: 'none', background: 'transparent', color: 'var(--text-muted)' }}>
+            <ChevronRight size={16} />
+          </button>
+          <button onClick={() => setIsConfirmOpen(true)} style={{ padding: '4px', borderRadius: '8px', cursor: 'pointer', border: 'none', background: 'transparent', opacity: 0.7, color: 'var(--text-muted)' }}>
+            <MoreHorizontal size={16} />
+          </button>
+        </div>
       </div>
 
       {/* Days of Week */}
@@ -91,22 +87,28 @@ export default function CalendarWidget({ id, onDelete }) {
           <div key={`empty-${i}`} />
         ))}
         {Array.from({ length: daysInMonth }).map((_, i) => {
-          const day = i + 1;
-          const isToday = isCurrentMonth && day === today.getDate();
+          const d = new Date(currentDate.getFullYear(), currentDate.getMonth(), i + 1);
+          const dayStr = d.toISOString().split('T')[0];
+          const isToday = isCurrentMonth && d.getDate() === today.getDate();
           return (
             <div 
-              key={day} 
+              key={dayStr}
               style={{ 
                 textAlign: 'center', 
-                fontSize: '0.85rem', 
-                padding: '4px 0',
+                fontSize: '0.9rem', 
+                padding: '6px 0',
                 backgroundColor: isToday ? '#5c8c9e' : 'transparent',
-                borderRadius: '6px',
-                color: isToday ? 'white' : 'var(--text-color)',
-                fontWeight: isToday ? 700 : 400
+                borderRadius: '8px',
+                color: isToday ? 'white' : (isCurrentMonth ? 'var(--text-color)' : 'var(--text-muted)'),
+                opacity: isCurrentMonth ? 1 : 0.5,
+                fontWeight: isToday ? 700 : 400,
+                cursor: 'pointer',
+                transition: 'background 0.2s'
               }}
+              onMouseOver={e => !isToday && (e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.05)')}
+              onMouseOut={e => !isToday && (e.currentTarget.style.backgroundColor = 'transparent')}
             >
-              {day}
+              {d.getDate()}
             </div>
           );
         })}
