@@ -14,7 +14,7 @@ import { useBackground } from './hooks/useBackground';
 const TOTAL_SLOTS = 15;
 
 function App() {
-  const { boards, setBoards, addBoard, addBookmark, renameBoard, updateBoard, deleteBoard } = useBoards();
+  const { boards, setBoards, addBoard, addBookmark, renameBoard, updateBoard, deleteBoard, editBookmark, deleteBookmark } = useBoards();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [targetSlotIndex, setTargetSlotIndex] = useState(null);
   const [bookmarkFolders, setBookmarkFolders] = useState([]);
@@ -235,6 +235,8 @@ function App() {
                 renameBoard={renameBoard}
                 updateBoard={updateBoard}
                 deleteBoard={deleteBoard}
+                editBookmark={editBookmark}
+                deleteBookmark={deleteBookmark}
               />
             );
           })}

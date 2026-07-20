@@ -109,5 +109,31 @@ export function useBoards() {
     saveBoards(newBoards);
   };
 
-  return { boards, setBoards: saveBoards, addBoard, addBookmark, renameBoard, updateBoard, deleteBoard };
+  const editBookmark = (boardId, bookmarkId, title, url) => {
+    const newBoards = boards.map(board => {
+      if (board.id === boardId) {
+        return {
+          ...board,
+          bookmarks: board.bookmarks.map(bm => bm.id === bookmarkId ? { ...bm, title, url } : bm)
+        };
+      }
+      return board;
+    });
+    saveBoards(newBoards);
+  };
+
+  const deleteBookmark = (boardId, bookmarkId) => {
+    const newBoards = boards.map(board => {
+      if (board.id === boardId) {
+        return {
+          ...board,
+          bookmarks: board.bookmarks.filter(bm => bm.id !== bookmarkId)
+        };
+      }
+      return board;
+    });
+    saveBoards(newBoards);
+  };
+
+  return { boards, setBoards: saveBoards, addBoard, addBookmark, renameBoard, updateBoard, deleteBoard, editBookmark, deleteBookmark };
 }

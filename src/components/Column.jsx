@@ -8,7 +8,7 @@ import CalendarWidget from './widgets/CalendarWidget';
 import PomodoroWidget from './widgets/PomodoroWidget';
 import { PenTool, Calendar, Clock } from 'lucide-react';
 
-export default function Column({ id, slotIndex, boards, addBoard, addBookmark, renameBoard, updateBoard, deleteBoard }) {
+export default function Column({ id, slotIndex, boards, addBoard, addBookmark, renameBoard, updateBoard, deleteBoard, editBookmark, deleteBookmark }) {
   const [isAdding, setIsAdding] = useState(false);
   const [newTitle, setNewTitle] = useState('');
   const addBoardRef = useRef(null);
@@ -59,6 +59,8 @@ export default function Column({ id, slotIndex, boards, addBoard, addBookmark, r
               onAddBookmark={addBookmark}
               onRenameBoard={renameBoard}
               onDeleteBoard={deleteBoard}
+              onEditBookmark={editBookmark}
+              onDeleteBookmark={deleteBookmark}
             />
           );
         })}

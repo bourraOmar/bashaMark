@@ -5,7 +5,7 @@ import BookmarkItem from './BookmarkItem';
 import { Plus, MoreHorizontal, Type, Layers, Trash2 } from 'lucide-react';
 import ConfirmModal from './ConfirmModal';
 
-export default function Board({ id, title, bookmarks, onAddBookmark, onRenameBoard, onDeleteBoard }) {
+export default function Board({ id, title, bookmarks, onAddBookmark, onRenameBoard, onDeleteBoard, onEditBookmark, onDeleteBookmark }) {
   const [isAdding, setIsAdding] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isRenaming, setIsRenaming] = useState(false);
@@ -155,7 +155,15 @@ export default function Board({ id, title, bookmarks, onAddBookmark, onRenameBoa
       <div className="bookmark-list">
         <SortableContext items={bookmarks.map(b => b.id)} strategy={verticalListSortingStrategy}>
           {bookmarks.map((bm) => (
-            <BookmarkItem key={bm.id} id={bm.id} title={bm.title} url={bm.url} iconUrl={bm.iconUrl} />
+            <BookmarkItem 
+              key={bm.id} 
+              id={bm.id} 
+              title={bm.title} 
+              url={bm.url} 
+              iconUrl={bm.iconUrl} 
+              onEdit={(newTitle, newUrl) => onEditBookmark(id, bm.id, newTitle, newUrl)}
+              onDelete={() => onDeleteBookmark(id, bm.id)}
+            />
           ))}
         </SortableContext>
       </div>
