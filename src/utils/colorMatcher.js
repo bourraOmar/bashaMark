@@ -53,6 +53,12 @@ export function extractColorsFromImage(imageUrl) {
     img.onerror = () => {
       reject(new Error("Could not load image (CORS)"));
     };
-    img.src = imageUrl;
+    
+    // Add a unique query param to bypass the browser's non-CORS cache
+    // (since the image is also loaded via CSS background-image without CORS)
+    const separator = imageUrl.includes('?') ? '&' : '?';
+    img.src = imageUrl.startsWith('data:') 
+      ? imageUrl 
+      : imageUrl + separator + 'cors=' + Date.now();
   });
 }
