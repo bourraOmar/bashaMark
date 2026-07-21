@@ -12,11 +12,11 @@
     "favicon",
     "tabs"
   ],
-  "background": {
-    "service_worker": "background.js"
+  "action": {
+    "default_popup": "popup.html"
   },
   "commands": {
-    "quick-save": {
+    "_execute_action": {
       "suggested_key": {
         "default": "Ctrl+Shift+S",
         "mac": "Command+Shift+S"
