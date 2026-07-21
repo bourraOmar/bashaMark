@@ -231,6 +231,11 @@ function App() {
       --font-size-base: ${settings.textSize === 'S' ? '0.85rem' : settings.textSize === 'M' ? '0.95rem' : '1.1rem'};
       --font-weight-base: ${settings.textWeight === 'Bold' ? '600' : '400'};
     }
+    
+    .glass-panel, .tabs-container, .search-bar, .fab, .dropdown-menu, .placeholder-board:hover {
+      backdrop-filter: blur(${settings.blur}px) !important;
+      -webkit-backdrop-filter: blur(${settings.blur}px) !important;
+    }
   `;
 
   if (!isLoaded) return null;
