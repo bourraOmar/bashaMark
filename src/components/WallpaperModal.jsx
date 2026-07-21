@@ -4,18 +4,18 @@ import { useBackground } from '../hooks/useBackground';
 import { extractColorsFromImage } from '../utils/colorMatcher';
 
 const PRESETS = [
-  'https://images.unsplash.com/photo-1506259091721-347e791bab0f?w=800&q=80',
-  'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=800&q=80',
-  'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80',
-  'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=800&q=80',
-  'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&q=80',
-  'https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?w=800&q=80',
-  'https://images.unsplash.com/photo-1434725039720-aaad6dd32dfe?w=800&q=80',
-  'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=800&q=80',
-  'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=800&q=80',
-  'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=800&q=80',
-  'https://images.unsplash.com/photo-1501862700950-18382cd41497?w=800&q=80',
-  'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&q=80'
+  'https://images.unsplash.com/photo-1506259091721-347e791bab0f?w=2560&q=100',
+  'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=2560&q=100',
+  'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=2560&q=100',
+  'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=2560&q=100',
+  'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=2560&q=100',
+  'https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?w=2560&q=100',
+  'https://images.unsplash.com/photo-1434725039720-aaad6dd32dfe?w=2560&q=100',
+  'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=2560&q=100',
+  'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=2560&q=100',
+  'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=2560&q=100',
+  'https://images.unsplash.com/photo-1501862700950-18382cd41497?w=2560&q=100',
+  'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=2560&q=100'
 ];
 
 export default function WallpaperModal({ isOpen, onClose, settings, setSettings }) {
