@@ -66,12 +66,16 @@ export function useBoards() {
   const addBoard = (titleOrConfig, slotIndex = null) => {
     let config = typeof titleOrConfig === 'string' ? { title: titleOrConfig, type: 'board' } : titleOrConfig;
 
-    // Find first available slot if not provided
+    // Find the slot with the fewest widgets (0 to 4)
     let newSlot = slotIndex;
     if (newSlot === null) {
-      const usedSlots = new Set(boards.map(b => b.slotIndex));
-      newSlot = 0;
-      while (usedSlots.has(newSlot)) newSlot++;
+      const slotCounts = [0, 0, 0, 0, 0];
+      boards.forEach(b => {
+        if (b.slotIndex >= 0 && b.slotIndex < 5) {
+          slotCounts[b.slotIndex]++;
+        }
+      });
+      newSlot = slotCounts.indexOf(Math.min(...slotCounts));
     }
 
     const newBoard = {
