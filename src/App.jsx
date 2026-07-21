@@ -219,13 +219,19 @@ function App() {
   const TOTAL_SLOTS = getComputedColumns();
 
   const appStyle = {
-    '--primary-color': settings.primaryColor,
-    '--glass-bg': `rgba(${hexToRgb(settings.boardColor)}, ${settings.opacity / 100})`,
-    '--glass-blur': `${settings.blur}px`,
-    '--board-width': `${settings.boardWidth}px`,
-    '--font-size-base': settings.textSize === 'S' ? '0.85rem' : settings.textSize === 'M' ? '0.95rem' : '1.1rem',
-    '--font-weight-base': settings.textWeight === 'Bold' ? '600' : '400',
+    // We'll inject these globally into :root using a style tag to ensure backdrop-filter repaints properly
   };
+
+  const dynamicCSS = `
+    :root {
+      --primary-color: ${settings.primaryColor};
+      --glass-bg: rgba(${hexToRgb(settings.boardColor)}, ${settings.opacity / 100});
+      --glass-blur: blur(${settings.blur}px);
+      --board-width: ${settings.boardWidth}px;
+      --font-size-base: ${settings.textSize === 'S' ? '0.85rem' : settings.textSize === 'M' ? '0.95rem' : '1.1rem'};
+      --font-weight-base: ${settings.textWeight === 'Bold' ? '600' : '400'};
+    }
+  `;
 
   if (!isLoaded) return null;
 
@@ -234,7 +240,9 @@ function App() {
   );
 
   return (
-    <div className="app-container" style={appStyle}>
+    <>
+      <style>{dynamicCSS}</style>
+      <div className="app-container">
       <header className="top-header">
         <div className="tabs-container">
           <button className="tab-btn active">Home</button>
@@ -333,6 +341,7 @@ function App() {
       <WidgetsMenu isOpen={isWidgetsMenuOpen} onClose={() => setIsWidgetsMenuOpen(false)} addBoard={(config, slot) => addBoard(config, slot, TOTAL_SLOTS)} />
       <SettingsModal isOpen={isSettingsModalOpen} onClose={() => setIsSettingsModalOpen(false)} settings={settings} setSettings={setSettings} />
     </div>
+    </>
   );
 }
 
