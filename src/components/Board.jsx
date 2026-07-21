@@ -11,6 +11,7 @@ export default function Board({ id, title, bookmarks, onAddBookmark, onRenameBoa
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isRenaming, setIsRenaming] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [childMenuOpen, setChildMenuOpen] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState('right');
   const [newUrl, setNewUrl] = useState('');
   const [newTitle, setNewTitle] = useState('');
@@ -26,7 +27,7 @@ export default function Board({ id, title, bookmarks, onAddBookmark, onRenameBoa
     transform: CSS.Translate.toString(transform),
     transition,
     opacity: isDragging ? 0.4 : 1,
-    zIndex: isDragging ? 1000 : (isMenuOpen || isConfirmOpen) ? 100 : undefined,
+    zIndex: isDragging ? 1000 : (isMenuOpen || isConfirmOpen || childMenuOpen) ? 100 : undefined,
     position: 'relative',
   };
 
@@ -193,6 +194,7 @@ export default function Board({ id, title, bookmarks, onAddBookmark, onRenameBoa
               onEdit={(newTitle, newUrl, newDescription) => onEditBookmark(id, bm.id, newTitle, newUrl, newDescription)}
               onDelete={() => onDeleteBookmark(id, bm.id)}
               settings={settings}
+              onMenuToggle={setChildMenuOpen}
             />
           ))}
         </SortableContext>

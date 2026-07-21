@@ -4,7 +4,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { MoreVertical, ExternalLink, EyeOff, Edit2, Trash2 } from 'lucide-react';
 import { getFaviconUrl } from '../utils/favicon';
 
-export default function BookmarkItem({ id, title, url, iconUrl, description, onEdit, onDelete, settings }) {
+export default function BookmarkItem({ id, title, url, iconUrl, description, onEdit, onDelete, settings, onMenuToggle }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(title);
@@ -21,6 +21,12 @@ export default function BookmarkItem({ id, title, url, iconUrl, description, onE
     transition,
     isDragging,
   } = useSortable({ id });
+
+  useEffect(() => {
+    if (onMenuToggle) {
+      onMenuToggle(isMenuOpen);
+    }
+  }, [isMenuOpen, onMenuToggle]);
 
   useEffect(() => {
     function handleClickOutside(event) {
