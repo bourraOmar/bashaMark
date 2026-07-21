@@ -122,19 +122,30 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings }
             />
           </div>
 
-          <div style={{ marginBottom: '24px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <label style={labelStyle}>Blur</label>
-              <span style={valueStyle}>{settings.blur}px</span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+            <label style={labelStyle}>Blur</label>
+            <div style={toggleGroupStyle}>
+              {[
+                { label: 'None', value: 0 },
+                { label: 'Low', value: 8 },
+                { label: 'Med', value: 24 },
+                { label: 'High', value: 48 }
+              ].map(opt => {
+                // If it's an old custom value, highlight the closest option
+                const closestValue = [0, 8, 24, 48].reduce((prev, curr) => 
+                  Math.abs(curr - settings.blur) < Math.abs(prev - settings.blur) ? curr : prev
+                );
+                return (
+                  <button 
+                    key={opt.label}
+                    onClick={() => handleChange('blur', opt.value)}
+                    style={toggleBtnStyle(closestValue === opt.value)}
+                  >
+                    {opt.label}
+                  </button>
+                );
+              })}
             </div>
-            <input 
-              type="range" 
-              min="0" max="50" 
-              value={settings.blur} 
-              onChange={(e) => handleChange('blur', parseInt(e.target.value, 10))}
-              className="custom-slider"
-              style={{ background: getSliderBackground(settings.blur, 0, 50) }}
-            />
           </div>
 
           <div style={{ display: 'flex', gap: '12px' }}>
