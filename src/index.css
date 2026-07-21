@@ -197,20 +197,31 @@ a {
 
 /* Main Dashboard Grid */
 .dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  grid-auto-rows: max-content;
+  display: flex;
+  flex-direction: row;
   gap: 24px;
   align-items: start;
   flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow-y: hidden;
+  overflow-x: auto;
   padding-bottom: 40px; /* Add some padding at the bottom for scrolling */
+  padding-right: 40px;
+}
+
+.board-column {
+  min-width: 300px;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  height: 100%;
+  overflow-y: auto;
 }
 
 /* Custom Scrollbar for Dashboard Grid */
 .dashboard-grid::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
 .dashboard-grid::-webkit-scrollbar-track {
   background: transparent;
@@ -223,12 +234,32 @@ a {
   background: rgba(0, 0, 0, 0.3);
 }
 
+.board-column::-webkit-scrollbar {
+  width: 6px;
+}
+.board-column::-webkit-scrollbar-track {
+  background: transparent;
+}
+.board-column::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+.board-column::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+
 @media (prefers-color-scheme: dark) {
   .dashboard-grid::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.2);
   }
   .dashboard-grid::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.3);
+  }
+  .board-column::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  .board-column::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
   }
 }
 
