@@ -11,7 +11,7 @@ const MODES = {
   LONG_BREAK: { label: 'Long Break', time: 15 * 60 }
 };
 
-export default function PomodoroWidget({ id, onDelete }) {
+export default function PomodoroWidget({ id, onDelete, settings: appSettings }) {
   const [mode, setMode] = useState('FOCUS');
   const [timeLeft, setTimeLeft] = useState(MODES.FOCUS.time);
   const [isRunning, setIsRunning] = useState(false);
@@ -269,7 +269,7 @@ export default function PomodoroWidget({ id, onDelete }) {
         
         <button 
           onClick={toggleTimer}
-          style={{ width: '64px', height: '64px', borderRadius: '50%', border: 'none', backgroundColor: '#5c8c9e', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 12px rgba(92, 140, 158, 0.3)' }}
+          style={{ width: '64px', height: '64px', borderRadius: '50%', border: 'none', backgroundColor: appSettings?.primaryColor || '#5c8c9e', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: `0 4px 12px ${appSettings?.primaryColor || '#5c8c9e'}4D` }}
         >
           {isRunning ? <Pause size={28} fill="currentColor" /> : <Play size={28} fill="currentColor" style={{ marginLeft: '4px' }} />}
         </button>

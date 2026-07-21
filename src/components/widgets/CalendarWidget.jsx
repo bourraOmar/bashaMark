@@ -4,7 +4,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { ChevronLeft, ChevronRight, MoreHorizontal, Trash2 } from 'lucide-react';
 import ConfirmModal from '../ConfirmModal';
 
-export default function CalendarWidget({ id, onDelete }) {
+export default function CalendarWidget({ id, onDelete, settings }) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState('right');
@@ -132,7 +132,7 @@ export default function CalendarWidget({ id, onDelete }) {
                 textAlign: 'center', 
                 fontSize: '0.9rem', 
                 padding: '6px 0',
-                backgroundColor: isToday ? '#5c8c9e' : 'transparent',
+                backgroundColor: isToday ? (settings?.primaryColor || '#5c8c9e') : 'transparent',
                 borderRadius: '8px',
                 color: isToday ? 'white' : (isCurrentMonth ? 'var(--text-color)' : 'var(--text-muted)'),
                 opacity: isCurrentMonth ? 1 : 0.5,
