@@ -74,8 +74,8 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
     <div className="modal-overlay" onClick={onClose} style={{
       position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center'
     }}>
-      <div className="glass-panel" onClick={e => e.stopPropagation()} style={{
-        width: '400px',
+      <div className="glass-panel hide-scrollbar" onClick={e => e.stopPropagation()} style={{
+        width: '480px',
         maxHeight: '90vh',
         overflowY: 'auto',
         backgroundColor: 'rgba(20, 20, 25, 0.85)', // Darker background based on screenshot

@@ -56,6 +56,15 @@ body {
   overflow: hidden;
 }
 
+/* Utility to hide scrollbars */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 @media (prefers-color-scheme: dark) {
   body {
     background: linear-gradient(135deg, #1f1c2c 0%, #928dab 100%);
