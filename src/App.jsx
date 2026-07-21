@@ -8,14 +8,16 @@ import Modal from './components/Modal';
 import BookmarkSearchModal from './components/BookmarkSearchModal';
 import WallpaperModal from './components/WallpaperModal';
 import WidgetsMenu from './components/WidgetsMenu';
+import SettingsModal from './components/SettingsModal';
 import { useBoards } from './hooks/useBoards';
 import { useBackground } from './hooks/useBackground';
-
-const TOTAL_SLOTS = 5;
+import { useSettings } from './hooks/useSettings';
 
 function App() {
   const { boards, setBoards, addBoard, addBookmark, renameBoard, updateBoard, deleteBoard, editBookmark, deleteBookmark } = useBoards();
+  const { settings, setSettings, isLoaded } = useSettings();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [targetSlotIndex, setTargetSlotIndex] = useState(null);
   const [bookmarkFolders, setBookmarkFolders] = useState([]);
   const [isFabMenuOpen, setIsFabMenuOpen] = useState(false);
@@ -200,8 +202,39 @@ function App() {
 
   if (!boards) return null;
 
+  // Convert hex to rgb for rgba usage
+  const hexToRgb = (hex) => {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '0, 0, 0';
+  };
+
+  const getComputedColumns = () => {
+    if (settings.numberOfColumns !== 'Auto') return parseInt(settings.numberOfColumns, 10);
+    const screenWidth = window.innerWidth;
+    const available = screenWidth - 40;
+    const colWidth = settings.boardWidth + 24;
+    return Math.max(1, Math.floor(available / colWidth));
+  };
+
+  const TOTAL_SLOTS = getComputedColumns();
+
+  const appStyle = {
+    '--primary-color': settings.primaryColor,
+    '--glass-bg': `rgba(${hexToRgb(settings.boardColor)}, ${settings.opacity / 100})`,
+    '--glass-blur': `blur(${settings.blur}px)`,
+    '--board-width': `${settings.boardWidth}px`,
+    '--font-size-base': settings.textSize === 'S' ? '0.85rem' : settings.textSize === 'M' ? '0.95rem' : '1.1rem',
+    '--font-weight-base': settings.textWeight === 'Bold' ? '600' : '400',
+  };
+
+  if (!isLoaded) return null;
+
+  const clampedBoards = boards.map(b => 
+    b.slotIndex >= TOTAL_SLOTS ? { ...b, slotIndex: b.slotIndex % Math.max(1, TOTAL_SLOTS) } : b
+  );
+
   return (
-    <div className="app-container">
+    <div className="app-container" style={appStyle}>
       <header className="top-header">
         <div className="tabs-container">
           <button className="tab-btn active">Home</button>
@@ -223,14 +256,14 @@ function App() {
           onDragEnd={handleDragEnd}
         >
           {Array.from({ length: TOTAL_SLOTS }).map((_, i) => {
-            const columnBoards = boards.filter(b => b.slotIndex === i);
+            const columnBoards = clampedBoards.filter(b => b.slotIndex === i);
             return (
               <Column 
                 key={`column-${i}`} 
                 id={`column-${i}`}
                 slotIndex={i}
                 boards={columnBoards}
-                addBoard={addBoard}
+                addBoard={(config, slot) => addBoard(config, slot, TOTAL_SLOTS)}
                 addBookmark={addBookmark}
                 renameBoard={renameBoard}
                 updateBoard={updateBoard}
@@ -290,12 +323,15 @@ function App() {
         <button className="fab" title="Menu" onClick={() => setIsFabMenuOpen(!isFabMenuOpen)}>
           {isFabMenuOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
-        <button className="fab fab-primary" title="Settings"><Settings size={20} /></button>
+        <button className="fab fab-primary" title="Settings" onClick={() => setIsSettingsModalOpen(true)}>
+          <Settings size={20} />
+        </button>
       </div>
 
       <BookmarkSearchModal isOpen={isSearchModalOpen} onClose={() => setIsSearchModalOpen(false)} />
       <WallpaperModal isOpen={isWallpaperModalOpen} onClose={() => setIsWallpaperModalOpen(false)} />
-      <WidgetsMenu isOpen={isWidgetsMenuOpen} onClose={() => setIsWidgetsMenuOpen(false)} addBoard={addBoard} />
+      <WidgetsMenu isOpen={isWidgetsMenuOpen} onClose={() => setIsWidgetsMenuOpen(false)} addBoard={(config, slot) => addBoard(config, slot, TOTAL_SLOTS)} />
+      <SettingsModal isOpen={isSettingsModalOpen} onClose={() => setIsSettingsModalOpen(false)} settings={settings} setSettings={setSettings} />
     </div>
   );
 }

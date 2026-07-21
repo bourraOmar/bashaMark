@@ -63,15 +63,15 @@ export function useBoards() {
     }
   };
 
-  const addBoard = (titleOrConfig, slotIndex = null) => {
+  const addBoard = (titleOrConfig, slotIndex = null, maxSlots = 5) => {
     let config = typeof titleOrConfig === 'string' ? { title: titleOrConfig, type: 'board' } : titleOrConfig;
 
-    // Find the slot with the fewest widgets (0 to 4)
+    // Find the slot with the fewest widgets (0 to maxSlots-1)
     let newSlot = slotIndex;
     if (newSlot === null) {
-      const slotCounts = [0, 0, 0, 0, 0];
+      const slotCounts = Array(maxSlots).fill(0);
       boards.forEach(b => {
-        if (b.slotIndex >= 0 && b.slotIndex < 5) {
+        if (b.slotIndex >= 0 && b.slotIndex < maxSlots) {
           slotCounts[b.slotIndex]++;
         }
       });

@@ -4,15 +4,19 @@
   --font-family: 'Inter', system-ui, sans-serif;
   
   /* Glassmorphism Variables */
-  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-bg: rgba(255, 255, 255, 0.85); /* Fallback */
   --glass-bg-hover: rgba(255, 255, 255, 0.95);
   --glass-border: rgba(255, 255, 255, 0.4);
   --glass-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  --glass-blur: blur(24px);
+  --glass-blur: blur(24px); /* Fallback */
   
   --text-color: #222;
   --text-muted: #555;
-  --primary-color: #55879a; /* Matching the blue tone in user screenshot */
+  --primary-color: #55879a; /* Fallback */
+  
+  --board-width: 264px; /* Fallback */
+  --font-size-base: 0.95rem; /* Fallback */
+  --font-weight-base: 400; /* Fallback */
   
   /* Layout */
   --spacing-sm: 8px;
@@ -211,9 +215,9 @@ a {
 }
 
 .board-column {
-  flex: 1;
-  min-width: 220px;
-  max-width: 350px;
+  flex: 0 0 var(--board-width);
+  min-width: var(--board-width);
+  max-width: var(--board-width);
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -233,8 +237,8 @@ a {
 }
 
 .board-header {
-  font-size: 0.95rem;
-  font-weight: 600;
+  font-size: var(--font-size-base);
+  font-weight: 600; /* keep header bold by default or maybe var */
   padding: 4px 16px;
   display: flex;
   justify-content: space-between;
@@ -263,8 +267,8 @@ a {
   align-items: center;
   padding: 8px 16px;
   gap: 12px;
-  font-size: 0.85rem;
-  font-weight: 500;
+  font-size: calc(var(--font-size-base) - 0.1rem);
+  font-weight: var(--font-weight-base);
   cursor: pointer;
   border-radius: 0; /* Edge to edge hover */
 }
