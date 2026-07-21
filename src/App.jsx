@@ -343,7 +343,12 @@ function App() {
       </div>
 
       <BookmarkSearchModal isOpen={isSearchModalOpen} onClose={() => setIsSearchModalOpen(false)} />
-      <WallpaperModal isOpen={isWallpaperModalOpen} onClose={() => setIsWallpaperModalOpen(false)} />
+      <WallpaperModal 
+        isOpen={isWallpaperModalOpen} 
+        onClose={() => setIsWallpaperModalOpen(false)} 
+        settings={settings}
+        setSettings={setSettings}
+      />
       <WidgetsMenu isOpen={isWidgetsMenuOpen} onClose={() => setIsWidgetsMenuOpen(false)} addBoard={(config, slot) => addBoard(config, slot, TOTAL_SLOTS)} />
       <SettingsModal isOpen={isSettingsModalOpen} onClose={() => setIsSettingsModalOpen(false)} settings={settings} setSettings={setSettings} boards={boards} />
     </div>

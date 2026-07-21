@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { X, UploadCloud, Search, ExternalLink } from 'lucide-react';
 import { useBackground } from '../hooks/useBackground';
+import { extractColorFromImage } from '../utils/colorMatcher';
 
 const PRESETS = [
   'https://images.unsplash.com/photo-1506259091721-347e791bab0f?w=800&q=80',
@@ -17,7 +18,7 @@ const PRESETS = [
   'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&q=80'
 ];
 
-export default function WallpaperModal({ isOpen, onClose }) {
+export default function WallpaperModal({ isOpen, onClose, settings, setSettings }) {
   const fileInputRef = useRef(null);
   const { changeBackground } = useBackground();
   
@@ -29,12 +30,26 @@ export default function WallpaperModal({ isOpen, onClose }) {
     }
   };
 
+  const applyBackground = async (bgUrl) => {
+    changeBackground(bgUrl);
+    
+    // Auto match colors
+    if (settings && setSettings) {
+      try {
+        const hex = await extractColorFromImage(bgUrl);
+        setSettings({ ...settings, primaryColor: hex, boardColor: hex });
+      } catch (e) {
+        console.warn("Could not extract color from wallpaper", e);
+      }
+    }
+  };
+
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = (event) => {
-        changeBackground(event.target.result);
+        applyBackground(event.target.result);
       };
       reader.readAsDataURL(file);
     }
@@ -135,7 +150,7 @@ export default function WallpaperModal({ isOpen, onClose }) {
               {PRESETS.map((url, idx) => (
                 <div 
                   key={idx}
-                  onClick={() => changeBackground(url)}
+                  onClick={() => applyBackground(url)}
                   style={{
                     aspectRatio: '16/9',
                     borderRadius: '8px',
