@@ -287,7 +287,7 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
               onChange={(val) => handleChange('quickSaveBoard', val)}
               options={[
                 { value: 'None', label: 'None' },
-                ...(boards?.map(b => ({ value: b.id, label: b.title })) || [])
+                ...(boards?.filter(b => !b.type || b.type === 'board').map(b => ({ value: b.id, label: b.title })) || [])
               ]}
             />
           </div>
