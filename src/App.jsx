@@ -283,6 +283,7 @@ function App() {
                 deleteBoard={deleteBoard}
                 editBookmark={editBookmark}
                 deleteBookmark={deleteBookmark}
+                settings={settings}
               />
             );
           })}

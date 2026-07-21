@@ -199,20 +199,17 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
           
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
             <label style={labelStyle}>Number of columns</label>
-            <select 
-              value={settings.numberOfColumns} 
-              onChange={(e) => handleColumnsChange(e.target.value)}
-              style={selectStyle}
-            >
-              <option value="Auto">Auto</option>
-              {/* Include the current value if it's clamped below 4 */}
-              {settings.numberOfColumns !== 'Auto' && settings.numberOfColumns < 4 && (
-                <option value={settings.numberOfColumns}>{settings.numberOfColumns}</option>
-              )}
-              {[4, 5, 6, 7, 8, 9].map(num => (
-                <option key={num} value={num}>{num}</option>
-              ))}
-            </select>
+            <CustomSelect 
+              value={settings.numberOfColumns}
+              onChange={(val) => handleColumnsChange(val)}
+              options={[
+                { value: 'Auto', label: 'Auto' },
+                ...(settings.numberOfColumns !== 'Auto' && settings.numberOfColumns < 4 
+                  ? [{ value: settings.numberOfColumns, label: String(settings.numberOfColumns) }] 
+                  : []),
+                ...[4, 5, 6, 7, 8, 9].map(num => ({ value: num, label: String(num) }))
+              ]}
+            />
           </div>
 
           <div>
@@ -252,18 +249,15 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
             <label style={labelStyle}>Hide extra bookmarks</label>
             <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-              <div style={{ position: 'relative' }}>
-                <select 
-                  value={settings.hideExtraBookmarks} 
-                  onChange={(e) => handleChange('hideExtraBookmarks', e.target.value)}
-                  style={{ ...selectStyle, paddingRight: '24px' }}
-                >
-                  <option value="10">Show 10</option>
-                  <option value="20">Show 20</option>
-                  <option value="All">Show All</option>
-                </select>
-                <ChevronDown size={14} style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', color: '#cbd5e0', pointerEvents: 'none' }} />
-              </div>
+              <CustomSelect 
+                value={settings.hideExtraBookmarks}
+                onChange={(val) => handleChange('hideExtraBookmarks', val)}
+                options={[
+                  { value: '10', label: 'Show 10' },
+                  { value: '20', label: 'Show 20' },
+                  { value: 'All', label: 'Show All' }
+                ]}
+              />
               <ToggleSwitch 
                 checked={settings.hideExtraBookmarksEnabled} 
                 onChange={(val) => handleChange('hideExtraBookmarksEnabled', val)} 
@@ -288,19 +282,14 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
           
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
             <label style={labelStyle}>Save to board</label>
-            <div style={{ position: 'relative' }}>
-              <select 
-                value={settings.quickSaveBoard} 
-                onChange={(e) => handleChange('quickSaveBoard', e.target.value)}
-                style={{ ...selectStyle, paddingRight: '24px' }}
-              >
-                <option value="None">None</option>
-                {boards?.map(b => (
-                  <option key={b.id} value={b.id}>{b.title}</option>
-                ))}
-              </select>
-              <ChevronDown size={14} style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', color: '#cbd5e0', pointerEvents: 'none' }} />
-            </div>
+            <CustomSelect 
+              value={settings.quickSaveBoard}
+              onChange={(val) => handleChange('quickSaveBoard', val)}
+              options={[
+                { value: 'None', label: 'None' },
+                ...(boards?.map(b => ({ value: b.id, label: b.title })) || [])
+              ]}
+            />
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -455,3 +444,75 @@ const ToggleSwitch = ({ checked, onChange }) => (
     />
   </div>
 );
+
+const CustomSelect = ({ value, options, onChange }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (containerRef.current && !containerRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const selectedOption = options.find(opt => String(opt.value) === String(value)) || options[0];
+
+  return (
+    <div ref={containerRef} style={{ position: 'relative' }}>
+      <div 
+        onClick={() => setIsOpen(!isOpen)}
+        style={{ ...selectStyle, paddingRight: '32px', display: 'flex', alignItems: 'center', userSelect: 'none' }}
+      >
+        {selectedOption ? selectedOption.label : value}
+        <ChevronDown size={14} style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', color: '#cbd5e0', pointerEvents: 'none' }} />
+      </div>
+
+      {isOpen && (
+        <div style={{
+          position: 'absolute',
+          top: '100%',
+          right: 0,
+          marginTop: '4px',
+          backgroundColor: '#1e1e1e',
+          borderRadius: '6px',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
+          zIndex: 10000,
+          minWidth: '100%',
+          overflow: 'hidden',
+          whiteSpace: 'nowrap'
+        }}>
+          {options.map((opt) => (
+            <div 
+              key={opt.value}
+              onClick={() => {
+                onChange(opt.value);
+                setIsOpen(false);
+              }}
+              style={{
+                padding: '6px 12px',
+                fontSize: '0.9rem',
+                color: String(opt.value) === String(value) ? '#fff' : 'rgba(255,255,255,0.7)',
+                backgroundColor: String(opt.value) === String(value) ? '#2b6cb0' : 'transparent',
+                cursor: 'pointer',
+                transition: 'background-color 0.2s',
+                userSelect: 'none'
+              }}
+              onMouseEnter={(e) => {
+                if (String(opt.value) !== String(value)) e.target.style.backgroundColor = 'rgba(255,255,255,0.1)';
+              }}
+              onMouseLeave={(e) => {
+                if (String(opt.value) !== String(value)) e.target.style.backgroundColor = 'transparent';
+              }}
+            >
+              {opt.label}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};

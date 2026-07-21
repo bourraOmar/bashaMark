@@ -4,11 +4,10 @@ import { CSS } from '@dnd-kit/utilities';
 import BookmarkItem from './BookmarkItem';
 import { Plus, MoreHorizontal, Type, Layers, Trash2 } from 'lucide-react';
 import ConfirmModal from './ConfirmModal';
-import { useSettings } from '../hooks/useSettings';
 
-export default function Board({ id, title, bookmarks, onAddBookmark, onRenameBoard, onDeleteBoard, onEditBookmark, onDeleteBookmark }) {
-  const { settings } = useSettings();
+export default function Board({ id, title, bookmarks, onAddBookmark, onRenameBoard, onDeleteBoard, onEditBookmark, onDeleteBookmark, settings }) {
   const [isAdding, setIsAdding] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isRenaming, setIsRenaming] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -78,12 +77,17 @@ export default function Board({ id, title, bookmarks, onAddBookmark, onRenameBoa
   };
 
   let displayedBookmarks = bookmarks;
+  let hasHiddenBookmarks = false;
   let hiddenCount = 0;
+  
   if (settings.hideExtraBookmarksEnabled && settings.hideExtraBookmarks !== 'All') {
     const limit = parseInt(settings.hideExtraBookmarks, 10);
     if (bookmarks.length > limit) {
-      displayedBookmarks = bookmarks.slice(0, limit);
+      hasHiddenBookmarks = true;
       hiddenCount = bookmarks.length - limit;
+      if (!isExpanded) {
+        displayedBookmarks = bookmarks.slice(0, limit);
+      }
     }
   }
 
@@ -192,9 +196,14 @@ export default function Board({ id, title, bookmarks, onAddBookmark, onRenameBoa
           ))}
         </SortableContext>
         
-        {hiddenCount > 0 && (
-          <div style={{ padding: '8px', textAlign: 'center', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-            + {hiddenCount} more
+        {hasHiddenBookmarks && (
+          <div 
+            onClick={() => setIsExpanded(!isExpanded)}
+            style={{ padding: '8px', textAlign: 'center', fontSize: '0.8rem', color: 'var(--text-muted)', cursor: 'pointer', transition: 'color 0.2s' }}
+            onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-color)'}
+            onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-muted)'}
+          >
+            {isExpanded ? 'Show less' : `+ ${hiddenCount} more`}
           </div>
         )}
       </div>

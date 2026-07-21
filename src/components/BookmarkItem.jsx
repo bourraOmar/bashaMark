@@ -3,10 +3,8 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { MoreVertical, ExternalLink, EyeOff, Edit2, Trash2 } from 'lucide-react';
 import { getFaviconUrl } from '../utils/favicon';
-import { useSettings } from '../hooks/useSettings';
 
-export default function BookmarkItem({ id, title, url, iconUrl, description, onEdit, onDelete }) {
-  const { settings } = useSettings();
+export default function BookmarkItem({ id, title, url, iconUrl, description, onEdit, onDelete, settings }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(title);
