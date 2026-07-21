@@ -251,17 +251,23 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
             <label style={labelStyle}>Hide extra bookmarks</label>
-            <div style={{ position: 'relative' }}>
-              <select 
-                value={settings.hideExtraBookmarks} 
-                onChange={(e) => handleChange('hideExtraBookmarks', e.target.value)}
-                style={{ ...selectStyle, paddingRight: '24px' }}
-              >
-                <option value="10">Show 10</option>
-                <option value="20">Show 20</option>
-                <option value="All">Show All</option>
-              </select>
-              <ChevronDown size={14} style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', color: '#cbd5e0', pointerEvents: 'none' }} />
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+              <div style={{ position: 'relative' }}>
+                <select 
+                  value={settings.hideExtraBookmarks} 
+                  onChange={(e) => handleChange('hideExtraBookmarks', e.target.value)}
+                  style={{ ...selectStyle, paddingRight: '24px' }}
+                >
+                  <option value="10">Show 10</option>
+                  <option value="20">Show 20</option>
+                  <option value="All">Show All</option>
+                </select>
+                <ChevronDown size={14} style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', color: '#cbd5e0', pointerEvents: 'none' }} />
+              </div>
+              <ToggleSwitch 
+                checked={settings.hideExtraBookmarksEnabled} 
+                onChange={(val) => handleChange('hideExtraBookmarksEnabled', val)} 
+              />
             </div>
           </div>
 

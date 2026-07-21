@@ -4,8 +4,10 @@ import { CSS } from '@dnd-kit/utilities';
 import BookmarkItem from './BookmarkItem';
 import { Plus, MoreHorizontal, Type, Layers, Trash2 } from 'lucide-react';
 import ConfirmModal from './ConfirmModal';
+import { useSettings } from '../hooks/useSettings';
 
 export default function Board({ id, title, bookmarks, onAddBookmark, onRenameBoard, onDeleteBoard, onEditBookmark, onDeleteBookmark }) {
+  const { settings } = useSettings();
   const [isAdding, setIsAdding] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isRenaming, setIsRenaming] = useState(false);
@@ -41,27 +43,20 @@ export default function Board({ id, title, bookmarks, onAddBookmark, onRenameBoa
 
   const handleAdd = (e) => {
     e.preventDefault();
-    if (newUrl && newTitle) {
-      onAddBookmark(id, newTitle, newUrl);
+    if (newUrl.trim() && newTitle.trim()) {
+      onAddBookmark(id, newTitle.trim(), newUrl.trim());
       setNewUrl('');
       setNewTitle('');
       setIsAdding(false);
     }
   };
 
-  const handleRenameSubmit = (e) => {
+  const handleRename = (e) => {
     e.preventDefault();
-    if (renameTitle.trim() && renameTitle !== title) {
+    if (renameTitle.trim()) {
       onRenameBoard(id, renameTitle.trim());
+      setIsRenaming(false);
     }
-    setIsRenaming(false);
-  };
-
-  const handleOpenAll = () => {
-    bookmarks.forEach(bm => {
-      window.open(bm.url, '_blank', 'noopener,noreferrer');
-    });
-    setIsMenuOpen(false);
   };
 
   const handleDelete = () => {
@@ -69,63 +64,92 @@ export default function Board({ id, title, bookmarks, onAddBookmark, onRenameBoa
     setIsMenuOpen(false);
   };
 
+  const handleOpenAll = () => {
+    if (typeof chrome !== 'undefined' && chrome.tabs) {
+      bookmarks.forEach(bm => {
+        chrome.tabs.create({ url: bm.url, active: false });
+      });
+    } else {
+      bookmarks.forEach(bm => {
+        window.open(bm.url, '_blank');
+      });
+    }
+    setIsMenuOpen(false);
+  };
+
+  let displayedBookmarks = bookmarks;
+  let hiddenCount = 0;
+  if (settings.hideExtraBookmarksEnabled && settings.hideExtraBookmarks !== 'All') {
+    const limit = parseInt(settings.hideExtraBookmarks, 10);
+    if (bookmarks.length > limit) {
+      displayedBookmarks = bookmarks.slice(0, limit);
+      hiddenCount = bookmarks.length - limit;
+    }
+  }
+
   return (
     <div ref={setNodeRef} style={style} className="board glass-panel">
-      <div className="board-header" {...attributes} {...listeners} style={{ cursor: 'grab' }}>
+      <div className="board-header" {...attributes} {...listeners}>
         {isRenaming ? (
-          <form onSubmit={handleRenameSubmit} style={{ flex: 1, marginRight: '8px' }}>
-            <input
-              type="text"
-              value={renameTitle}
+          <form onSubmit={handleRename} style={{ flex: 1, display: 'flex', gap: '8px' }}>
+            <input 
+              type="text" 
+              value={renameTitle} 
               onChange={(e) => setRenameTitle(e.target.value)}
-              onKeyDown={(e) => e.stopPropagation()}
               className="glass-input"
               autoFocus
-              onBlur={handleRenameSubmit}
-              style={{ padding: '4px 8px' }}
+              onKeyDown={(e) => e.stopPropagation()}
+              style={{ flex: 1, padding: '2px 8px' }}
             />
           </form>
         ) : (
-          <span>{title}</span>
+          <span style={{ cursor: 'grab' }}>{title}</span>
         )}
-        <div className="board-header-actions" style={{ position: 'relative' }} ref={menuRef} onPointerDown={(e) => e.stopPropagation()}>
-          <button onClick={() => setIsAdding(!isAdding)} className="add-btn" title="Add Link">
+        <div className="board-header-actions" onPointerDown={(e) => e.stopPropagation()}>
+          <button onClick={() => setIsAdding(!isAdding)} style={{ padding: '4px' }}>
             <Plus size={16} />
           </button>
-          <button onClick={() => {
-            if (!isMenuOpen && menuRef.current) {
-              const rect = menuRef.current.getBoundingClientRect();
-              setDropdownPosition(window.innerWidth - rect.right < 250 ? 'left' : 'right');
-            }
-            setIsMenuOpen(!isMenuOpen);
-          }} className="add-btn" title="More options">
-            <MoreHorizontal size={16} />
-          </button>
+          
+          <div ref={menuRef} style={{ position: 'relative' }}>
+            <button 
+              onClick={(e) => {
+                e.preventDefault();
+                if (!isMenuOpen && menuRef.current) {
+                  const rect = menuRef.current.getBoundingClientRect();
+                  setDropdownPosition(window.innerWidth - rect.right < 200 ? 'left' : 'right');
+                }
+                setIsMenuOpen(!isMenuOpen);
+              }} 
+              style={{ padding: '4px' }}
+            >
+              <MoreHorizontal size={16} />
+            </button>
 
-          {isMenuOpen && (
-            <div className="dropdown-menu" style={{ 
-              right: dropdownPosition === 'left' ? '100%' : 'auto', 
-              left: dropdownPosition === 'right' ? '100%' : 'auto', 
-              top: '24px', 
-              marginLeft: dropdownPosition === 'right' ? '8px' : 0, 
-              marginRight: dropdownPosition === 'left' ? '8px' : 0, 
-              marginTop: 0 
-            }}>
-              <button className="dropdown-item" onClick={() => { setIsRenaming(true); setIsMenuOpen(false); }}>
-                <Type size={16} />
-                Rename
-              </button>
-              <button className="dropdown-item" onClick={handleOpenAll}>
-                <Layers size={16} />
-                Open all links
-              </button>
-              <div className="dropdown-divider"></div>
-              <button className="dropdown-item danger" onClick={handleDelete}>
-                <Trash2 size={16} />
-                Delete board
-              </button>
-            </div>
-          )}
+            {isMenuOpen && (
+              <div className="dropdown-menu" style={{ 
+                right: dropdownPosition === 'left' ? '100%' : 'auto', 
+                left: dropdownPosition === 'right' ? '100%' : 'auto', 
+                top: '0', 
+                marginLeft: dropdownPosition === 'right' ? '8px' : 0, 
+                marginRight: dropdownPosition === 'left' ? '8px' : 0, 
+                marginTop: 0 
+              }}>
+                <button className="dropdown-item" onClick={() => { setIsRenaming(true); setIsMenuOpen(false); }}>
+                  <Type size={16} />
+                  Rename
+                </button>
+                <button className="dropdown-item" onClick={handleOpenAll}>
+                  <Layers size={16} />
+                  Open all links
+                </button>
+                <div className="dropdown-divider"></div>
+                <button className="dropdown-item danger" onClick={handleDelete}>
+                  <Trash2 size={16} />
+                  Delete board
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
       
@@ -154,18 +178,25 @@ export default function Board({ id, title, bookmarks, onAddBookmark, onRenameBoa
 
       <div className="bookmark-list">
         <SortableContext items={bookmarks.map(b => b.id)} strategy={verticalListSortingStrategy}>
-          {bookmarks.map((bm) => (
+          {displayedBookmarks.map((bm) => (
             <BookmarkItem 
               key={bm.id} 
               id={bm.id} 
               title={bm.title} 
               url={bm.url} 
               iconUrl={bm.iconUrl} 
-              onEdit={(newTitle, newUrl) => onEditBookmark(id, bm.id, newTitle, newUrl)}
+              description={bm.description}
+              onEdit={(newTitle, newUrl, newDescription) => onEditBookmark(id, bm.id, newTitle, newUrl, newDescription)}
               onDelete={() => onDeleteBookmark(id, bm.id)}
             />
           ))}
         </SortableContext>
+        
+        {hiddenCount > 0 && (
+          <div style={{ padding: '8px', textAlign: 'center', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+            + {hiddenCount} more
+          </div>
+        )}
       </div>
       <ConfirmModal 
         isOpen={isConfirmOpen} 

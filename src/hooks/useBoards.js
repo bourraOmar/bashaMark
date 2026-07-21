@@ -119,12 +119,17 @@ export function useBoards() {
     saveBoards(newBoards);
   };
 
-  const editBookmark = (boardId, bookmarkId, title, url) => {
+  const editBookmark = (boardId, bookmarkId, title, url, description) => {
     const newBoards = boards.map(board => {
       if (board.id === boardId) {
         return {
           ...board,
-          bookmarks: board.bookmarks.map(bm => bm.id === bookmarkId ? { ...bm, title, url } : bm)
+          bookmarks: board.bookmarks.map(bm => {
+            if (bm.id === bookmarkId) {
+              return { ...bm, title, url, description };
+            }
+            return bm;
+          })
         };
       }
       return board;

@@ -10,6 +10,7 @@ export const defaultSettings = {
   numberOfColumns: 'Auto', // 'Auto', 4, 5, 6, 7, 8, 9
   boardWidth: 264, // px
   openLinksInNewTab: true,
+  hideExtraBookmarksEnabled: true,
   hideExtraBookmarks: '10', // '10', '20', 'All'
   showDescriptions: true,
   quickSaveBoard: 'Barre de favoris',

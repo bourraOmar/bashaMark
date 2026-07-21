@@ -3,12 +3,15 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { MoreVertical, ExternalLink, EyeOff, Edit2, Trash2 } from 'lucide-react';
 import { getFaviconUrl } from '../utils/favicon';
+import { useSettings } from '../hooks/useSettings';
 
-export default function BookmarkItem({ id, title, url, iconUrl, onEdit, onDelete }) {
+export default function BookmarkItem({ id, title, url, iconUrl, description, onEdit, onDelete }) {
+  const { settings } = useSettings();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(title);
   const [editUrl, setEditUrl] = useState(url);
+  const [editDescription, setEditDescription] = useState(description || '');
   const [dropdownPosition, setDropdownPosition] = useState('right');
   const menuRef = useRef(null);
 
@@ -55,7 +58,7 @@ export default function BookmarkItem({ id, title, url, iconUrl, onEdit, onDelete
   const handleEditSubmit = (e) => {
     e.preventDefault();
     if (editTitle.trim() && editUrl.trim()) {
-      onEdit(editTitle.trim(), editUrl.trim());
+      onEdit(editTitle.trim(), editUrl.trim(), editDescription.trim());
       setIsEditing(false);
     }
   };
@@ -71,8 +74,17 @@ export default function BookmarkItem({ id, title, url, iconUrl, onEdit, onDelete
           e.target.src = fallbackIcon;
         }}
       />
-      <a href={url} target="_blank" rel="noopener noreferrer">
-        {title}
+      <a 
+        href={url} 
+        style={{ color: 'var(--text-color)', display: 'flex', flexDirection: 'column', gap: '2px', textDecoration: 'none' }}
+        {...(settings.openLinksInNewTab ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+      >
+        <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{title}</span>
+        {settings.showDescriptions && description && (
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {description}
+          </span>
+        )}
       </a>
       <div className="bookmark-item-actions" ref={menuRef} onPointerDown={(e) => e.stopPropagation()} style={{ position: 'relative' }}>
         <button 
@@ -127,6 +139,8 @@ export default function BookmarkItem({ id, title, url, iconUrl, onEdit, onDelete
               <input 
                 type="text" 
                 placeholder="Description (optional)"
+                value={editDescription}
+                onChange={(e) => setEditDescription(e.target.value)}
                 className="glass-input" 
                 style={{ padding: '6px 8px', fontSize: '0.85rem', width: '100%', background: 'rgba(0,0,0,0.05)', border: '1px solid var(--glass-border)' }}
               />
