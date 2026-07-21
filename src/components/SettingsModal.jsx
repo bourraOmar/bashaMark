@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { X, ChevronDown } from 'lucide-react';
 import { defaultSettings } from '../hooks/useSettings';
 
-export default function SettingsModal({ isOpen, onClose, settings, setSettings }) {
+export default function SettingsModal({ isOpen, onClose, settings, setSettings, boards }) {
   // Local state for fast updates without triggering full app re-renders immediately,
   // or we can just use the global state. Let's use local state for the sliders for performance,
   // and sync to global on change. Actually, syncing directly works fine if performance is okay.
