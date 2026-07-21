@@ -192,6 +192,7 @@ export default function Board({ id, title, bookmarks, onAddBookmark, onRenameBoa
               description={bm.description}
               onEdit={(newTitle, newUrl, newDescription) => onEditBookmark(id, bm.id, newTitle, newUrl, newDescription)}
               onDelete={() => onDeleteBookmark(id, bm.id)}
+              settings={settings}
             />
           ))}
         </SortableContext>
