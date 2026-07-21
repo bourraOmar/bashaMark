@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import { X, ChevronDown } from 'lucide-react';
+import { X, ChevronDown, Wand } from 'lucide-react';
 import { defaultSettings } from '../hooks/useSettings';
+import { useBackground } from '../hooks/useBackground';
 
 export default function SettingsModal({ isOpen, onClose, settings, setSettings, boards }) {
   // Local state for fast updates without triggering full app re-renders immediately,
@@ -20,6 +21,51 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
       });
     }
   }, []);
+
+  const { background } = useBackground();
+
+  const handleMatchWallpaper = () => {
+    if (!background) {
+      alert("No wallpaper selected!");
+      return;
+    }
+
+    const img = new Image();
+    img.crossOrigin = 'Anonymous';
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = 64;
+      canvas.height = 64;
+      ctx.drawImage(img, 0, 0, 64, 64);
+      
+      const data = ctx.getImageData(0, 0, 64, 64).data;
+      let r = 0, g = 0, b = 0;
+      let count = 0;
+      
+      for (let i = 0; i < data.length; i += 4) {
+        // Skip fully transparent pixels
+        if (data[i+3] < 128) continue;
+        r += data[i];
+        g += data[i+1];
+        b += data[i+2];
+        count++;
+      }
+      
+      if (count > 0) {
+        r = Math.floor(r / count);
+        g = Math.floor(g / count);
+        b = Math.floor(b / count);
+        
+        const hex = '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('');
+        setSettings({ ...settings, primaryColor: hex, boardColor: hex });
+      }
+    };
+    img.onerror = () => {
+      alert("Could not extract colors from this wallpaper due to security restrictions (CORS).");
+    };
+    img.src = background;
+  };
 
   if (!isOpen) return null;
 
@@ -119,6 +165,31 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
               </div>
             </div>
           </div>
+          
+          <button 
+            onClick={handleMatchWallpaper}
+            style={{
+              width: '100%',
+              padding: '8px 12px',
+              backgroundColor: 'rgba(255, 255, 255, 0.05)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              borderRadius: '8px',
+              color: '#f1f1f1',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              cursor: 'pointer',
+              marginBottom: '16px',
+              fontSize: '13px',
+              transition: 'background-color 0.2s'
+            }}
+            onMouseEnter={(e) => e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'}
+            onMouseLeave={(e) => e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.05)'}
+          >
+            <Wand size={16} />
+            Match wallpaper colors
+          </button>
 
           <div style={{ marginBottom: '16px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
