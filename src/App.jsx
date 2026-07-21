@@ -11,7 +11,7 @@ import WidgetsMenu from './components/WidgetsMenu';
 import { useBoards } from './hooks/useBoards';
 import { useBackground } from './hooks/useBackground';
 
-const TOTAL_SLOTS = 15;
+const TOTAL_SLOTS = 5;
 
 function App() {
   const { boards, setBoards, addBoard, addBookmark, renameBoard, updateBoard, deleteBoard, editBookmark, deleteBookmark } = useBoards();
