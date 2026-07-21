@@ -52,6 +52,11 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings }
     handleChange('numberOfColumns', val);
   };
 
+  const getSliderBackground = (value, min, max) => {
+    const percentage = ((value - min) / (max - min)) * 100;
+    return `linear-gradient(to right, #cbd5e0 ${percentage}%, rgba(255,255,255,0.12) ${percentage}%)`;
+  };
+
   return (
     <div className="modal-overlay" onClick={onClose} style={{
       position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center'
@@ -112,7 +117,8 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings }
               min="0" max="100" 
               value={settings.opacity} 
               onChange={(e) => handleChange('opacity', parseInt(e.target.value, 10))}
-              style={rangeStyle}
+              className="custom-slider"
+              style={{ background: getSliderBackground(settings.opacity, 0, 100) }}
             />
           </div>
 
@@ -126,7 +132,8 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings }
               min="0" max="50" 
               value={settings.blur} 
               onChange={(e) => handleChange('blur', parseInt(e.target.value, 10))}
-              style={rangeStyle}
+              className="custom-slider"
+              style={{ background: getSliderBackground(settings.blur, 0, 50) }}
             />
           </div>
 
@@ -211,7 +218,8 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings }
                 // Also clamp when sliding just in case
                 handleChange('boardWidth', Math.min(val, getMaxBoardWidth()));
               }}
-              style={rangeStyle}
+              className="custom-slider"
+              style={{ background: getSliderBackground(settings.boardWidth, 200, getMaxBoardWidth()) }}
             />
           </div>
         </div>
@@ -231,16 +239,6 @@ const labelStyle = { fontSize: '0.9rem', color: '#cbd5e0', marginBottom: '8px', 
 const valueStyle = { fontSize: '0.85rem', color: '#8892a0' };
 
 const dividerStyle = { height: '1px', backgroundColor: 'rgba(255,255,255,0.05)', margin: '24px 0' };
-
-const rangeStyle = {
-  width: '100%',
-  accentColor: '#cbd5e0',
-  height: '4px',
-  borderRadius: '2px',
-  outline: 'none',
-  marginTop: '8px',
-  cursor: 'pointer'
-};
 
 const toggleGroupStyle = {
   display: 'flex',
