@@ -8,6 +8,19 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
   // and sync to global on change. Actually, syncing directly works fine if performance is okay.
   // We'll sync directly to global state so changes are instantly reflected in CSS variables.
   
+  const [shortcutLabel, setShortcutLabel] = useState('Not set');
+
+  useEffect(() => {
+    if (typeof chrome !== 'undefined' && chrome.commands) {
+      chrome.commands.getAll((commands) => {
+        const cmd = commands.find(c => c.name === 'quick-save');
+        if (cmd && cmd.shortcut) {
+          setShortcutLabel(cmd.shortcut);
+        }
+      });
+    }
+  }, []);
+
   if (!isOpen) return null;
 
   const handleChange = (key, value) => {
@@ -296,10 +309,16 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
             <label style={labelStyle}>Shortcut</label>
             <div style={toggleGroupStyle}>
               <button style={{ ...toggleBtnStyle(false), cursor: 'default' }}>
-                {settings.quickSaveShortcut || 'Not set'}
+                {shortcutLabel}
               </button>
               <button 
-                onClick={() => alert("Shortcut configuration coming soon!")} 
+                onClick={() => {
+                  if (typeof chrome !== 'undefined' && chrome.tabs) {
+                    chrome.tabs.create({ url: 'chrome://extensions/shortcuts' });
+                  } else {
+                    alert("Please open chrome://extensions/shortcuts in your browser.");
+                  }
+                }} 
                 style={toggleBtnStyle(false)}
               >
                 Change

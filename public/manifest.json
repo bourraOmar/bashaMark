@@ -9,6 +9,19 @@
   "permissions": [
     "storage",
     "bookmarks",
-    "favicon"
-  ]
+    "favicon",
+    "tabs"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "commands": {
+    "quick-save": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+S",
+        "mac": "Command+Shift+S"
+      },
+      "description": "Quick Save to Board"
+    }
+  }
 }
