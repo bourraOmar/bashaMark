@@ -554,3 +554,24 @@ a {
   from { opacity: 0; transform: translateY(20px) scale(0.95); }
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
+
+.color-picker-input {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 100%;
+  border: none;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.color-picker-input::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.color-picker-input::-webkit-color-swatch {
+  border: none;
+  border-radius: 6px;
+}

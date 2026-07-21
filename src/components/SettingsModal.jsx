@@ -85,7 +85,7 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings }
                   type="color" 
                   value={settings.primaryColor} 
                   onChange={(e) => handleChange('primaryColor', e.target.value)}
-                  style={{ width: '100%', height: '150%', cursor: 'pointer', border: 'none', padding: 0, background: 'none' }} 
+                  className="color-picker-input"
                 />
               </div>
             </div>
@@ -96,7 +96,7 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings }
                   type="color" 
                   value={settings.boardColor} 
                   onChange={(e) => handleChange('boardColor', e.target.value)}
-                  style={{ width: '100%', height: '150%', cursor: 'pointer', border: 'none', padding: 0, background: 'none' }} 
+                  className="color-picker-input"
                 />
               </div>
             </div>
