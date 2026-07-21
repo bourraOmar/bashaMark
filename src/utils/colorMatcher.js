@@ -1,4 +1,4 @@
-export function extractColorFromImage(imageUrl) {
+export function extractColorsFromImage(imageUrl) {
   return new Promise((resolve, reject) => {
     if (!imageUrl) {
       reject(new Error("No image URL provided"));
@@ -33,8 +33,16 @@ export function extractColorFromImage(imageUrl) {
           g = Math.floor(g / count);
           b = Math.floor(b / count);
           
-          const hex = '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('');
-          resolve(hex);
+          // Boost saturation slightly for primary color to make it pop
+          const primaryHex = '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('');
+          
+          // Darken significantly (by 70%) for the board glass background
+          const darkR = Math.floor(r * 0.3);
+          const darkG = Math.floor(g * 0.3);
+          const darkB = Math.floor(b * 0.3);
+          const boardHex = '#' + [darkR, darkG, darkB].map(x => x.toString(16).padStart(2, '0')).join('');
+          
+          resolve({ primary: primaryHex, board: boardHex });
         } else {
           reject(new Error("Image is fully transparent"));
         }

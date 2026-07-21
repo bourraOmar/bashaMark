@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { X, ChevronDown, Wand } from 'lucide-react';
 import { defaultSettings } from '../hooks/useSettings';
 import { useBackground } from '../hooks/useBackground';
+import { extractColorsFromImage } from '../utils/colorMatcher';
 
 export default function SettingsModal({ isOpen, onClose, settings, setSettings, boards }) {
   // Local state for fast updates without triggering full app re-renders immediately,
@@ -24,47 +25,18 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
 
   const { background } = useBackground();
 
-  const handleMatchWallpaper = () => {
+  const handleMatchWallpaper = async () => {
     if (!background) {
       alert("No wallpaper selected!");
       return;
     }
 
-    const img = new Image();
-    img.crossOrigin = 'Anonymous';
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      canvas.width = 64;
-      canvas.height = 64;
-      ctx.drawImage(img, 0, 0, 64, 64);
-      
-      const data = ctx.getImageData(0, 0, 64, 64).data;
-      let r = 0, g = 0, b = 0;
-      let count = 0;
-      
-      for (let i = 0; i < data.length; i += 4) {
-        // Skip fully transparent pixels
-        if (data[i+3] < 128) continue;
-        r += data[i];
-        g += data[i+1];
-        b += data[i+2];
-        count++;
-      }
-      
-      if (count > 0) {
-        r = Math.floor(r / count);
-        g = Math.floor(g / count);
-        b = Math.floor(b / count);
-        
-        const hex = '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('');
-        setSettings({ ...settings, primaryColor: hex, boardColor: hex });
-      }
-    };
-    img.onerror = () => {
+    try {
+      const { primary, board } = await extractColorsFromImage(background);
+      setSettings({ ...settings, primaryColor: primary, boardColor: board });
+    } catch (e) {
       alert("Could not extract colors from this wallpaper due to security restrictions (CORS).");
-    };
-    img.src = background;
+    }
   };
 
   if (!isOpen) return null;

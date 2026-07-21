@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { X, UploadCloud, Search, ExternalLink } from 'lucide-react';
 import { useBackground } from '../hooks/useBackground';
-import { extractColorFromImage } from '../utils/colorMatcher';
+import { extractColorsFromImage } from '../utils/colorMatcher';
 
 const PRESETS = [
   'https://images.unsplash.com/photo-1506259091721-347e791bab0f?w=800&q=80',
@@ -36,8 +36,8 @@ export default function WallpaperModal({ isOpen, onClose, settings, setSettings 
     // Auto match colors
     if (settings && setSettings) {
       try {
-        const hex = await extractColorFromImage(bgUrl);
-        setSettings({ ...settings, primaryColor: hex, boardColor: hex });
+        const { primary, board } = await extractColorsFromImage(bgUrl);
+        setSettings({ ...settings, primaryColor: primary, boardColor: board });
       } catch (e) {
         console.warn("Could not extract color from wallpaper", e);
       }
