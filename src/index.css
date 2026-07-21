@@ -206,6 +206,8 @@ a {
   overflow-x: auto;
   padding-bottom: 40px; /* Add some padding at the bottom for scrolling */
   padding-right: 40px;
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
 
 .board-column {
@@ -217,49 +219,9 @@ a {
   gap: 24px;
 }
 
-/* Custom Scrollbar for Dashboard Grid */
+/* Hide Scrollbar for Dashboard Grid */
 .dashboard-grid::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-.dashboard-grid::-webkit-scrollbar-track {
-  background: transparent;
-}
-.dashboard-grid::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
-}
-.dashboard-grid::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.3);
-}
-
-.board-column::-webkit-scrollbar {
-  width: 6px;
-}
-.board-column::-webkit-scrollbar-track {
-  background: transparent;
-}
-.board-column::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
-}
-.board-column::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.2);
-}
-
-@media (prefers-color-scheme: dark) {
-  .dashboard-grid::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2);
-  }
-  .dashboard-grid::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.3);
-  }
-  .board-column::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1);
-  }
-  .board-column::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.2);
-  }
+  display: none;
 }
 
 /* Board Styling */
