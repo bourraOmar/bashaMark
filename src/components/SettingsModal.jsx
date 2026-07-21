@@ -235,6 +235,134 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings }
           </div>
         </div>
 
+        <div style={dividerStyle} />
+
+        {/* GENERAL SECTION */}
+        <div className="settings-section">
+          <SectionTitle>GENERAL</SectionTitle>
+          
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <label style={labelStyle}>Open links in new tab</label>
+            <ToggleSwitch 
+              checked={settings.openLinksInNewTab} 
+              onChange={(val) => handleChange('openLinksInNewTab', val)} 
+            />
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <label style={labelStyle}>Hide extra bookmarks</label>
+            <div style={{ position: 'relative' }}>
+              <select 
+                value={settings.hideExtraBookmarks} 
+                onChange={(e) => handleChange('hideExtraBookmarks', e.target.value)}
+                style={{ ...selectStyle, paddingRight: '24px' }}
+              >
+                <option value="10">Show 10</option>
+                <option value="20">Show 20</option>
+                <option value="All">Show All</option>
+              </select>
+              <ChevronDown size={14} style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', color: '#cbd5e0', pointerEvents: 'none' }} />
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <label style={labelStyle}>Show descriptions</label>
+            <ToggleSwitch 
+              checked={settings.showDescriptions} 
+              onChange={(val) => handleChange('showDescriptions', val)} 
+            />
+          </div>
+        </div>
+
+        <div style={dividerStyle} />
+
+        {/* QUICK SAVE SECTION */}
+        <div className="settings-section">
+          <SectionTitle>QUICK SAVE</SectionTitle>
+          
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <label style={labelStyle}>Save to board</label>
+            <div style={{ position: 'relative' }}>
+              <select 
+                value={settings.quickSaveBoard} 
+                onChange={(e) => handleChange('quickSaveBoard', e.target.value)}
+                style={{ ...selectStyle, paddingRight: '24px' }}
+              >
+                <option value="None">None</option>
+                {boards?.map(b => (
+                  <option key={b.id} value={b.id}>{b.title}</option>
+                ))}
+              </select>
+              <ChevronDown size={14} style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', color: '#cbd5e0', pointerEvents: 'none' }} />
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <label style={labelStyle}>Shortcut</label>
+            <div style={toggleGroupStyle}>
+              <button style={{ ...toggleBtnStyle(false), cursor: 'default' }}>
+                {settings.quickSaveShortcut || 'Not set'}
+              </button>
+              <button 
+                onClick={() => alert("Shortcut configuration coming soon!")} 
+                style={toggleBtnStyle(false)}
+              >
+                Change
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div style={dividerStyle} />
+
+        {/* REGION SECTION */}
+        <div className="settings-section">
+          <SectionTitle>REGION</SectionTitle>
+          
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <button style={btnOutlineStyle}>
+              Auto-detect
+            </button>
+            <button style={btnOutlineStyle}>
+              Advanced ›
+            </button>
+          </div>
+        </div>
+
+        <div style={dividerStyle} />
+
+        {/* SIDEBAR SECTION */}
+        <div className="settings-section">
+          <SectionTitle>SIDEBAR</SectionTitle>
+          
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <label style={labelStyle}>Always show all buttons</label>
+            <ToggleSwitch 
+              checked={settings.alwaysShowAllButtons} 
+              onChange={(val) => handleChange('alwaysShowAllButtons', val)} 
+            />
+          </div>
+        </div>
+
+        <div style={dividerStyle} />
+
+        {/* SUPPORT SECTION */}
+        <div className="settings-section">
+          <SectionTitle>SUPPORT</SectionTitle>
+          
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <label style={labelStyle}>Version</label>
+            <span style={valueStyle}>1.3.1</span>
+          </div>
+          
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <label style={labelStyle}>Contact</label>
+            <a href="mailto:markmezapp@gmail.com" style={{ ...valueStyle, textDecoration: 'none' }}>
+              markmezapp@gmail.com
+            </a>
+          </div>
+        </div>
+
       </div>
     </div>
   );
@@ -291,3 +419,33 @@ const btnOutlineStyle = {
   fontWeight: 500,
   cursor: 'pointer'
 };
+
+const ToggleSwitch = ({ checked, onChange }) => (
+  <div 
+    onClick={() => onChange(!checked)}
+    style={{
+      width: '40px',
+      height: '22px',
+      backgroundColor: checked ? '#b47b44' : 'rgba(255, 255, 255, 0.1)',
+      borderRadius: '11px',
+      position: 'relative',
+      cursor: 'pointer',
+      transition: 'background-color 0.2s',
+      flexShrink: 0
+    }}
+  >
+    <div 
+      style={{
+        width: '18px',
+        height: '18px',
+        backgroundColor: '#fff',
+        borderRadius: '50%',
+        position: 'absolute',
+        top: '2px',
+        left: checked ? '20px' : '2px',
+        transition: 'left 0.2s',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+      }}
+    />
+  </div>
+);

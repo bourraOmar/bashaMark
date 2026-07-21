@@ -8,7 +8,14 @@ export const defaultSettings = {
   textSize: 'M', // S, M, L
   textWeight: 'Normal', // Normal, Bold
   numberOfColumns: 'Auto', // 'Auto', 4, 5, 6, 7, 8, 9
-  boardWidth: 264 // px
+  boardWidth: 264, // px
+  openLinksInNewTab: true,
+  hideExtraBookmarks: '10', // '10', '20', 'All'
+  showDescriptions: true,
+  quickSaveBoard: 'Barre de favoris',
+  quickSaveShortcut: 'Not set',
+  region: 'Auto-detect',
+  alwaysShowAllButtons: false
 };
 
 export function useSettings() {
