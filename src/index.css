@@ -8,7 +8,7 @@
   --glass-bg-hover: rgba(255, 255, 255, 0.95);
   --glass-border: rgba(255, 255, 255, 0.4);
   --glass-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  --glass-blur: blur(24px); /* Fallback */
+  --glass-blur: 24px; /* Fallback */
   
   --text-color: #222;
   --text-muted: #555;
@@ -65,8 +65,8 @@ body {
 /* Utilities */
 .glass-panel {
   background: var(--glass-bg);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
   border: 1px solid var(--glass-border);
   box-shadow: var(--glass-shadow);
   border-radius: var(--radius-lg);
@@ -127,8 +127,8 @@ a {
   align-items: center;
   padding: 4px;
   background: var(--glass-bg);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-pill);
   gap: 4px;
@@ -177,8 +177,8 @@ a {
   align-items: center;
   padding: 12px 24px;
   background: var(--glass-bg);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-pill);
   width: 100%;
@@ -379,8 +379,8 @@ a {
   opacity: 1;
   border-color: rgba(255,255,255,0.4);
   background: rgba(255,255,255,0.1);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
   color: rgba(255,255,255,0.8);
 }
 
@@ -412,8 +412,8 @@ a {
   height: 48px;
   border-radius: 50%;
   background: var(--glass-bg);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
   border: 1px solid var(--glass-border);
   display: flex;
   align-items: center;

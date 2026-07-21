@@ -20,8 +20,6 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings }
 
   const getMaxColumns = () => {
     const screenWidth = window.innerWidth;
-    // Account for paddings/gaps (e.g. 40px right padding, 24px gaps)
-    // Rough estimate: available space / (boardWidth + gap)
     const available = screenWidth - 40; 
     const colWidth = settings.boardWidth + 24;
     return Math.max(1, Math.floor(available / colWidth));
@@ -29,13 +27,26 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings }
 
   const maxColumns = getMaxColumns();
 
+  const getMaxBoardWidth = (cols = settings.numberOfColumns) => {
+    if (cols === 'Auto') return 500;
+    const screenWidth = window.innerWidth;
+    const numCols = parseInt(cols, 10);
+    const max = Math.floor((screenWidth - 40 - (numCols - 1) * 24) / numCols);
+    return Math.max(200, Math.min(max, 500));
+  };
+
   const handleColumnsChange = (val) => {
     if (val !== 'Auto') {
       const num = parseInt(val, 10);
       if (num > maxColumns) {
-        alert(`Your screen fits up to ${maxColumns} columns.`);
-        handleChange('numberOfColumns', maxColumns);
-        return;
+        alert(`Your screen fits up to ${maxColumns} columns with the current board width.`);
+        val = maxColumns;
+      }
+      
+      // Clamp board width if it exceeds the new max
+      const newMaxWidth = getMaxBoardWidth(val);
+      if (settings.boardWidth > newMaxWidth) {
+        handleChange('boardWidth', newMaxWidth);
       }
     }
     handleChange('numberOfColumns', val);
@@ -193,9 +204,13 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings }
             </div>
             <input 
               type="range" 
-              min="200" max="500" 
+              min="200" max={getMaxBoardWidth()} 
               value={settings.boardWidth} 
-              onChange={(e) => handleChange('boardWidth', parseInt(e.target.value, 10))}
+              onChange={(e) => {
+                const val = parseInt(e.target.value, 10);
+                // Also clamp when sliding just in case
+                handleChange('boardWidth', Math.min(val, getMaxBoardWidth()));
+              }}
               style={rangeStyle}
             />
           </div>
