@@ -393,6 +393,7 @@ a {
   flex-direction: column;
   gap: 12px;
   align-items: center;
+  z-index: 100;
 }
 
 .fab-menu-items {
