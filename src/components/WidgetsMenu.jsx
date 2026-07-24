@@ -4,31 +4,32 @@ export default function WidgetsMenu({ isOpen, onClose, addBoard }) {
   if (!isOpen) return null;
 
   return (
-    <div 
-      className="widgets-menu glass-panel"
-      style={{
-        position: 'absolute',
-        right: '70px',
-        bottom: '80px',
-        width: '280px',
-        borderRadius: '16px',
-        padding: '16px',
-        boxShadow: '0 10px 40px rgba(0,0,0,0.15)',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '12px',
-        zIndex: 1000,
-        border: '1px solid var(--glass-border)'
-      }}
-    >
+    <>
       {/* Click outside detection helper */}
       <div 
-        style={{ position: 'fixed', inset: 0, zIndex: -1 }} 
+        style={{ position: 'fixed', inset: 0, zIndex: 999 }} 
         onClick={(e) => {
           e.stopPropagation();
           onClose();
         }}
       />
+      <div 
+        className="widgets-menu glass-panel"
+        style={{
+          position: 'absolute',
+          right: '70px',
+          bottom: '80px',
+          width: '280px',
+          borderRadius: '16px',
+          padding: '16px',
+          boxShadow: '0 10px 40px rgba(0,0,0,0.15)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '12px',
+          zIndex: 1000,
+          border: '1px solid var(--glass-border)'
+        }}
+      >
       
       <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', letterSpacing: '0.05em', marginBottom: '4px', marginLeft: '4px' }}>
         WIDGETS
@@ -44,6 +45,7 @@ export default function WidgetsMenu({ isOpen, onClose, addBoard }) {
       <WidgetItem icon={<Clock size={18} />} title="Clock" type="toggle" defaultChecked={false} />
       <WidgetItem icon={<Search size={18} />} title="Search" type="toggle" defaultChecked={true} />
     </div>
+    </>
   );
 }
 
