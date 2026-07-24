@@ -106,10 +106,16 @@ export function extractColorsFromImage(imageUrl) {
       reject(new Error("Could not load image (CORS)"));
     };
     
+    // For Unsplash images, request a tiny thumbnail (100px) so it downloads instantly for analysis
+    let fastUrl = imageUrl;
+    if (fastUrl.includes('images.unsplash.com')) {
+      fastUrl = fastUrl.replace(/w=\d+/, 'w=100').replace(/q=\d+/, 'q=50');
+    }
+
     // Add a unique query param to bypass the browser's non-CORS cache
-    const separator = imageUrl.includes('?') ? '&' : '?';
-    img.src = imageUrl.startsWith('data:') 
-      ? imageUrl 
-      : imageUrl + separator + 'cors=' + Date.now();
+    const separator = fastUrl.includes('?') ? '&' : '?';
+    img.src = fastUrl.startsWith('data:') 
+      ? fastUrl 
+      : fastUrl + separator + 'cors=' + Date.now();
   });
 }
