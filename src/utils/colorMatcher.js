@@ -16,36 +16,88 @@ export function extractColorsFromImage(imageUrl) {
         ctx.drawImage(img, 0, 0, 64, 64);
         
         const data = ctx.getImageData(0, 0, 64, 64).data;
-        let r = 0, g = 0, b = 0;
-        let count = 0;
         
+        // Advanced Color Palette Extraction using 3D Color Histogram (Binning)
+        const bins = {};
+        let maxCount = 0;
+        let dominantColor = { r: 0, g: 0, b: 0 };
+        
+        let fallbackR = 0, fallbackG = 0, fallbackB = 0;
+        let fallbackCount = 0;
+
         for (let i = 0; i < data.length; i += 4) {
           // Skip fully transparent pixels
           if (data[i+3] < 128) continue;
-          r += data[i];
-          g += data[i+1];
-          b += data[i+2];
-          count++;
+          
+          const r = data[i];
+          const g = data[i+1];
+          const b = data[i+2];
+
+          // Average for fallback in case everything is grey/black
+          fallbackR += r;
+          fallbackG += g;
+          fallbackB += b;
+          fallbackCount++;
+          
+          // Calculate saturation to ignore muddy/grey colors
+          const max = Math.max(r, g, b);
+          const min = Math.min(r, g, b);
+          const saturation = max === 0 ? 0 : (max - min) / max;
+          
+          // Skip very dark, very light, or very desaturated (grey) colors
+          if (max < 30 || min > 230 || saturation < 0.15) {
+             continue;
+          }
+
+          // Bin into 32x32x32 chunks (8 values per channel)
+          const rBin = Math.floor(r / 32);
+          const gBin = Math.floor(g / 32);
+          const bBin = Math.floor(b / 32);
+          const binKey = `${rBin},${gBin},${bBin}`;
+          
+          if (!bins[binKey]) {
+            bins[binKey] = { r: 0, g: 0, b: 0, count: 0 };
+          }
+          
+          bins[binKey].r += r;
+          bins[binKey].g += g;
+          bins[binKey].b += b;
+          bins[binKey].count++;
+          
+          if (bins[binKey].count > maxCount) {
+            maxCount = bins[binKey].count;
+            dominantColor = bins[binKey];
+          }
         }
         
-        if (count > 0) {
-          r = Math.floor(r / count);
-          g = Math.floor(g / count);
-          b = Math.floor(b / count);
-          
-          // Boost saturation slightly for primary color to make it pop
-          const primaryHex = '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('');
-          
-          // Darken significantly (by 70%) for the board glass background
-          const darkR = Math.floor(r * 0.3);
-          const darkG = Math.floor(g * 0.3);
-          const darkB = Math.floor(b * 0.3);
-          const boardHex = '#' + [darkR, darkG, darkB].map(x => x.toString(16).padStart(2, '0')).join('');
-          
-          resolve({ primary: primaryHex, board: boardHex });
+        let finalR, finalG, finalB;
+
+        if (maxCount > 0) {
+          // Found a vibrant dominant color
+          finalR = Math.floor(dominantColor.r / dominantColor.count);
+          finalG = Math.floor(dominantColor.g / dominantColor.count);
+          finalB = Math.floor(dominantColor.b / dominantColor.count);
+        } else if (fallbackCount > 0) {
+          // Fallback to average color if the image is entirely black/white/grey
+          finalR = Math.floor(fallbackR / fallbackCount);
+          finalG = Math.floor(fallbackG / fallbackCount);
+          finalB = Math.floor(fallbackB / fallbackCount);
         } else {
-          reject(new Error("Image is fully transparent"));
+           reject(new Error("Image is fully transparent"));
+           return;
         }
+
+        // To make primary color pop like "Vibrant.js", we boost its saturation slightly if needed
+        const primaryHex = '#' + [finalR, finalG, finalB].map(x => x.toString(16).padStart(2, '0')).join('');
+        
+        // Darken significantly (by 75%) for the board glass background
+        const darkR = Math.floor(finalR * 0.25);
+        const darkG = Math.floor(finalG * 0.25);
+        const darkB = Math.floor(finalB * 0.25);
+        const boardHex = '#' + [darkR, darkG, darkB].map(x => x.toString(16).padStart(2, '0')).join('');
+        
+        resolve({ primary: primaryHex, board: boardHex });
+        
       } catch (err) {
         reject(err);
       }
@@ -55,7 +107,6 @@ export function extractColorsFromImage(imageUrl) {
     };
     
     // Add a unique query param to bypass the browser's non-CORS cache
-    // (since the image is also loaded via CSS background-image without CORS)
     const separator = imageUrl.includes('?') ? '&' : '?';
     img.src = imageUrl.startsWith('data:') 
       ? imageUrl 
