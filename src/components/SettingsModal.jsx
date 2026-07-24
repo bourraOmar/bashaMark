@@ -138,30 +138,6 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
             </div>
           </div>
           
-          <button 
-            onClick={handleMatchWallpaper}
-            style={{
-              width: '100%',
-              padding: '8px 12px',
-              backgroundColor: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              borderRadius: '8px',
-              color: '#f1f1f1',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '8px',
-              cursor: 'pointer',
-              marginBottom: '16px',
-              fontSize: '13px',
-              transition: 'background-color 0.2s'
-            }}
-            onMouseEnter={(e) => e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'}
-            onMouseLeave={(e) => e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.05)'}
-          >
-            <Wand size={16} />
-            Match wallpaper colors
-          </button>
 
           <div style={{ marginBottom: '16px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
