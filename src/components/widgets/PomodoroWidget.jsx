@@ -239,7 +239,7 @@ export default function PomodoroWidget({ id, onDelete, settings: appSettings }) 
       </div>
 
       {/* Timer Display */}
-      <div style={{ textAlign: 'center', fontSize: '4.5rem', fontWeight: 300, color: 'var(--text-color)', marginBottom: '8px', letterSpacing: '-0.02em', lineHeight: 1 }}>
+      <div style={{ textAlign: 'center', fontSize: '3rem', fontWeight: 300, color: 'var(--text-color)', marginBottom: '8px', letterSpacing: '-0.02em', lineHeight: 1 }}>
         {formatTime(timeLeft)}
       </div>
 
