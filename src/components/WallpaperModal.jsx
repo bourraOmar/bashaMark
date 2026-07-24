@@ -81,10 +81,10 @@ export default function WallpaperModal({ isOpen, onClose, settings, setSettings 
           maxHeight: '90vh',
           display: 'flex',
           flexDirection: 'column',
-          backgroundColor: 'var(--bg-color)', // match the light/dark theme
           borderRadius: '16px',
           overflow: 'hidden',
-          boxShadow: '0 10px 40px rgba(0,0,0,0.2)'
+          boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
+          border: '1px solid var(--glass-border)'
         }}
       >
         {/* Header */}

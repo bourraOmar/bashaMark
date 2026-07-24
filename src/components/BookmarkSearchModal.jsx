@@ -58,7 +58,7 @@ export default function BookmarkSearchModal({ isOpen, onClose }) {
           display: 'flex', 
           flexDirection: 'column', 
           gap: '16px',
-          background: 'rgba(255,255,255,0.1)'
+          border: '1px solid var(--glass-border)'
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>

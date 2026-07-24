@@ -11,15 +11,14 @@ export default function WidgetsMenu({ isOpen, onClose, addBoard }) {
         right: '70px',
         bottom: '80px',
         width: '280px',
-        backgroundColor: 'rgba(235, 238, 245, 0.95)',
-        backdropFilter: 'blur(10px)',
         borderRadius: '16px',
         padding: '16px',
         boxShadow: '0 10px 40px rgba(0,0,0,0.15)',
         display: 'flex',
         flexDirection: 'column',
         gap: '12px',
-        zIndex: 1000
+        zIndex: 1000,
+        border: '1px solid var(--glass-border)'
       }}
     >
       {/* Click outside detection helper */}
@@ -31,7 +30,7 @@ export default function WidgetsMenu({ isOpen, onClose, addBoard }) {
         }}
       />
       
-      <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#8892a0', letterSpacing: '0.05em', marginBottom: '4px', marginLeft: '4px' }}>
+      <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', letterSpacing: '0.05em', marginBottom: '4px', marginLeft: '4px' }}>
         WIDGETS
       </span>
 
@@ -58,7 +57,7 @@ function WidgetItem({ icon, title, type, defaultChecked, onAdd }) {
       padding: '10px 14px',
       borderRadius: '12px',
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#4a5568' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: 'var(--text-color)' }}>
         {icon}
         <span style={{ fontWeight: 500, fontSize: '0.95rem' }}>{title}</span>
       </div>
@@ -66,15 +65,18 @@ function WidgetItem({ icon, title, type, defaultChecked, onAdd }) {
       {type === 'add' ? (
         <button 
           onClick={onAdd}
+          onMouseEnter={(e) => e.target.style.filter = 'brightness(0.9)'}
+          onMouseLeave={(e) => e.target.style.filter = 'none'}
           style={{
-            backgroundColor: '#5c8c9e', // matching the teal/blue in the screenshot
+            backgroundColor: 'var(--primary-color)',
             color: 'white',
             border: 'none',
             padding: '6px 16px',
             borderRadius: '8px',
             fontSize: '0.85rem',
             fontWeight: 600,
-            cursor: 'pointer'
+            cursor: 'pointer',
+            transition: 'filter 0.2s'
           }}
         >
           Add
@@ -83,7 +85,7 @@ function WidgetItem({ icon, title, type, defaultChecked, onAdd }) {
         <div style={{
           width: '36px',
           height: '20px',
-          backgroundColor: defaultChecked ? '#5c8c9e' : '#cbd5e0',
+          backgroundColor: defaultChecked ? 'var(--primary-color)' : 'rgba(0,0,0,0.2)',
           borderRadius: '12px',
           position: 'relative',
           cursor: 'pointer',

@@ -301,15 +301,13 @@ a {
   opacity: 1;
 }
 
-/* Dropdown Menu */
 .dropdown-menu {
   position: absolute;
   top: 100%;
   right: 0;
   margin-top: 8px;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
   border-radius: 12px;
   padding: 8px 0;
   min-width: 180px;
@@ -334,12 +332,12 @@ a {
 }
 
 .dropdown-item:hover {
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(0, 0, 0, 0.1);
 }
 
 .dropdown-divider {
   height: 1px;
-  background: rgba(0, 0, 0, 0.08);
+  background: var(--glass-border);
   margin: 6px 16px;
 }
 
@@ -353,14 +351,7 @@ a {
 
 @media (prefers-color-scheme: dark) {
   .dropdown-menu {
-    background: rgba(30, 30, 30, 0.85);
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-  }
-  .dropdown-divider {
-    background: rgba(255, 255, 255, 0.1);
-  }
-  .dropdown-item:hover {
-    background: rgba(255, 255, 255, 0.1);
   }
 }
 
@@ -441,9 +432,11 @@ a {
   background: var(--primary-color);
   color: white;
   border: none;
+  transition: all 0.2s, filter 0.2s;
 }
 .fab.fab-primary:hover {
-  background: #477282;
+  background: var(--primary-color);
+  filter: brightness(0.9);
 }
 
 /* Modal */
@@ -466,15 +459,13 @@ a {
   display: flex;
   flex-direction: column;
   padding: 24px;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  border-radius: 16px;
+  border: 1px solid var(--glass-border);
 }
 
 @media (prefers-color-scheme: dark) {
   .modal-content {
-    background: rgba(45, 45, 50, 0.95);
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
   }
 }
