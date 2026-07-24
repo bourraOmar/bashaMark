@@ -217,13 +217,18 @@ export default function PomodoroWidget({ id, onDelete, settings: appSettings }) 
       </div>
 
       {/* Tabs */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginBottom: '24px', fontSize: '0.7rem', justifyContent: 'center' }}>
+      <div style={{ display: 'flex', gap: '4px', marginBottom: '24px', fontSize: '0.7rem', justifyContent: 'center' }}>
         {Object.entries(MODES).map(([key, config]) => (
           <div 
             key={key}
             onClick={() => changeMode(key)}
             style={{
-              padding: '4px 8px',
+              flex: 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              textAlign: 'center',
+              padding: '6px 4px',
               borderRadius: '12px',
               cursor: 'pointer',
               color: mode === key ? 'var(--text-color)' : 'var(--text-muted)',
@@ -231,7 +236,8 @@ export default function PomodoroWidget({ id, onDelete, settings: appSettings }) 
               fontWeight: mode === key ? 500 : 400,
               opacity: mode === key ? 1 : 0.6,
               transition: 'all 0.2s',
-              whiteSpace: 'nowrap'
+              whiteSpace: 'normal',
+              lineHeight: 1.2
             }}
           >
             {config.label}
