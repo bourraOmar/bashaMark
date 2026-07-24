@@ -244,6 +244,8 @@ function App() {
     b.slotIndex >= TOTAL_SLOTS ? { ...b, slotIndex: b.slotIndex % Math.max(1, TOTAL_SLOTS) } : b
   );
 
+  const maxOccupiedSlot = Math.max(-1, ...clampedBoards.map(b => b.slotIndex));
+
   return (
     <>
       <style>{dynamicCSS}</style>
@@ -269,7 +271,11 @@ function App() {
           onDragEnd={handleDragEnd}
         >
           {Array.from({ length: TOTAL_SLOTS }).map((_, i) => {
+            if (i > maxOccupiedSlot + 1) return null;
+            
             const columnBoards = clampedBoards.filter(b => b.slotIndex === i);
+            const isTrailingEmpty = i === maxOccupiedSlot + 1;
+            
             return (
               <Column 
                 key={`column-${i}`} 
@@ -284,6 +290,7 @@ function App() {
                 editBookmark={editBookmark}
                 deleteBookmark={deleteBookmark}
                 settings={settings}
+                isTrailingEmpty={isTrailingEmpty}
               />
             );
           })}

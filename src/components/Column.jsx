@@ -8,7 +8,7 @@ import CalendarWidget from './widgets/CalendarWidget';
 import PomodoroWidget from './widgets/PomodoroWidget';
 import { PenTool, Calendar, Clock } from 'lucide-react';
 
-export default function Column({ id, slotIndex, boards, addBoard, addBookmark, renameBoard, updateBoard, deleteBoard, editBookmark, deleteBookmark, settings }) {
+export default function Column({ id, slotIndex, boards, addBoard, addBookmark, renameBoard, updateBoard, deleteBoard, editBookmark, deleteBookmark, settings, isTrailingEmpty }) {
   const [isAdding, setIsAdding] = useState(false);
   const [newTitle, setNewTitle] = useState('');
   const addBoardRef = useRef(null);
@@ -36,8 +36,21 @@ export default function Column({ id, slotIndex, boards, addBoard, addBookmark, r
     setIsAdding(false);
   };
 
+  const baseStyle = isTrailingEmpty ? {
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    bottom: 0,
+    width: '100px',
+    zIndex: 10,
+    minWidth: 0,
+    pointerEvents: 'auto'
+  } : { 
+    display: 'flex', flexDirection: 'column', gap: '24px' 
+  };
+
   return (
-    <div ref={setNodeRef} className="board-column" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+    <div ref={setNodeRef} className={`board-column ${isTrailingEmpty ? 'trailing-empty' : ''}`} style={baseStyle}>
       <SortableContext items={boards.map(b => b.id)} strategy={verticalListSortingStrategy}>
         {boards.map(board => {
           if (board.type === 'notes') {
