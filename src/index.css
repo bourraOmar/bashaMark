@@ -132,92 +132,72 @@ a {
 
 /* Tabs / Pages Pill */
 .tabs-container {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  padding: 5px 8px;
-  background: var(--glass-bg, rgba(20, 25, 38, 0.7));
-  backdrop-filter: blur(20px) saturate(140%);
-  -webkit-backdrop-filter: blur(20px) saturate(140%);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  padding: 4px;
+  background: rgba(35, 42, 54, 0.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-pill);
-  gap: 6px;
+  gap: 3px;
   max-width: 100%;
   overflow-x: auto;
   overflow-y: hidden;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .tabs-container::-webkit-scrollbar {
-  height: 5px;
-}
-
-.tabs-container::-webkit-scrollbar-track {
-  background: transparent;
-  margin: 0 16px;
-}
-
-.tabs-container::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 6px;
-  transition: background 0.2s;
-}
-
-.tabs-container::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.5);
+  display: none;
 }
 
 .tab-btn {
   padding: 6px 18px;
-  border-radius: var(--radius-pill);
+  border-radius: 12px;
   font-weight: 500;
   font-size: 0.86rem;
-  color: rgba(255, 255, 255, 0.75);
-  letter-spacing: 0.015em;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  color: rgba(255, 255, 255, 0.85);
+  letter-spacing: 0.01em;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
-  border: 1px solid transparent;
+  border: none;
   background: transparent;
+  white-space: nowrap;
 }
 
 .tab-btn:hover:not(.active) {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
   color: #ffffff;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .tab-btn.active {
-  background: var(--primary-color, #232d42);
+  background: #141c2b;
   color: #ffffff;
-  font-weight: 600;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.3);
-  transform: translateY(-1px);
+  font-weight: 700;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
 }
 
 .tab-add-btn {
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.75);
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  color: rgba(255, 255, 255, 0.6);
+  background: transparent;
+  border: none;
+  transition: all 0.2s ease;
   flex-shrink: 0;
   margin-left: 2px;
 }
 
 .tab-add-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.12);
   color: #ffffff;
-  transform: scale(1.08) rotate(90deg);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  border-color: rgba(255, 255, 255, 0.35);
+  transform: rotate(90deg);
 }
 
 /* Center Search */
@@ -231,15 +211,17 @@ a {
 .search-bar {
   display: flex;
   align-items: center;
-  padding: 7px 16px;
-  background: var(--glass-bg, rgba(20, 25, 38, 0.7));
-  backdrop-filter: blur(20px) saturate(140%);
-  -webkit-backdrop-filter: blur(20px) saturate(140%);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  padding: 6px 16px;
+  background: rgba(35, 42, 54, 0.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-pill);
   width: 100%;
+  min-width: 320px;
   max-width: 400px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  height: 38px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
 
 .search-bar input {
@@ -253,7 +235,7 @@ a {
 }
 
 .search-bar input::placeholder {
-  color: rgba(255, 255, 255, 0.55);
+  color: rgba(255, 255, 255, 0.45);
 }
 
 /* Header Right Pill Widgets */
@@ -262,29 +244,28 @@ a {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 5px 14px;
-  background: var(--glass-bg, rgba(20, 25, 38, 0.7));
-  backdrop-filter: blur(20px) saturate(140%);
-  -webkit-backdrop-filter: blur(20px) saturate(140%);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  padding: 5px 16px;
+  background: rgba(35, 42, 54, 0.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 14px;
-  min-width: 92px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  min-width: 95px;
+  height: 38px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
   user-select: none;
 }
 
 .header-pill-widget:hover {
-  background: rgba(255, 255, 255, 0.12);
-  transform: translateY(-1px);
-  border-color: rgba(255, 255, 255, 0.25);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.15);
 }
 
 .pill-widget-label {
-  font-size: 0.62rem;
+  font-size: 0.58rem;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.55);
+  color: rgba(255, 255, 255, 0.5);
   letter-spacing: 0.05em;
   text-transform: uppercase;
   white-space: nowrap;
@@ -295,7 +276,7 @@ a {
   font-size: 0.92rem;
   font-weight: 700;
   color: #ffffff;
-  margin-top: 2px;
+  margin-top: 1px;
   line-height: 1.1;
   white-space: nowrap;
 }
