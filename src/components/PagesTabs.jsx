@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { Plus, Type, Trash2 } from 'lucide-react';
+import { Plus, Type, Trash2, AlertCircle } from 'lucide-react';
+import ConfirmModal from './ConfirmModal';
 
 export default function PagesTabs({
   pages,
@@ -13,11 +14,13 @@ export default function PagesTabs({
   const [editingPageId, setEditingPageId] = useState(null);
   const [editingTitle, setEditingTitle] = useState('');
   const [menu, setMenu] = useState(null); // { pageId, title, x, y }
+  const [confirmDelete, setConfirmDelete] = useState(null); // { pageId, title }
+  const [cannotDeleteAlert, setCannotDeleteAlert] = useState(false);
   const containerRef = useRef(null);
 
   // Close dropdown menu when clicking anywhere on the document outside the open menu
   useEffect(() => {
-    const handleOutsideClick = () => {
+    const handleOutsideClick = (e) => {
       if (menu !== null) {
         setMenu(null);
       }
@@ -232,12 +235,10 @@ export default function PagesTabs({
               e.stopPropagation();
               setMenu(null);
               if (pages.length <= 1) {
-                window.alert('You cannot delete your only dashboard page. Please add another page first.');
+                setCannotDeleteAlert(true);
                 return;
               }
-              if (window.confirm(`Are you sure you want to delete "${menu.title}" and all its boards?`)) {
-                onDeletePage(menu.pageId);
-              }
+              setConfirmDelete({ pageId: menu.pageId, title: menu.title });
             }}
             style={{
               display: 'flex',
@@ -260,6 +261,94 @@ export default function PagesTabs({
             <Trash2 size={17} style={{ color: '#e06c75' }} />
             <span>Delete</span>
           </button>
+        </div>,
+        document.body
+      )}
+
+      {/* Custom Popup Confirmation Modal for Page Deletion */}
+      <ConfirmModal 
+        isOpen={confirmDelete !== null}
+        onClose={() => setConfirmDelete(null)}
+        onConfirm={() => {
+          if (confirmDelete) {
+            onDeletePage(confirmDelete.pageId);
+          }
+        }}
+        title="Delete Page?"
+        message={`Are you sure you want to delete "${confirmDelete ? confirmDelete.title : ''}" and all its widgets? This action cannot be undone.`}
+      />
+
+      {/* Custom Popup Alarm/Modal for attempting to delete the only page */}
+      {cannotDeleteAlert && createPortal(
+        <div 
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.45)',
+            backdropFilter: 'blur(6px)',
+            zIndex: 9999999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            animation: 'fadeIn 0.2s ease'
+          }}
+          onClick={() => setCannotDeleteAlert(false)}
+        >
+          <div 
+            className="glass-panel"
+            style={{
+              width: '90%',
+              maxWidth: '340px',
+              padding: '28px 24px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '16px',
+              textAlign: 'center',
+              animation: 'slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+              borderRadius: '20px',
+              boxShadow: '0 24px 60px rgba(0,0,0,0.6)'
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{ 
+              width: '56px', 
+              height: '56px', 
+              borderRadius: '50%', 
+              backgroundColor: 'rgba(245, 158, 11, 0.15)', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              marginBottom: '4px',
+              color: '#f59e0b'
+            }}>
+              <AlertCircle size={32} />
+            </div>
+            
+            <div>
+              <h3 style={{ margin: '0 0 8px 0', fontSize: '1.2rem', fontWeight: 600, color: 'var(--text-color)' }}>Cannot Delete Page</h3>
+              <p style={{ margin: 0, fontSize: '0.95rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                You cannot delete your only remaining dashboard page. Please create another page first before removing this one.
+              </p>
+            </div>
+
+            <div style={{ display: 'flex', width: '100%', marginTop: '8px' }}>
+              <button 
+                onClick={() => setCannotDeleteAlert(false)}
+                className="btn btn-primary"
+                style={{ 
+                  width: '100%', 
+                  padding: '12px', 
+                  borderRadius: '12px', 
+                  fontSize: '0.95rem', 
+                  fontWeight: 600,
+                  cursor: 'pointer'
+                }}
+              >
+                Understood
+              </button>
+            </div>
+          </div>
         </div>,
         document.body
       )}
