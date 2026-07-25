@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 export const defaultSettings = {
   primaryColor: '#b47b44', // Orange/brown color from screenshot
-  boardColor: '#000000', // Black
+  boardColor: '#1e293b', // Sleek slate instead of pitch black
   opacity: 20, // 20%
   blur: 12, // 12px
   textSize: 'M', // S, M, L

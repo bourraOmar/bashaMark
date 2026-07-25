@@ -208,6 +208,16 @@ function App() {
     return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '0, 0, 0';
   };
 
+  // Calculate relative perceived luminance to dynamically adjust text color for readability on bright vs dark boards
+  const getLuminance = (hex) => {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    if (!result) return 0;
+    const r = parseInt(result[1], 16);
+    const g = parseInt(result[2], 16);
+    const b = parseInt(result[3], 16);
+    return (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  };
+
   const getComputedColumns = () => {
     if (settings.numberOfColumns !== 'Auto') return parseInt(settings.numberOfColumns, 10);
     const screenWidth = window.innerWidth;
@@ -222,6 +232,8 @@ function App() {
     // We'll inject these globally into :root using a style tag to ensure backdrop-filter repaints properly
   };
 
+  const isLightBoard = getLuminance(settings.boardColor) > 0.55;
+
   const dynamicCSS = `
     :root {
       --primary-color: ${settings.primaryColor};
@@ -230,6 +242,8 @@ function App() {
       --board-width: ${settings.boardWidth}px;
       --font-size-base: ${settings.textSize === 'S' ? '0.85rem' : settings.textSize === 'M' ? '0.95rem' : '1.1rem'};
       --font-weight-base: ${settings.textWeight === 'Bold' ? '600' : '400'};
+      --text-color: ${isLightBoard ? '#1e293b' : '#f8fafc'};
+      --text-muted: ${isLightBoard ? '#64748b' : '#94a3b8'};
     }
     
     .glass-panel, .tabs-container, .search-bar, .fab, .dropdown-menu, .placeholder-board:hover {

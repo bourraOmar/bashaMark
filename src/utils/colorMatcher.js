@@ -69,10 +69,11 @@ function analyzeCanvasData(data) {
 
   const primaryHex = '#' + [finalR, finalG, finalB].map(x => x.toString(16).padStart(2, '0')).join('');
   
-  const darkR = Math.floor(finalR * 0.25);
-  const darkG = Math.floor(finalG * 0.25);
-  const darkB = Math.floor(finalB * 0.25);
-  const boardHex = '#' + [darkR, darkG, darkB].map(x => x.toString(16).padStart(2, '0')).join('');
+  // Retain 80% of the dominant color's brightness for vibrant, colorful glassmorphic boards instead of forcing a dark tone
+  const boardR = Math.min(255, Math.floor(finalR * 0.8));
+  const boardG = Math.min(255, Math.floor(finalG * 0.8));
+  const boardB = Math.min(255, Math.floor(finalB * 0.8));
+  const boardHex = '#' + [boardR, boardG, boardB].map(x => x.toString(16).padStart(2, '0')).join('');
   
   return { primary: primaryHex, board: boardHex };
 }
