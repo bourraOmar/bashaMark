@@ -1,7 +1,25 @@
 import { useState, useEffect } from 'react';
 
+export function isVideoUrl(url) {
+  if (!url) return false;
+  return url.startsWith('data:video/') || /\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(url);
+}
+
 export function useBackground() {
   const [background, setBackground] = useState(null);
+
+  const applyBodyBackground = (bg) => {
+    if (!bg) {
+      document.body.style.background = '#0a0d14';
+      return;
+    }
+    if (isVideoUrl(bg)) {
+      // Do not put video in CSS background url()
+      document.body.style.background = '#0a0d14';
+    } else {
+      document.body.style.background = `url(${bg}) center/cover no-repeat fixed`;
+    }
+  };
 
   useEffect(() => {
     // Load from storage on mount
@@ -12,7 +30,7 @@ export function useBackground() {
           if (result.customBackground) {
             bg = result.customBackground;
             setBackground(bg);
-            document.body.style.background = `url(${bg}) center/cover no-repeat fixed`;
+            applyBodyBackground(bg);
           }
         });
       } else {
@@ -20,7 +38,7 @@ export function useBackground() {
         if (stored) {
           bg = stored;
           setBackground(bg);
-          document.body.style.background = `url(${bg}) center/cover no-repeat fixed`;
+          applyBodyBackground(bg);
         }
       }
     };
@@ -29,7 +47,7 @@ export function useBackground() {
 
   const changeBackground = (newBackground) => {
     setBackground(newBackground);
-    document.body.style.background = `url(${newBackground}) center/cover no-repeat fixed`;
+    applyBodyBackground(newBackground);
     if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
       chrome.storage.local.set({ customBackground: newBackground });
     } else {
@@ -37,5 +55,5 @@ export function useBackground() {
     }
   };
 
-  return { background, changeBackground };
+  return { background, isVideo: isVideoUrl(background), changeBackground };
 }

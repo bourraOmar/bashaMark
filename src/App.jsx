@@ -26,7 +26,7 @@ function App() {
   const [isWidgetsMenuOpen, setIsWidgetsMenuOpen] = useState(false);
 
   // Initialize background loader
-  useBackground();
+  const { background, isVideo: isVideoBackground } = useBackground();
 
   useEffect(() => {
     if (isModalOpen && typeof chrome !== 'undefined' && chrome.bookmarks) {
@@ -249,6 +249,26 @@ function App() {
   return (
     <>
       <style>{dynamicCSS}</style>
+      {isVideoBackground && background && (
+        <video
+          key={background}
+          autoPlay
+          loop
+          muted
+          playsInline
+          src={background}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            objectFit: 'cover',
+            zIndex: -1,
+            pointerEvents: 'none'
+          }}
+        />
+      )}
       <div className="app-container">
       <header className="top-header">
         <div className="tabs-container">
