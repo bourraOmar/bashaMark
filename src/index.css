@@ -227,6 +227,7 @@ a {
   flex: 0 0 var(--board-width);
   min-width: var(--board-width);
   max-width: var(--board-width);
+  min-height: 500px;
   display: flex;
   flex-direction: column;
   gap: 24px;
