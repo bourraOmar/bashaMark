@@ -35,6 +35,24 @@ export default function PagesTabs({
     };
   }, [menu]);
 
+  // Enable horizontal scrolling via mouse scroll wheel when hovering over tabs container
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const handleWheel = (e) => {
+      if (e.deltaY !== 0) {
+        e.preventDefault();
+        el.scrollLeft += e.deltaY;
+      }
+    };
+
+    el.addEventListener('wheel', handleWheel, { passive: false });
+    return () => {
+      el.removeEventListener('wheel', handleWheel);
+    };
+  }, []);
+
   const handleAddClick = () => {
     const newId = onAddPage();
     setEditingPageId(newId);
