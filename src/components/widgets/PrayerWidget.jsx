@@ -73,14 +73,35 @@ export default function PrayerWidget({ id, board, onUpdate, onDelete, settings: 
       
       if (locationType === 'auto') {
         try {
-          const geoRes = await fetch('https://ipapi.co/json/');
-          const geoData = await geoRes.json();
-          if (geoData.latitude && geoData.longitude) {
-            url = `https://api.aladhan.com/v1/timings?latitude=${geoData.latitude}&longitude=${geoData.longitude}&method=${method}`;
-            locLabel = `${geoData.city || 'Local'}, ${geoData.country_name || 'Region'}`;
+          let lat, lon, cityName, countryName;
+          try {
+            // Primary: GeoJS (Open CORS enabled by default, free & very reliable)
+            const geoRes = await fetch('https://get.geojs.io/v1/ip/geo.json');
+            const geoData = await geoRes.json();
+            if (geoData.latitude && geoData.longitude) {
+              lat = parseFloat(geoData.latitude);
+              lon = parseFloat(geoData.longitude);
+              cityName = geoData.city || 'Local';
+              countryName = geoData.country || 'Region';
+            }
+          } catch (e1) {
+            // Secondary fallback: ipwhois (Open CORS enabled)
+            const backupRes = await fetch('https://ipwhois.app/json/');
+            const backupData = await backupRes.json();
+            if (backupData.latitude && backupData.longitude) {
+              lat = backupData.latitude;
+              lon = backupData.longitude;
+              cityName = backupData.city || 'Local';
+              countryName = backupData.country || 'Region';
+            }
+          }
+          
+          if (lat && lon) {
+            url = `https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=${method}`;
+            locLabel = `${cityName}, ${countryName}`;
           }
         } catch (e) {
-          console.warn('Auto Geo-IP failed, falling back to City/Country API');
+          console.warn('Auto Geo-IP failed, falling back to City/Country API:', e);
         }
       }
 
