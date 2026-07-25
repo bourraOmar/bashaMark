@@ -14,6 +14,7 @@ import { useBackground } from './hooks/useBackground';
 import { useSettings } from './hooks/useSettings';
 import { usePages } from './hooks/usePages';
 import PagesTabs from './components/PagesTabs';
+import HeaderRightWidgets from './components/HeaderRightWidgets';
 
 function App() {
   const { boards, setBoards, addBoard, addBookmark, renameBoard, updateBoard, deleteBoard, deleteBoardsByPage, editBookmark, deleteBookmark } = useBoards();
@@ -303,7 +304,9 @@ function App() {
         <div className="search-container">
           <SearchBar />
         </div>
-        <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}></div>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
+          <HeaderRightWidgets />
+        </div>
       </header>
       
       <main className="dashboard-grid">
