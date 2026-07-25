@@ -12,10 +12,13 @@ import SettingsModal from './components/SettingsModal';
 import { useBoards } from './hooks/useBoards';
 import { useBackground } from './hooks/useBackground';
 import { useSettings } from './hooks/useSettings';
+import { usePages } from './hooks/usePages';
+import PagesTabs from './components/PagesTabs';
 
 function App() {
-  const { boards, setBoards, addBoard, addBookmark, renameBoard, updateBoard, deleteBoard, editBookmark, deleteBookmark } = useBoards();
+  const { boards, setBoards, addBoard, addBookmark, renameBoard, updateBoard, deleteBoard, deleteBoardsByPage, editBookmark, deleteBookmark } = useBoards();
   const { settings, setSettings, isLoaded } = useSettings();
+  const { pages, currentPageId, setCurrentPageId, addPage, renamePage, deletePage, isPagesLoaded } = usePages();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [targetSlotIndex, setTargetSlotIndex] = useState(null);
@@ -176,6 +179,7 @@ function App() {
       id: `board-imported-${folder.id}-${Date.now()}`,
       title: folder.title,
       slotIndex: newSlot,
+      pageId: currentPageId,
       bookmarks: folder.children
         .filter(node => node.url)
         .map((node) => ({
@@ -190,7 +194,7 @@ function App() {
   };
 
   const handleCreateEmptyBoard = () => {
-    addBoard('New Board', targetSlotIndex);
+    addBoard('New Board', targetSlotIndex, 5, currentPageId);
     setIsModalOpen(false);
     setTargetSlotIndex(null);
   };
@@ -252,7 +256,7 @@ function App() {
     }
   `;
 
-  if (!isLoaded) return null;
+  if (!isLoaded || !isPagesLoaded) return null;
 
   const clampedBoards = boards.map(b => 
     b.slotIndex >= TOTAL_SLOTS ? { ...b, slotIndex: b.slotIndex % Math.max(1, TOTAL_SLOTS) } : b
@@ -283,12 +287,17 @@ function App() {
       )}
       <div className="app-container">
       <header className="top-header">
-        <div className="tabs-container">
-          <button className="tab-btn active">Home</button>
-          <button className="tab-add-btn" title="Add Page">
-            <Plus size={18} />
-          </button>
-        </div>
+        <PagesTabs
+          pages={pages}
+          currentPageId={currentPageId}
+          onSelectPage={(id) => setCurrentPageId(id)}
+          onAddPage={() => addPage()}
+          onRenamePage={renamePage}
+          onDeletePage={(id) => {
+            deleteBoardsByPage(id);
+            deletePage(id);
+          }}
+        />
         <div className="search-container">
           <SearchBar />
         </div>
@@ -303,7 +312,7 @@ function App() {
           onDragEnd={handleDragEnd}
         >
           {Array.from({ length: TOTAL_SLOTS }).map((_, i) => {
-            const columnBoards = clampedBoards.filter(b => b.slotIndex === i);
+            const columnBoards = clampedBoards.filter(b => (b.pageId || 'page-home') === currentPageId && b.slotIndex === i);
             
             return (
               <Column 
@@ -311,7 +320,7 @@ function App() {
                 id={`column-${i}`}
                 slotIndex={i}
                 boards={columnBoards}
-                addBoard={(config, slot) => addBoard(config, slot, TOTAL_SLOTS)}
+                addBoard={(config, slot) => addBoard(config, slot, TOTAL_SLOTS, currentPageId)}
                 addBookmark={addBookmark}
                 renameBoard={renameBoard}
                 updateBoard={updateBoard}
@@ -384,7 +393,7 @@ function App() {
         settings={settings}
         setSettings={setSettings}
       />
-      <WidgetsMenu isOpen={isWidgetsMenuOpen} onClose={() => setIsWidgetsMenuOpen(false)} addBoard={(config, slot) => addBoard(config, slot, TOTAL_SLOTS)} />
+      <WidgetsMenu isOpen={isWidgetsMenuOpen} onClose={() => setIsWidgetsMenuOpen(false)} addBoard={(config, slot) => addBoard(config, slot, TOTAL_SLOTS, currentPageId)} />
       <SettingsModal isOpen={isSettingsModalOpen} onClose={() => setIsSettingsModalOpen(false)} settings={settings} setSettings={setSettings} boards={boards} />
     </div>
     </>

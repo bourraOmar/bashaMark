@@ -5,6 +5,7 @@ const defaultBoards = [
     id: 'board-1',
     title: 'Work',
     slotIndex: 0,
+    pageId: 'page-home',
     bookmarks: [
       { id: 'bm-1', title: 'Gmail', url: 'https://mail.google.com' },
       { id: 'bm-2', title: 'Google Calendar', url: 'https://calendar.google.com' }
@@ -27,6 +28,7 @@ export function useBoards() {
               res = { ...res, slotIndex: res.slotIndex % 5 };
             }
             if (!res.type) res.type = 'board';
+            if (!res.pageId) res.pageId = 'page-home';
             return res;
           });
           setBoards(migrated);
@@ -45,6 +47,7 @@ export function useBoards() {
             res = { ...res, slotIndex: res.slotIndex % 5 };
           }
           if (!res.type) res.type = 'board';
+          if (!res.pageId) res.pageId = 'page-home';
           return res;
         });
         setBoards(migrated);
@@ -63,14 +66,17 @@ export function useBoards() {
     }
   };
 
-  const addBoard = (titleOrConfig, slotIndex = null, maxSlots = 5) => {
-    let config = typeof titleOrConfig === 'string' ? { title: titleOrConfig, type: 'board' } : titleOrConfig;
+  const addBoard = (titleOrConfig, slotIndex = null, maxSlots = 5, pageId = 'page-home') => {
+    let config = typeof titleOrConfig === 'string' ? { title: titleOrConfig, type: 'board' } : { ...titleOrConfig };
+    if (!config.pageId) {
+      config.pageId = pageId;
+    }
 
-    // Find the slot with the fewest widgets (0 to maxSlots-1)
+    // Find the slot with the fewest widgets on the current page (0 to maxSlots-1)
     let newSlot = slotIndex;
     if (newSlot === null) {
       const slotCounts = Array(maxSlots).fill(0);
-      boards.forEach(b => {
+      boards.filter(b => (b.pageId || 'page-home') === config.pageId).forEach(b => {
         if (b.slotIndex >= 0 && b.slotIndex < maxSlots) {
           slotCounts[b.slotIndex]++;
         }
@@ -150,5 +156,10 @@ export function useBoards() {
     saveBoards(newBoards);
   };
 
-  return { boards, setBoards: saveBoards, addBoard, addBookmark, renameBoard, updateBoard, deleteBoard, editBookmark, deleteBookmark };
+  const deleteBoardsByPage = (pageId) => {
+    const newBoards = boards.filter(board => (board.pageId || 'page-home') !== pageId);
+    saveBoards(newBoards);
+  };
+
+  return { boards, setBoards: saveBoards, addBoard, addBookmark, renameBoard, updateBoard, deleteBoard, deleteBoardsByPage, editBookmark, deleteBookmark };
 }
