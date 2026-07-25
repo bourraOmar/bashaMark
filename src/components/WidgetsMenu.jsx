@@ -1,4 +1,4 @@
-import { LayoutTemplate, PenTool, Calendar, Clock, Search } from 'lucide-react';
+import { LayoutTemplate, PenTool, Calendar, Clock, Search, Compass } from 'lucide-react';
 
 export default function WidgetsMenu({ isOpen, onClose, addBoard }) {
   if (!isOpen) return null;
@@ -40,6 +40,7 @@ export default function WidgetsMenu({ isOpen, onClose, addBoard }) {
       <WidgetItem icon={<PenTool size={18} />} title="Notes" type="add" onAdd={() => { addBoard({ type: 'notes' }); onClose(); }} />
       <WidgetItem icon={<Calendar size={18} />} title="Calendar" type="add" onAdd={() => { addBoard({ type: 'calendar' }); onClose(); }} />
       <WidgetItem icon={<Clock size={18} />} title="Pomodoro" type="add" onAdd={() => { addBoard({ type: 'pomodoro' }); onClose(); }} />
+      <WidgetItem icon={<Compass size={18} />} title="Prayer Times" type="add" onAdd={() => { addBoard({ type: 'prayer' }); onClose(); }} />
 
       {/* Togglable Widgets */}
       <WidgetItem icon={<Clock size={18} />} title="Clock" type="toggle" defaultChecked={false} />
