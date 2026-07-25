@@ -84,9 +84,10 @@ export default function WallpaperModal({ isOpen, onClose, settings, setSettings 
     return (0.299 * r + 0.587 * g + 0.114 * b) / 255;
   };
 
-  const getSliderBackground = (value, min, max) => {
+  const getSliderBackground = (value, min, max, primaryHex) => {
     const percentage = ((value - min) / (max - min)) * 100;
-    return `linear-gradient(to right, #2563eb ${percentage}%, rgba(255,255,255,0.1) ${percentage}%)`;
+    const activeColor = primaryHex || '#2563eb';
+    return `linear-gradient(to right, ${activeColor} ${percentage}%, rgba(255,255,255,0.15) ${percentage}%)`;
   };
 
   const isLight = getLuminance(settings?.boardColor) > 0.55;
@@ -137,9 +138,9 @@ export default function WallpaperModal({ isOpen, onClose, settings, setSettings 
       onClick={handleOverlayClick}
     >
       {adjusting && settings ? (
-        /* Adjust Wallpaper Style Modal */
+        /* Adjust Wallpaper Style Modal (Dynamically matching wallpaper & theme) */
         <div 
-          className="hide-scrollbar"
+          className="glass-panel hide-scrollbar"
           style={{
             width: '480px',
             maxWidth: '92vw',
@@ -148,20 +149,19 @@ export default function WallpaperModal({ isOpen, onClose, settings, setSettings 
             display: 'flex',
             flexDirection: 'column',
             borderRadius: '20px',
-            backgroundColor: 'rgba(15, 20, 32, 0.96)',
-            color: '#ffffff',
+            color: 'var(--text-color)',
             boxShadow: '0 25px 70px rgba(0,0,0,0.65), 0 0 0 1px rgba(255,255,255,0.08)',
-            border: '1px solid rgba(255,255,255,0.12)',
+            border: '1px solid var(--glass-border)',
             padding: '28px'
           }}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
           <div style={{ marginBottom: '22px' }}>
-            <h2 style={{ margin: '0 0 6px 0', fontSize: '1.35rem', fontWeight: 700, letterSpacing: '-0.01em' }}>
+            <h2 style={{ margin: '0 0 6px 0', fontSize: '1.35rem', fontWeight: 700, letterSpacing: '-0.01em', color: 'var(--text-color)' }}>
               Adjust Wallpaper Style
             </h2>
-            <span style={{ fontSize: '0.9rem', color: '#64748b' }}>
+            <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>
               {isLight ? 'Light theme detected.' : 'Dark theme detected.'}
             </span>
           </div>
@@ -171,8 +171,8 @@ export default function WallpaperModal({ isOpen, onClose, settings, setSettings 
             {/* Primary Color */}
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#8899a6', letterSpacing: '0.05em' }}>PRIMARY COLOR</span>
-                <span style={{ fontSize: '0.8rem', fontWeight: 600, color: '#cbd5e1', textTransform: 'uppercase' }}>{settings.primaryColor}</span>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.05em' }}>PRIMARY COLOR</span>
+                <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-color)', textTransform: 'uppercase' }}>{settings.primaryColor}</span>
               </div>
               <div 
                 style={{
@@ -180,7 +180,7 @@ export default function WallpaperModal({ isOpen, onClose, settings, setSettings 
                   width: '100%',
                   borderRadius: '12px',
                   backgroundColor: settings.primaryColor,
-                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
                   boxShadow: '0 4px 12px rgba(0,0,0,0.25)',
                   cursor: 'pointer',
                   position: 'relative',
@@ -210,8 +210,8 @@ export default function WallpaperModal({ isOpen, onClose, settings, setSettings 
             {/* Board Color */}
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#8899a6', letterSpacing: '0.05em' }}>BOARD COLOR</span>
-                <span style={{ fontSize: '0.8rem', fontWeight: 600, color: '#cbd5e1', textTransform: 'uppercase' }}>{settings.boardColor}</span>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.05em' }}>BOARD COLOR</span>
+                <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-color)', textTransform: 'uppercase' }}>{settings.boardColor}</span>
               </div>
               <div 
                 style={{
@@ -219,7 +219,7 @@ export default function WallpaperModal({ isOpen, onClose, settings, setSettings 
                   width: '100%',
                   borderRadius: '12px',
                   backgroundColor: settings.boardColor,
-                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
                   boxShadow: '0 4px 12px rgba(0,0,0,0.25)',
                   cursor: 'pointer',
                   position: 'relative',
@@ -250,8 +250,8 @@ export default function WallpaperModal({ isOpen, onClose, settings, setSettings 
           {/* Board Opacity Slider */}
           <div style={{ marginBottom: '22px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#8899a6', letterSpacing: '0.05em' }}>BOARD OPACITY</span>
-              <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#cbd5e1' }}>{settings.opacity}%</span>
+              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.05em' }}>BOARD OPACITY</span>
+              <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-color)' }}>{settings.opacity}%</span>
             </div>
             <input 
               type="range"
@@ -260,15 +260,15 @@ export default function WallpaperModal({ isOpen, onClose, settings, setSettings 
               value={settings.opacity}
               onChange={(e) => setSettings({ ...settings, opacity: parseInt(e.target.value, 10) })}
               className="custom-slider"
-              style={{ background: getSliderBackground(settings.opacity, 0, 100), width: '100%' }}
+              style={{ background: getSliderBackground(settings.opacity, 0, 100, settings.primaryColor), width: '100%' }}
             />
           </div>
 
           {/* Board Blur Slider */}
           <div style={{ marginBottom: '24px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#8899a6', letterSpacing: '0.05em' }}>BOARD BLUR</span>
-              <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#cbd5e1' }}>{settings.blur}PX</span>
+              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.05em' }}>BOARD BLUR</span>
+              <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-color)' }}>{settings.blur}PX</span>
             </div>
             <input 
               type="range"
@@ -277,13 +277,13 @@ export default function WallpaperModal({ isOpen, onClose, settings, setSettings 
               value={settings.blur}
               onChange={(e) => setSettings({ ...settings, blur: parseInt(e.target.value, 10) })}
               className="custom-slider"
-              style={{ background: getSliderBackground(settings.blur, 0, 40), width: '100%' }}
+              style={{ background: getSliderBackground(settings.blur, 0, 40, settings.primaryColor), width: '100%' }}
             />
           </div>
 
           {/* Text Size Options */}
           <div style={{ marginBottom: '24px' }}>
-            <span style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#8899a6', letterSpacing: '0.05em', marginBottom: '10px' }}>
+            <span style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.05em', marginBottom: '10px' }}>
               TEXT SIZE
             </span>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
@@ -296,14 +296,14 @@ export default function WallpaperModal({ isOpen, onClose, settings, setSettings 
                     style={{
                       height: '44px',
                       borderRadius: '10px',
-                      backgroundColor: isActive ? '#0d2847' : 'rgba(255,255,255,0.03)',
-                      border: `1px solid ${isActive ? '#2563eb' : 'rgba(255,255,255,0.08)'}`,
-                      color: isActive ? '#ffffff' : '#94a3b8',
+                      backgroundColor: isActive ? settings.primaryColor : 'rgba(0, 0, 0, 0.15)',
+                      border: `1px solid ${isActive ? 'rgba(255,255,255,0.3)' : 'var(--glass-border)'}`,
+                      color: isActive ? '#ffffff' : 'var(--text-color)',
                       fontWeight: isActive ? 600 : 400,
                       fontSize: '0.9rem',
                       cursor: 'pointer',
                       transition: 'all 0.15s ease',
-                      boxShadow: isActive ? '0 4px 14px rgba(37, 99, 235, 0.2)' : 'none'
+                      boxShadow: isActive ? `0 4px 14px ${settings.primaryColor}50` : 'none'
                     }}
                   >
                     {size}
@@ -315,7 +315,7 @@ export default function WallpaperModal({ isOpen, onClose, settings, setSettings 
 
           {/* Text Weight Options */}
           <div style={{ marginBottom: '28px' }}>
-            <span style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#8899a6', letterSpacing: '0.05em', marginBottom: '10px' }}>
+            <span style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.05em', marginBottom: '10px' }}>
               TEXT WEIGHT
             </span>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
@@ -328,14 +328,14 @@ export default function WallpaperModal({ isOpen, onClose, settings, setSettings 
                     style={{
                       height: '44px',
                       borderRadius: '10px',
-                      backgroundColor: isActive ? '#0d2847' : 'rgba(255,255,255,0.03)',
-                      border: `1px solid ${isActive ? '#2563eb' : 'rgba(255,255,255,0.08)'}`,
-                      color: isActive ? '#ffffff' : '#94a3b8',
+                      backgroundColor: isActive ? settings.primaryColor : 'rgba(0, 0, 0, 0.15)',
+                      border: `1px solid ${isActive ? 'rgba(255,255,255,0.3)' : 'var(--glass-border)'}`,
+                      color: isActive ? '#ffffff' : 'var(--text-color)',
                       fontWeight: isActive ? 600 : 400,
                       fontSize: '0.9rem',
                       cursor: 'pointer',
                       transition: 'all 0.15s ease',
-                      boxShadow: isActive ? '0 4px 14px rgba(37, 99, 235, 0.2)' : 'none'
+                      boxShadow: isActive ? `0 4px 14px ${settings.primaryColor}50` : 'none'
                     }}
                   >
                     {weight}
@@ -346,13 +346,13 @@ export default function WallpaperModal({ isOpen, onClose, settings, setSettings 
           </div>
 
           {/* Footer Buttons */}
-          <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '20px', display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+          <div style={{ borderTop: '1px solid var(--glass-border)', paddingTop: '20px', display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
             <button
               onClick={handleCancelAdjust}
               style={{
-                backgroundColor: '#212631',
-                color: '#cbd5e1',
-                border: '1px solid rgba(255,255,255,0.1)',
+                backgroundColor: 'rgba(0, 0, 0, 0.2)',
+                color: 'var(--text-color)',
+                border: '1px solid var(--glass-border)',
                 padding: '10px 22px',
                 borderRadius: '10px',
                 fontSize: '0.9rem',
@@ -360,17 +360,17 @@ export default function WallpaperModal({ isOpen, onClose, settings, setSettings 
                 cursor: 'pointer',
                 transition: 'all 0.15s'
               }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#2d3342'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#212631'}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.2)'}
             >
               Cancel
             </button>
             <button
               onClick={handleResetAdjust}
               style={{
-                backgroundColor: '#212631',
-                color: '#cbd5e1',
-                border: '1px solid rgba(255,255,255,0.1)',
+                backgroundColor: 'rgba(0, 0, 0, 0.2)',
+                color: 'var(--text-color)',
+                border: '1px solid var(--glass-border)',
                 padding: '10px 22px',
                 borderRadius: '10px',
                 fontSize: '0.9rem',
@@ -378,32 +378,32 @@ export default function WallpaperModal({ isOpen, onClose, settings, setSettings 
                 cursor: 'pointer',
                 transition: 'all 0.15s'
               }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#2d3342'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#212631'}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.2)'}
             >
               Reset
             </button>
             <button
               onClick={handleSaveAdjust}
               style={{
-                backgroundColor: '#0f2c52',
+                backgroundColor: settings.primaryColor,
                 color: '#ffffff',
-                border: '1px solid #1d4ed8',
+                border: '1px solid rgba(255, 255, 255, 0.25)',
                 padding: '10px 28px',
                 borderRadius: '10px',
                 fontSize: '0.95rem',
                 fontWeight: 600,
                 cursor: 'pointer',
-                boxShadow: '0 4px 14px rgba(29, 78, 216, 0.3)',
+                boxShadow: `0 4px 14px ${settings.primaryColor}60`,
                 transition: 'all 0.15s'
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#1b3f6e';
-                e.currentTarget.style.boxShadow = '0 4px 18px rgba(29, 78, 216, 0.45)';
+                e.currentTarget.style.transform = 'scale(1.03)';
+                e.currentTarget.style.boxShadow = `0 6px 20px ${settings.primaryColor}80`;
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = '#0f2c52';
-                e.currentTarget.style.boxShadow = '0 4px 14px rgba(29, 78, 216, 0.3)';
+                e.currentTarget.style.transform = 'scale(1)';
+                e.currentTarget.style.boxShadow = `0 4px 14px ${settings.primaryColor}60`;
               }}
             >
               Save
