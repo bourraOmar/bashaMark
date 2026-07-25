@@ -120,10 +120,7 @@ export default function PagesTabs({
                   justifyContent: 'center',
                   cursor: isEditing ? 'text' : 'pointer',
                   whiteSpace: 'nowrap',
-                  position: 'relative',
-                  border: 'none',
-                  userSelect: 'none',
-                  transition: 'all 0.2s'
+                  userSelect: 'none'
                 }}
               >
                 {isEditing ? (
@@ -144,16 +141,17 @@ export default function PagesTabs({
                     onBlur={() => handleSaveRename(page.id)}
                     onClick={(e) => e.stopPropagation()}
                     style={{
-                      background: 'transparent',
-                      border: 'none',
-                      borderBottom: '1px solid rgba(255, 255, 255, 0.6)',
-                      color: 'inherit',
+                      background: 'rgba(0, 0, 0, 0.25)',
+                      border: '1px solid rgba(255, 255, 255, 0.35)',
+                      borderRadius: '8px',
+                      color: '#ffffff',
                       outline: 'none',
                       fontWeight: 600,
-                      fontSize: '0.88rem',
-                      width: `${Math.max(70, editingTitle.length * 8 + 15)}px`,
+                      fontSize: '0.86rem',
+                      width: `${Math.max(70, editingTitle.length * 8 + 16)}px`,
                       textAlign: 'center',
-                      padding: '0 2px'
+                      padding: '2px 6px',
+                      boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.3)'
                     }}
                   />
                 ) : (
@@ -168,7 +166,7 @@ export default function PagesTabs({
           className="tab-add-btn" 
           onClick={handleAddClick} 
           title="New Page"
-          style={{ border: 'none', background: 'transparent', cursor: 'pointer', marginLeft: '2px' }}
+          style={{ cursor: 'pointer' }}
         >
           <Plus size={18} />
         </button>
