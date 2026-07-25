@@ -40,7 +40,7 @@ export default function Column({ id, slotIndex, boards, addBoard, addBookmark, r
   const baseStyle = { 
     display: 'flex', 
     flexDirection: 'column', 
-    gap: '24px' 
+    gap: '16px' 
   };
 
   return (

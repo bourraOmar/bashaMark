@@ -8,7 +8,7 @@ export const defaultSettings = {
   textSize: 'M', // S, M, L
   textWeight: 'Normal', // Normal, Bold
   numberOfColumns: 'Auto', // 'Auto', 4, 5, 6, 7, 8, 9
-  boardWidth: 264, // px
+  boardWidth: 250, // px
   openLinksInNewTab: true,
   hideExtraBookmarksEnabled: true,
   hideExtraBookmarks: '10', // '10', '20', 'All'
@@ -27,14 +27,18 @@ export function useSettings() {
     if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
       chrome.storage.local.get(['settings'], (result) => {
         if (result.settings) {
-          setSettingsState({ ...defaultSettings, ...result.settings });
+          const loaded = { ...defaultSettings, ...result.settings };
+          if (loaded.boardWidth === 264) loaded.boardWidth = 250;
+          setSettingsState(loaded);
         }
         setIsLoaded(true);
       });
     } else {
       const local = localStorage.getItem('settings');
       if (local) {
-        setSettingsState({ ...defaultSettings, ...JSON.parse(local) });
+        const loaded = { ...defaultSettings, ...JSON.parse(local) };
+        if (loaded.boardWidth === 264) loaded.boardWidth = 250;
+        setSettingsState(loaded);
       }
       setIsLoaded(true);
     }

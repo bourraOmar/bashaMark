@@ -240,7 +240,7 @@ function App() {
       --glass-bg: rgba(${hexToRgb(settings.boardColor)}, ${settings.opacity / 100});
       --glass-blur: blur(${settings.blur}px);
       --board-width: ${settings.boardWidth}px;
-      --font-size-base: ${settings.textSize === 'S' ? '0.85rem' : settings.textSize === 'M' ? '0.95rem' : '1.1rem'};
+      --font-size-base: ${settings.textSize === 'S' ? '0.80rem' : settings.textSize === 'M' ? '0.88rem' : '0.96rem'};
       --font-weight-base: ${settings.textWeight === 'Bold' ? '600' : '400'};
       --text-color: ${isLightBoard ? '#1e293b' : '#f8fafc'};
       --text-muted: ${isLightBoard ? '#64748b' : '#94a3b8'};

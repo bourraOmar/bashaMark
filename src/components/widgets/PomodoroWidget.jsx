@@ -54,7 +54,7 @@ export default function PomodoroWidget({ id, onDelete, settings: appSettings }) 
     cursor: 'default',
     display: 'flex',
     flexDirection: 'column',
-    padding: '16px'
+    padding: '14px 14px'
   };
 
   useEffect(() => {
@@ -125,15 +125,15 @@ export default function PomodoroWidget({ id, onDelete, settings: appSettings }) 
   return (
     <div ref={setNodeRef} style={style} className="board glass-panel">
       {/* Header / Drag Handle */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
         <div 
           {...attributes} 
           {...listeners} 
           style={{ 
             cursor: 'grab', 
-            fontWeight: 500, 
+            fontWeight: 600, 
             color: 'var(--text-color)', 
-            fontSize: '1.05rem',
+            fontSize: '0.92rem',
             flex: 1
           }}
         >
@@ -217,7 +217,7 @@ export default function PomodoroWidget({ id, onDelete, settings: appSettings }) 
       </div>
 
       {/* Tabs */}
-      <div style={{ display: 'flex', gap: '4px', marginBottom: '24px', fontSize: '0.7rem', justifyContent: 'center' }}>
+      <div style={{ display: 'flex', gap: '4px', marginBottom: '12px', fontSize: '0.68rem', justifyContent: 'center' }}>
         {Object.entries(MODES).map(([key, config]) => (
           <div 
             key={key}
@@ -246,12 +246,12 @@ export default function PomodoroWidget({ id, onDelete, settings: appSettings }) 
       </div>
 
       {/* Timer Display */}
-      <div style={{ textAlign: 'center', fontSize: '3rem', fontWeight: 300, color: 'var(--text-color)', marginBottom: '8px', letterSpacing: '-0.02em', lineHeight: 1 }}>
+      <div style={{ textAlign: 'center', fontSize: '2.35rem', fontWeight: 300, color: 'var(--text-color)', marginBottom: '6px', letterSpacing: '-0.02em', lineHeight: 1 }}>
         {formatTime(timeLeft)}
       </div>
 
       {/* Dots (Sessions) */}
-      <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginBottom: '24px' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', marginBottom: '14px' }}>
         {Array.from({ length: settings.longBreakAfter }).map((_, i) => (
           <div 
             key={i}
@@ -266,26 +266,26 @@ export default function PomodoroWidget({ id, onDelete, settings: appSettings }) 
       </div>
 
       {/* Controls */}
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '16px' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '12px' }}>
         <button 
           onClick={resetTimer}
-          style={{ width: '44px', height: '44px', borderRadius: '50%', border: 'none', backgroundColor: 'rgba(0,0,0,0.08)', color: 'var(--text-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+          style={{ width: '36px', height: '36px', borderRadius: '50%', border: 'none', backgroundColor: 'rgba(0,0,0,0.08)', color: 'var(--text-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
         >
-          <RotateCcw size={18} />
+          <RotateCcw size={15} />
         </button>
         
         <button 
           onClick={toggleTimer}
-          style={{ width: '64px', height: '64px', borderRadius: '50%', border: 'none', backgroundColor: appSettings?.primaryColor || '#5c8c9e', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: `0 4px 12px ${appSettings?.primaryColor || '#5c8c9e'}4D` }}
+          style={{ width: '48px', height: '48px', borderRadius: '50%', border: 'none', backgroundColor: appSettings?.primaryColor || '#5c8c9e', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: `0 4px 12px ${appSettings?.primaryColor || '#5c8c9e'}4D` }}
         >
-          {isRunning ? <Pause size={28} fill="currentColor" /> : <Play size={28} fill="currentColor" style={{ marginLeft: '4px' }} />}
+          {isRunning ? <Pause size={22} fill="currentColor" /> : <Play size={22} fill="currentColor" style={{ marginLeft: '3px' }} />}
         </button>
 
         <button 
           onClick={skipTimer}
-          style={{ width: '44px', height: '44px', borderRadius: '50%', border: 'none', backgroundColor: 'rgba(0,0,0,0.08)', color: 'var(--text-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+          style={{ width: '36px', height: '36px', borderRadius: '50%', border: 'none', backgroundColor: 'rgba(0,0,0,0.08)', color: 'var(--text-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
         >
-          <SkipForward size={18} />
+          <SkipForward size={15} />
         </button>
       </div>
       

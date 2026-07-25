@@ -58,10 +58,10 @@ export default function PrayerWidget({ id, board, onUpdate, onDelete, settings: 
     zIndex: isDragging ? 1000 : (isMenuOpen || isConfirmOpen || isSettingsOpen) ? 100 : undefined,
     position: 'relative',
     cursor: 'default',
-    padding: '16px',
+    padding: '14px 14px',
     display: 'flex',
     flexDirection: 'column',
-    minHeight: '280px'
+    minHeight: 'auto'
   };
 
   const fetchPrayerTimes = async () => {
@@ -164,7 +164,7 @@ export default function PrayerWidget({ id, board, onUpdate, onDelete, settings: 
 
   return (
     <div ref={setNodeRef} style={style} className="board glass-panel">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
         <div 
           {...attributes} 
           {...listeners} 
@@ -176,8 +176,8 @@ export default function PrayerWidget({ id, board, onUpdate, onDelete, settings: 
             flex: 1
           }}
         >
-          <Compass size={18} style={{ color: 'var(--text-color)', opacity: 0.8 }} />
-          <h3 style={{ fontSize: '0.95rem', fontWeight: 600, margin: 0, color: 'var(--text-color)' }}>
+          <Compass size={16} style={{ color: 'var(--text-color)', opacity: 0.8 }} />
+          <h3 style={{ fontSize: '0.92rem', fontWeight: 600, margin: 0, color: 'var(--text-color)' }}>
             Prayer Times
           </h3>
         </div>
@@ -350,13 +350,13 @@ export default function PrayerWidget({ id, board, onUpdate, onDelete, settings: 
           ) : prayerTimes ? (
             <>
               {locationDisplay && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.75rem', opacity: 0.7, marginBottom: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.75rem', opacity: 0.7, marginBottom: '6px' }}>
                   <MapPin size={12} />
                   <span>{locationDisplay}</span>
                 </div>
               )}
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
                 {Object.entries(prayerTimes).map(([name, time]) => {
                   const isNext = name === nextPrayer;
                   return (
@@ -366,9 +366,9 @@ export default function PrayerWidget({ id, board, onUpdate, onDelete, settings: 
                         display: 'flex',
                         justifyContent: 'space-between',
                         alignItems: 'center',
-                        padding: '6px 10px',
-                        borderRadius: '8px',
-                        fontSize: '0.85rem',
+                        padding: '4px 10px',
+                        borderRadius: '6px',
+                        fontSize: '0.82rem',
                         backgroundColor: isNext ? 'var(--primary-color)' : 'rgba(0,0,0,0.04)',
                         color: isNext ? 'white' : 'var(--text-color)',
                         fontWeight: isNext ? 700 : 400,
@@ -376,7 +376,7 @@ export default function PrayerWidget({ id, board, onUpdate, onDelete, settings: 
                       }}
                     >
                       <span>{name}</span>
-                      <span style={{ fontFamily: 'monospace', fontSize: '0.9rem' }}>{time}</span>
+                      <span style={{ fontFamily: 'monospace', fontSize: '0.84rem' }}>{time}</span>
                     </div>
                   );
                 })}

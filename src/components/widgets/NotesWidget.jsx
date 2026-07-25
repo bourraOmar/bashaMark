@@ -31,10 +31,10 @@ export default function NotesWidget({ id, initialText = '', onUpdate, onDelete }
     zIndex: isDragging ? 1000 : (isMenuOpen || isConfirmOpen) ? 100 : undefined,
     position: 'relative',
     cursor: 'default',
-    padding: '16px',
+    padding: '14px 14px',
     display: 'flex',
     flexDirection: 'column',
-    height: '240px'
+    height: '220px'
   };
 
   // Debounced auto-save
@@ -57,7 +57,7 @@ export default function NotesWidget({ id, initialText = '', onUpdate, onDelete }
             cursor: 'grab', 
             fontWeight: 600, 
             color: 'var(--text-color)', 
-            fontSize: '1rem',
+            fontSize: '0.92rem',
             flex: 1
           }}
         >

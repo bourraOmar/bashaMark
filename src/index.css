@@ -14,16 +14,16 @@
   --text-muted: #555;
   --primary-color: #55879a; /* Fallback */
   
-  --board-width: 264px; /* Fallback */
-  --font-size-base: 0.95rem; /* Fallback */
+  --board-width: 250px; /* Fallback */
+  --font-size-base: 0.88rem; /* Fallback */
   --font-weight-base: 400; /* Fallback */
   
   /* Layout */
   --spacing-sm: 8px;
   --spacing-md: 16px;
-  --spacing-lg: 24px;
-  --radius-md: 16px;
-  --radius-lg: 24px;
+  --spacing-lg: 20px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
   --radius-pill: 40px;
 }
 
@@ -108,7 +108,7 @@ a {
 #root {
   width: 100%;
   height: 100vh;
-  padding: 40px;
+  padding: 24px 32px;
   display: flex;
   flex-direction: column;
 }
@@ -127,7 +127,7 @@ a {
   justify-content: space-between;
   align-items: flex-start;
   width: 100%;
-  margin-bottom: 40px;
+  margin-bottom: 24px;
 }
 
 /* Tabs / Pages Pill */
@@ -144,10 +144,10 @@ a {
 }
 
 .tab-btn {
-  padding: 8px 20px;
+  padding: 6px 16px;
   border-radius: var(--radius-pill);
   font-weight: 500;
-  font-size: 0.95rem;
+  font-size: 0.88rem;
   transition: background 0.2s;
 }
 
@@ -158,8 +158,8 @@ a {
 }
 
 .tab-add-btn {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -184,14 +184,14 @@ a {
 .search-bar {
   display: flex;
   align-items: center;
-  padding: 12px 24px;
+  padding: 9px 20px;
   background: var(--glass-bg);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-pill);
   width: 100%;
-  max-width: 480px;
+  max-width: 420px;
 }
 
 .search-bar input {
@@ -200,8 +200,8 @@ a {
   border: none;
   outline: none;
   color: var(--text-color);
-  font-size: 1rem;
-  margin-left: 12px;
+  font-size: 0.92rem;
+  margin-left: 10px;
 }
 
 .search-bar input::placeholder {
@@ -213,12 +213,12 @@ a {
   display: flex;
   flex-direction: row;
   justify-content: center;
-  gap: 24px;
+  gap: 18px;
   align-items: start;
   flex: 1;
   overflow-y: auto;
   overflow-x: auto;
-  padding-bottom: 40px; 
+  padding-bottom: 24px; 
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
@@ -230,7 +230,7 @@ a {
   min-height: 500px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 16px;
 }
 
 /* Hide Scrollbar for Dashboard Grid */
@@ -240,16 +240,16 @@ a {
 
 /* Board Styling */
 .board {
-  padding: 8px 0;
+  padding: 10px 0 6px 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
 .board-header {
   font-size: var(--font-size-base);
   font-weight: 600; /* keep header bold by default or maybe var */
-  padding: 4px 16px;
+  padding: 2px 14px 6px 14px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -258,7 +258,7 @@ a {
 
 .board-header-actions {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   align-items: center;
   color: var(--text-muted);
 }
@@ -275,9 +275,9 @@ a {
 .bookmark-item {
   display: flex;
   align-items: center;
-  padding: 8px 16px;
-  gap: 12px;
-  font-size: calc(var(--font-size-base) - 0.1rem);
+  padding: 5px 14px;
+  gap: 10px;
+  font-size: calc(var(--font-size-base) - 0.05rem);
   font-weight: var(--font-weight-base);
   cursor: pointer;
   border-radius: 0; /* Edge to edge hover */
@@ -357,8 +357,8 @@ a {
 }
 
 .bookmark-icon {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   border-radius: 4px;
 }
 
