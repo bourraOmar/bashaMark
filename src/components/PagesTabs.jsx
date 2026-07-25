@@ -96,10 +96,9 @@ export default function PagesTabs({
         ref={containerRef}
         className="tabs-container"
         style={{ 
-          maxWidth: '55vw', 
+          maxWidth: '100%', 
           overflowX: 'auto',
-          scrollbarWidth: 'none',
-          msOverflowStyle: 'none',
+          overflowY: 'hidden',
           position: 'relative',
           zIndex: 50
         }}

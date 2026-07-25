@@ -123,8 +123,8 @@ a {
 
 /* Top Header */
 .top-header {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: flex-start;
   width: 100%;
   margin-bottom: 24px;
@@ -141,6 +141,30 @@ a {
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-pill);
   gap: 4px;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+.tabs-container::-webkit-scrollbar {
+  height: 5px;
+}
+
+.tabs-container::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 0 16px;
+}
+
+.tabs-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.tabs-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
 }
 
 .tab-btn {
@@ -175,10 +199,10 @@ a {
 
 /* Center Search */
 .search-container {
-  flex: 1;
   display: flex;
   justify-content: center;
-  margin: 0 20px;
+  margin: 0;
+  z-index: 10;
 }
 
 .search-bar {

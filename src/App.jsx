@@ -287,21 +287,23 @@ function App() {
       )}
       <div className="app-container">
       <header className="top-header">
-        <PagesTabs
-          pages={pages}
-          currentPageId={currentPageId}
-          onSelectPage={(id) => setCurrentPageId(id)}
-          onAddPage={() => addPage()}
-          onRenamePage={renamePage}
-          onDeletePage={(id) => {
-            deleteBoardsByPage(id);
-            deletePage(id);
-          }}
-        />
+        <div style={{ display: 'flex', justifyContent: 'flex-start', maxWidth: '100%', overflow: 'hidden', paddingRight: '16px' }}>
+          <PagesTabs
+            pages={pages}
+            currentPageId={currentPageId}
+            onSelectPage={(id) => setCurrentPageId(id)}
+            onAddPage={() => addPage()}
+            onRenamePage={renamePage}
+            onDeletePage={(id) => {
+              deleteBoardsByPage(id);
+              deletePage(id);
+            }}
+          />
+        </div>
         <div className="search-container">
           <SearchBar />
         </div>
-        <div style={{ width: '100px' }}></div>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}></div>
       </header>
       
       <main className="dashboard-grid">
