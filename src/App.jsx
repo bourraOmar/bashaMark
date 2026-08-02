@@ -116,16 +116,17 @@ function App() {
     if (!over) return;
     
     if (active.id.toString().startsWith('board-')) {
-      if (active.id === over.id) return;
       const overId = over.id.toString();
-      
-      if (overId.startsWith('board-')) {
-         const activeIndex = boards.findIndex(b => b.id === active.id);
-         const overIndex = boards.findIndex(b => b.id === over.id);
-         if (activeIndex !== -1 && overIndex !== -1) {
-            setBoards(arrayMove(boards, activeIndex, overIndex));
-         }
+      if (active.id !== over.id && overId.startsWith('board-')) {
+        const activeIndex = boards.findIndex(b => b.id === active.id);
+        const overIndex = boards.findIndex(b => b.id === over.id);
+        if (activeIndex !== -1 && overIndex !== -1) {
+          setBoards(arrayMove(boards, activeIndex, overIndex));
+          return;
+        }
       }
+      // Ensure drag-and-drop slot changes are saved to persistent storage
+      setBoards(prev => [...prev]);
       return;
     }
 

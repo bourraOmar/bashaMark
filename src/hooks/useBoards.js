@@ -57,13 +57,16 @@ export function useBoards() {
     }
   }, []);
 
-  const saveBoards = (newBoards) => {
-    setBoards(newBoards);
-    if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-      chrome.storage.local.set({ boards: newBoards });
-    } else {
-      localStorage.setItem('boards', JSON.stringify(newBoards));
-    }
+  const saveBoards = (newBoardsOrFn) => {
+    setBoards(prev => {
+      const resolved = typeof newBoardsOrFn === 'function' ? newBoardsOrFn(prev) : newBoardsOrFn;
+      if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+        chrome.storage.local.set({ boards: resolved });
+      } else {
+        localStorage.setItem('boards', JSON.stringify(resolved));
+      }
+      return resolved;
+    });
   };
 
   const addBoard = (titleOrConfig, slotIndex = null, maxSlots = 5, pageId = 'page-home') => {
