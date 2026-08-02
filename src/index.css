@@ -115,10 +115,13 @@ a {
 
 .app-container {
   width: 100%;
+  max-width: 100vw;
   height: 100%;
   display: flex;
   flex-direction: column;
   position: relative;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 /* Top Header */
@@ -289,21 +292,25 @@ a {
   gap: 18px;
   align-items: start;
   flex: 1;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
   overflow-y: auto;
-  overflow-x: auto;
+  overflow-x: hidden;
   padding-bottom: 24px; 
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
 
 .board-column {
-  flex: 0 0 var(--board-width);
-  min-width: var(--board-width);
+  flex: 0 1 var(--board-width);
+  width: var(--board-width);
   max-width: var(--board-width);
   min-height: 500px;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  box-sizing: border-box;
 }
 
 /* Hide Scrollbar for Dashboard Grid */

@@ -228,12 +228,25 @@ function App() {
     return (0.299 * r + 0.587 * g + 0.114 * b) / 255;
   };
 
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const getComputedColumns = () => {
-    if (settings.numberOfColumns !== 'Auto') return parseInt(settings.numberOfColumns, 10);
-    const screenWidth = window.innerWidth;
-    const available = screenWidth - 40;
-    const colWidth = settings.boardWidth + 24;
-    return Math.max(1, Math.floor(available / colWidth));
+    const padding = 60; 
+    const gap = 18;
+    const colWidth = settings.boardWidth + gap;
+    const maxFitting = Math.max(1, Math.floor((windowWidth - padding + gap) / colWidth));
+
+    if (settings.numberOfColumns !== 'Auto') {
+      const userCols = parseInt(settings.numberOfColumns, 10);
+      return Math.max(1, Math.min(userCols, maxFitting));
+    }
+    return maxFitting;
   };
 
   const TOTAL_SLOTS = getComputedColumns();
