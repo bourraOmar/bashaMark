@@ -51,6 +51,10 @@ export function useBoards() {
     }
   }, []);
 
+  const setBoardsState = (newBoardsOrFn) => {
+    setBoards(newBoardsOrFn);
+  };
+
   const saveBoards = (newBoardsOrFn) => {
     setBoards(prev => {
       const resolved = typeof newBoardsOrFn === 'function' ? newBoardsOrFn(prev) : newBoardsOrFn;
@@ -104,16 +108,22 @@ export function useBoards() {
   };
 
   const renameBoard = (boardId, newTitle) => {
-    const newBoards = boards.map(board => 
-      board.id === boardId ? { ...board, title: newTitle } : board
-    );
+    const newBoards = boards.map(board => {
+      if (board.id === boardId) {
+        return { ...board, title: newTitle };
+      }
+      return board;
+    });
     saveBoards(newBoards);
   };
 
   const updateBoard = (boardId, updates) => {
-    const newBoards = boards.map(board => 
-      board.id === boardId ? { ...board, ...updates } : board
-    );
+    const newBoards = boards.map(board => {
+      if (board.id === boardId) {
+        return { ...board, ...updates };
+      }
+      return board;
+    });
     saveBoards(newBoards);
   };
 
@@ -122,17 +132,14 @@ export function useBoards() {
     saveBoards(newBoards);
   };
 
-  const editBookmark = (boardId, bookmarkId, title, url, description) => {
+  const editBookmark = (boardId, bookmarkId, newTitle, newUrl) => {
     const newBoards = boards.map(board => {
       if (board.id === boardId) {
         return {
           ...board,
-          bookmarks: board.bookmarks.map(bm => {
-            if (bm.id === bookmarkId) {
-              return { ...bm, title, url, description };
-            }
-            return bm;
-          })
+          bookmarks: board.bookmarks.map(bm => 
+            bm.id === bookmarkId ? { ...bm, title: newTitle, url: newUrl } : bm
+          )
         };
       }
       return board;
@@ -158,5 +165,5 @@ export function useBoards() {
     saveBoards(newBoards);
   };
 
-  return { boards, setBoards: saveBoards, addBoard, addBookmark, renameBoard, updateBoard, deleteBoard, deleteBoardsByPage, editBookmark, deleteBookmark };
+  return { boards, setBoards: setBoardsState, saveBoards, addBoard, addBookmark, renameBoard, updateBoard, deleteBoard, deleteBoardsByPage, editBookmark, deleteBookmark };
 }

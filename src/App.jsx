@@ -17,7 +17,7 @@ import PagesTabs from './components/PagesTabs';
 import HeaderRightWidgets from './components/HeaderRightWidgets';
 
 function App() {
-  const { boards, setBoards, addBoard, addBookmark, renameBoard, updateBoard, deleteBoard, deleteBoardsByPage, editBookmark, deleteBookmark } = useBoards();
+  const { boards, setBoards, saveBoards, addBoard, addBookmark, renameBoard, updateBoard, deleteBoard, deleteBoardsByPage, editBookmark, deleteBookmark } = useBoards();
   const { settings, setSettings, isLoaded } = useSettings();
   const { pages, currentPageId, setCurrentPageId, addPage, renamePage, deletePage, isPagesLoaded } = usePages();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -137,7 +137,7 @@ function App() {
     
     if (active.id.toString().startsWith('board-')) {
       // Always persist final board positions & slot indices to Chrome storage on drop
-      setBoards(prev => [...prev]);
+      saveBoards(prev => [...prev]);
       return;
     }
 
@@ -163,7 +163,7 @@ function App() {
       const oldIndex = activeBoard.bookmarks.findIndex(b => b.id === active.id);
       const newIndex = overBoard.bookmarks.findIndex(b => b.id === over.id);
       const newBookmarks = arrayMove(activeBoard.bookmarks, oldIndex, newIndex);
-      setBoards(boards.map(b => b.id === activeBoardId ? { ...b, bookmarks: newBookmarks } : b));
+      saveBoards(boards.map(b => b.id === activeBoardId ? { ...b, bookmarks: newBookmarks } : b));
     } else {
       const activeBookmark = activeBoard.bookmarks.find(b => b.id === active.id);
       const overIndex = overBoard.bookmarks.findIndex(b => b.id === over.id);
@@ -180,9 +180,9 @@ function App() {
         }
         return board;
       });
-      setBoards(newBoards);
+      saveBoards(newBoards);
     }
-  }, [boards, setBoards]);
+  }, [boards, saveBoards]);
 
   const handleImportFolder = (folder) => {
     let newSlot = targetSlotIndex;
@@ -276,11 +276,14 @@ function App() {
     }
   `;
 
-  if (!isLoaded || !isPagesLoaded) return null;
+  const clampedBoards = useMemo(() => {
+    if (!boards) return [];
+    return boards.map(b => 
+      b.slotIndex >= TOTAL_SLOTS ? { ...b, slotIndex: Math.min(b.slotIndex, Math.max(0, TOTAL_SLOTS - 1)) } : b
+    );
+  }, [boards, TOTAL_SLOTS]);
 
-  const clampedBoards = boards.map(b => 
-    b.slotIndex >= TOTAL_SLOTS ? { ...b, slotIndex: Math.min(b.slotIndex, Math.max(0, TOTAL_SLOTS - 1)) } : b
-  );
+  if (!isLoaded || !isPagesLoaded || !boards) return null;
 
   return (
     <>
