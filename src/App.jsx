@@ -28,6 +28,13 @@ function App() {
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [isWallpaperModalOpen, setIsWallpaperModalOpen] = useState(false);
   const [isWidgetsMenuOpen, setIsWidgetsMenuOpen] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Initialize background loader
   const { background, isVideo: isVideoBackground } = useBackground();
@@ -228,13 +235,7 @@ function App() {
     return (0.299 * r + 0.587 * g + 0.114 * b) / 255;
   };
 
-  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
 
-  useEffect(() => {
-    const handleResize = () => setWindowWidth(window.innerWidth);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   const getComputedColumns = () => {
     const padding = 60; 
