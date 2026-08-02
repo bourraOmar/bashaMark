@@ -89,23 +89,36 @@ function App() {
 
       let overColumnIndex = null;
       if (overId.startsWith('column-')) {
-        overColumnIndex = over.data.current.slotIndex;
+        overColumnIndex = over.data?.current?.slotIndex ?? null;
       } else if (overId.startsWith('board-')) {
         const overBoard = boards.find(b => b.id === overId);
         if (overBoard) overColumnIndex = overBoard.slotIndex;
       }
 
-      if (overColumnIndex !== null && activeBoard.slotIndex !== overColumnIndex) {
+      if (overColumnIndex !== null) {
         setBoards(prev => {
           const activeIndex = prev.findIndex(b => b.id === activeId);
-          const newBoards = [...prev];
-          newBoards[activeIndex] = { ...newBoards[activeIndex], slotIndex: overColumnIndex };
+          if (activeIndex === -1) return prev;
           
+          const currentSlot = prev[activeIndex].slotIndex;
+          const slotChanged = currentSlot !== overColumnIndex;
+
           if (overId.startsWith('board-')) {
             const overIndex = prev.findIndex(b => b.id === overId);
-            return arrayMove(newBoards, activeIndex, overIndex);
+            if (overIndex !== -1) {
+              if (activeIndex !== overIndex || slotChanged) {
+                let updated = [...prev];
+                updated[activeIndex] = { ...updated[activeIndex], slotIndex: overColumnIndex };
+                return arrayMove(updated, activeIndex, overIndex);
+              }
+            }
+          } else if (slotChanged) {
+            let updated = [...prev];
+            updated[activeIndex] = { ...updated[activeIndex], slotIndex: overColumnIndex };
+            return updated;
           }
-          return newBoards;
+
+          return prev;
         });
       }
     }
@@ -116,16 +129,7 @@ function App() {
     if (!over) return;
     
     if (active.id.toString().startsWith('board-')) {
-      const overId = over.id.toString();
-      if (active.id !== over.id && overId.startsWith('board-')) {
-        const activeIndex = boards.findIndex(b => b.id === active.id);
-        const overIndex = boards.findIndex(b => b.id === over.id);
-        if (activeIndex !== -1 && overIndex !== -1) {
-          setBoards(arrayMove(boards, activeIndex, overIndex));
-          return;
-        }
-      }
-      // Ensure drag-and-drop slot changes are saved to persistent storage
+      // Always persist final board positions & slot indices to Chrome storage on drop
       setBoards(prev => [...prev]);
       return;
     }
