@@ -278,9 +278,20 @@ function App() {
 
   if (!isLoaded || !isPagesLoaded) return null;
 
-  const clampedBoards = boards.map(b => 
+  const initialClamped = boards.map(b => 
     b.slotIndex >= TOTAL_SLOTS ? { ...b, slotIndex: Math.min(b.slotIndex, Math.max(0, TOTAL_SLOTS - 1)) } : b
   );
+
+  const currentPageBoards = initialClamped.filter(b => (b.pageId || 'page-home') === currentPageId);
+  const usedSlots = Array.from(new Set(currentPageBoards.map(b => b.slotIndex))).sort((a, b) => a - b);
+  const slotMap = new Map();
+  usedSlots.forEach((oldSlot, newIndex) => slotMap.set(oldSlot, newIndex));
+
+  const clampedBoards = initialClamped.map(b => {
+    if ((b.pageId || 'page-home') !== currentPageId) return b;
+    const newSlot = slotMap.has(b.slotIndex) ? slotMap.get(b.slotIndex) : b.slotIndex;
+    return newSlot !== b.slotIndex ? { ...b, slotIndex: newSlot } : b;
+  });
 
   return (
     <>

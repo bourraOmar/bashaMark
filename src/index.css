@@ -43,26 +43,34 @@
   padding: 0;
 }
 
+html, body, #root {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden !important;
+}
+
 body {
   font-family: var(--font-family);
   color: var(--text-color);
-  /* Matching the beautiful sky background from the screenshot */
   background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
-  min-height: 100vh;
-  margin: 0;
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
+  overflow: hidden !important;
 }
 
-/* Utility to hide scrollbars */
-.hide-scrollbar::-webkit-scrollbar {
-  display: none;
+/* Global utility to hide all scrollbars */
+*::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
-.hide-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+
+* {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
 }
 
 @media (prefers-color-scheme: dark) {
