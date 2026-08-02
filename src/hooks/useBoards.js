@@ -21,12 +21,9 @@ export function useBoards() {
     if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
       chrome.storage.local.get(['boards'], (result) => {
         if (result.boards) {
-          // Migration: Ensure all boards have a slotIndex < 5 and type
+          // Migration: Ensure all boards have valid slotIndex and type
           const migrated = result.boards.map((b, i) => {
             let res = b.slotIndex !== undefined ? b : { ...b, slotIndex: i };
-            if (res.slotIndex >= 5) {
-              res = { ...res, slotIndex: res.slotIndex % 5 };
-            }
             if (!res.type) res.type = 'board';
             if (!res.pageId) res.pageId = 'page-home';
             return res;
@@ -43,9 +40,6 @@ export function useBoards() {
         const parsed = JSON.parse(local);
         const migrated = parsed.map((b, i) => {
           let res = b.slotIndex !== undefined ? b : { ...b, slotIndex: i };
-          if (res.slotIndex >= 5) {
-            res = { ...res, slotIndex: res.slotIndex % 5 };
-          }
           if (!res.type) res.type = 'board';
           if (!res.pageId) res.pageId = 'page-home';
           return res;

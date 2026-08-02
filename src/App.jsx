@@ -265,7 +265,7 @@ function App() {
   if (!isLoaded || !isPagesLoaded) return null;
 
   const clampedBoards = boards.map(b => 
-    b.slotIndex >= TOTAL_SLOTS ? { ...b, slotIndex: b.slotIndex % Math.max(1, TOTAL_SLOTS) } : b
+    b.slotIndex >= TOTAL_SLOTS ? { ...b, slotIndex: Math.min(b.slotIndex, Math.max(0, TOTAL_SLOTS - 1)) } : b
   );
 
   return (
