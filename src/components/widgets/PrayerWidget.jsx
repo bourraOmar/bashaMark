@@ -27,10 +27,9 @@ export default function PrayerWidget({ id, board, onUpdate, onDelete, settings: 
   const menuRef = useRef(null);
 
   // Settings from board state or defaults
-  const [locationType, setLocationType] = useState(board?.locationType || 'auto');
-  const [city, setCity] = useState(board?.city || 'Mecca');
-  const [country, setCountry] = useState(board?.country || 'Saudi Arabia');
   const [method, setMethod] = useState(board?.method !== undefined ? board?.method : 2);
+  const [city, setCity] = useState(board?.city || 'Safi');
+  const [country, setCountry] = useState(board?.country || 'Morocco');
 
   // Fetched data state
   const [prayerTimes, setPrayerTimes] = useState(null);
@@ -68,47 +67,10 @@ export default function PrayerWidget({ id, board, onUpdate, onDelete, settings: 
     setLoading(true);
     setError(null);
     try {
-      let url = '';
-      let locLabel = '';
-      
-      if (locationType === 'auto') {
-        try {
-          let lat, lon, cityName, countryName;
-          try {
-            // Primary: GeoJS (Open CORS enabled by default, free & very reliable)
-            const geoRes = await fetch('https://get.geojs.io/v1/ip/geo.json');
-            const geoData = await geoRes.json();
-            if (geoData.latitude && geoData.longitude) {
-              lat = parseFloat(geoData.latitude);
-              lon = parseFloat(geoData.longitude);
-              cityName = geoData.city || 'Local';
-              countryName = geoData.country || 'Region';
-            }
-          } catch (e1) {
-            // Secondary fallback: ipwhois (Open CORS enabled)
-            const backupRes = await fetch('https://ipwhois.app/json/');
-            const backupData = await backupRes.json();
-            if (backupData.latitude && backupData.longitude) {
-              lat = backupData.latitude;
-              lon = backupData.longitude;
-              cityName = backupData.city || 'Local';
-              countryName = backupData.country || 'Region';
-            }
-          }
-          
-          if (lat && lon) {
-            url = `https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=${method}`;
-            locLabel = `${cityName}, ${countryName}`;
-          }
-        } catch (e) {
-          console.warn('Auto Geo-IP failed, falling back to City/Country API:', e);
-        }
-      }
-
-      if (!url) {
-        url = `https://api.aladhan.com/v1/timingsByCity?city=${encodeURIComponent(city)}&country=${encodeURIComponent(country)}&method=${method}`;
-        locLabel = `${city}, ${country}`;
-      }
+      const targetCity = city;
+      const targetCountry = country;
+      const url = `https://api.aladhan.com/v1/timingsByCity?city=${encodeURIComponent(targetCity)}&country=${encodeURIComponent(targetCountry)}&method=${method}`;
+      const locLabel = `${targetCity}, ${targetCountry}`;
 
       const res = await fetch(url);
       const data = await res.json();
@@ -135,10 +97,10 @@ export default function PrayerWidget({ id, board, onUpdate, onDelete, settings: 
 
   useEffect(() => {
     fetchPrayerTimes();
-  }, [board?.locationType, board?.city, board?.country, board?.method]);
+  }, [city, country, method]);
 
   const handleSaveSettings = () => {
-    onUpdate(id, { locationType, city, country, method });
+    onUpdate(id, { method, city, country });
     setIsSettingsOpen(false);
   };
 
@@ -231,66 +193,44 @@ export default function PrayerWidget({ id, board, onUpdate, onDelete, settings: 
 
       {isSettingsOpen ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', flex: 1, fontSize: '0.85rem' }}>
-          <div>
-            <label style={{ fontWeight: 600, display: 'block', marginBottom: '6px', color: 'var(--text-muted)' }}>LOCATION MODE</label>
-            <div style={{ display: 'flex', gap: '4px' }}>
-              <button
-                type="button"
-                onClick={() => setLocationType('auto')}
+          <div style={{ display: 'flex', gap: '8px', marginBottom: '14px' }}>
+            <div style={{ flex: 1 }}>
+              <label style={{ fontWeight: 600, display: 'block', marginBottom: '4px', color: 'var(--text-muted)' }}>CITY</label>
+              <input
+                type="text"
+                value={city}
+                onChange={e => setCity(e.target.value)}
                 style={{
-                  flex: 1,
-                  padding: '6px',
+                  width: '100%',
+                  padding: '8px',
                   borderRadius: '8px',
-                  border: 'none',
-                  cursor: 'pointer',
-                  backgroundColor: locationType === 'auto' ? 'var(--primary-color)' : 'rgba(0,0,0,0.1)',
-                  color: locationType === 'auto' ? 'white' : 'var(--text-color)',
-                  fontWeight: locationType === 'auto' ? 600 : 400
+                  border: '1px solid var(--glass-border)',
+                  background: 'rgba(0,0,0,0.2)',
+                  color: 'var(--text-color)',
+                  outline: 'none',
+                  fontSize: '0.8rem'
                 }}
-              >
-                Auto (IP)
-              </button>
-              <button
-                type="button"
-                onClick={() => setLocationType('manual')}
+              />
+            </div>
+            <div style={{ flex: 1 }}>
+              <label style={{ fontWeight: 600, display: 'block', marginBottom: '4px', color: 'var(--text-muted)' }}>COUNTRY</label>
+              <input
+                type="text"
+                value={country}
+                onChange={e => setCountry(e.target.value)}
                 style={{
-                  flex: 1,
-                  padding: '6px',
+                  width: '100%',
+                  padding: '8px',
                   borderRadius: '8px',
-                  border: 'none',
-                  cursor: 'pointer',
-                  backgroundColor: locationType === 'manual' ? 'var(--primary-color)' : 'rgba(0,0,0,0.1)',
-                  color: locationType === 'manual' ? 'white' : 'var(--text-color)',
-                  fontWeight: locationType === 'manual' ? 600 : 400
+                  border: '1px solid var(--glass-border)',
+                  background: 'rgba(0,0,0,0.2)',
+                  color: 'var(--text-color)',
+                  outline: 'none',
+                  fontSize: '0.8rem'
                 }}
-              >
-                Manual
-              </button>
+              />
             </div>
           </div>
-
-          {locationType === 'manual' && (
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <div style={{ flex: 1 }}>
-                <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>City</label>
-                <input 
-                  type="text"
-                  value={city}
-                  onChange={e => setCity(e.target.value)}
-                  style={{ width: '100%', padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--glass-border)', background: 'rgba(0,0,0,0.1)', color: 'var(--text-color)', outline: 'none', fontSize: '0.8rem' }}
-                />
-              </div>
-              <div style={{ flex: 1 }}>
-                <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>Country</label>
-                <input 
-                  type="text"
-                  value={country}
-                  onChange={e => setCountry(e.target.value)}
-                  style={{ width: '100%', padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--glass-border)', background: 'rgba(0,0,0,0.1)', color: 'var(--text-color)', outline: 'none', fontSize: '0.8rem' }}
-                />
-              </div>
-            </div>
-          )}
 
           <div>
             <label style={{ fontWeight: 600, display: 'block', marginBottom: '4px', color: 'var(--text-muted)' }}>CALCULATION METHOD</label>

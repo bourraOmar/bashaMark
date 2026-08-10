@@ -85,7 +85,7 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
 
   const getSliderBackground = (value, min, max) => {
     const percentage = ((value - min) / (max - min)) * 100;
-    return `linear-gradient(to right, #cbd5e0 ${percentage}%, rgba(255,255,255,0.12) ${percentage}%)`;
+    return `linear-gradient(to right, var(--primary-color) ${percentage}%, rgba(255,255,255,0.12) ${percentage}%)`;
   };
 
   return (
@@ -154,30 +154,19 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
             />
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-            <label style={labelStyle}>Blur</label>
-            <div style={toggleGroupStyle}>
-              {[
-                { label: 'None', value: 0 },
-                { label: 'Low', value: 8 },
-                { label: 'Med', value: 24 },
-                { label: 'High', value: 48 }
-              ].map(opt => {
-                // If it's an old custom value, highlight the closest option
-                const closestValue = [0, 8, 24, 48].reduce((prev, curr) => 
-                  Math.abs(curr - settings.blur) < Math.abs(prev - settings.blur) ? curr : prev
-                );
-                return (
-                  <button 
-                    key={opt.label}
-                    onClick={() => handleChange('blur', opt.value)}
-                    style={toggleBtnStyle(closestValue === opt.value)}
-                  >
-                    {opt.label}
-                  </button>
-                );
-              })}
+          <div style={{ marginBottom: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <label style={labelStyle}>Blur</label>
+              <span style={valueStyle}>{settings.blur}px</span>
             </div>
+            <input 
+              type="range" 
+              min="0" max="64" 
+              value={settings.blur} 
+              onChange={(e) => handleChange('blur', parseInt(e.target.value, 10))}
+              className="custom-slider"
+              style={{ background: getSliderBackground(settings.blur, 0, 64) }}
+            />
           </div>
 
           <div style={{ display: 'flex', gap: '12px' }}>
@@ -348,21 +337,7 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
 
         <div style={dividerStyle} />
 
-        {/* REGION SECTION */}
-        <div className="settings-section">
-          <SectionTitle>REGION</SectionTitle>
-          
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <button style={btnOutlineStyle}>
-              Auto-detect
-            </button>
-            <button style={btnOutlineStyle}>
-              Advanced ›
-            </button>
-          </div>
-        </div>
 
-        <div style={dividerStyle} />
 
         {/* SIDEBAR SECTION */}
         <div className="settings-section">
@@ -385,13 +360,13 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
           
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
             <label style={labelStyle}>Version</label>
-            <span style={valueStyle}>1.3.1</span>
+            <span style={valueStyle}>0.0.0</span>
           </div>
           
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <label style={labelStyle}>Contact</label>
-            <a href="mailto:markmezapp@gmail.com" style={{ ...valueStyle, textDecoration: 'none' }}>
-              markmezapp@gmail.com
+            <a href="mailto:obourra662@gmail.com" style={{ ...valueStyle, textDecoration: 'none' }}>
+              obourra662@gmail.com
             </a>
           </div>
         </div>
@@ -459,7 +434,7 @@ const ToggleSwitch = ({ checked, onChange }) => (
     style={{
       width: '40px',
       height: '22px',
-      backgroundColor: checked ? '#b47b44' : 'rgba(255, 255, 255, 0.1)',
+      backgroundColor: checked ? 'var(--primary-color)' : 'rgba(100, 116, 139, 0.45)',
       borderRadius: '11px',
       position: 'relative',
       cursor: 'pointer',
@@ -534,7 +509,7 @@ const CustomSelect = ({ value, options, onChange }) => {
                 padding: '6px 12px',
                 fontSize: '0.9rem',
                 color: String(opt.value) === String(value) ? '#fff' : 'rgba(255,255,255,0.7)',
-                backgroundColor: String(opt.value) === String(value) ? '#2b6cb0' : 'transparent',
+                backgroundColor: String(opt.value) === String(value) ? 'var(--primary-color)' : 'transparent',
                 cursor: 'pointer',
                 transition: 'background-color 0.2s',
                 userSelect: 'none'

@@ -2,6 +2,27 @@ import { useState, useCallback, useEffect, useMemo } from 'react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { Plus, Settings, X, Search, Image as ImageIcon, Grid, Bookmark, Trash2, Menu } from 'lucide-react';
+
+const customRestrictToWindowMargins = ({ transform, draggingNodeRect, windowRect }) => {
+  if (!draggingNodeRect) return transform;
+  
+  const winWidth = windowRect?.width ?? (typeof window !== 'undefined' ? window.innerWidth : 1200);
+  const winHeight = windowRect?.height ?? (typeof window !== 'undefined' ? window.innerHeight : 800);
+  
+  const margin = 48; // 48px solid barrier from window borders
+  
+  const minX = margin - draggingNodeRect.left;
+  const maxX = (winWidth - margin) - (draggingNodeRect.left + draggingNodeRect.width);
+  
+  const minY = 10 - draggingNodeRect.top;
+  const maxY = (winHeight - 10) - (draggingNodeRect.top + draggingNodeRect.height);
+  
+  return {
+    ...transform,
+    x: Math.min(Math.max(transform.x, minX), Math.max(minX, maxX)),
+    y: Math.min(Math.max(transform.y, minY), Math.max(minY, maxY)),
+  };
+};
 import SearchBar from './components/widgets/SearchBar';
 import Column from './components/Column';
 import Modal from './components/Modal';
@@ -15,9 +36,12 @@ import { useSettings } from './hooks/useSettings';
 import { usePages } from './hooks/usePages';
 import PagesTabs from './components/PagesTabs';
 import HeaderRightWidgets from './components/HeaderRightWidgets';
+import TrashModal from './components/TrashModal';
+import { useTrash } from './hooks/useTrash';
 
 function App() {
   const { boards, setBoards, saveBoards, addBoard, addBookmark, renameBoard, updateBoard, deleteBoard, deleteBoardsByPage, editBookmark, deleteBookmark } = useBoards();
+  const { trashItems, addToTrash, removeFromTrash, emptyTrash } = useTrash();
   const { settings, setSettings, isLoaded } = useSettings();
   const { pages, currentPageId, setCurrentPageId, addPage, renamePage, deletePage, isPagesLoaded } = usePages();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -28,7 +52,9 @@ function App() {
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [isWallpaperModalOpen, setIsWallpaperModalOpen] = useState(false);
   const [isWidgetsMenuOpen, setIsWidgetsMenuOpen] = useState(false);
+  const [isTrashModalOpen, setIsTrashModalOpen] = useState(false);
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+  const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
@@ -212,12 +238,32 @@ function App() {
     setTargetSlotIndex(null);
   };
 
+  const handleDeleteBoard = (boardId) => {
+    const boardToDelete = boards?.find(b => b.id === boardId);
+    if (boardToDelete && boardToDelete.type === 'board') {
+      addToTrash(boardToDelete);
+    }
+    deleteBoard(boardId);
+  };
+  
+  const handleRestoreFromTrash = (item) => {
+    if (!boards?.find(b => b.id === item.id)) {
+      saveBoards([...(boards || []), item]);
+    }
+    removeFromTrash(item.id);
+  };
+
+  const handleDeletePage = (pageId) => {
+    const boardsToDelete = boards?.filter(b => (b.pageId || 'page-home') === pageId && b.type === 'board') || [];
+    boardsToDelete.forEach(b => addToTrash(b));
+    deleteBoardsByPage(pageId);
+    deletePage(pageId);
+  };
+
   const openModalForSlot = (index) => {
     setTargetSlotIndex(index);
     setIsModalOpen(true);
   };
-
-  if (!boards) return null;
 
   // Convert hex to rgb for rgba usage
   const hexToRgb = (hex) => {
@@ -238,7 +284,7 @@ function App() {
 
 
   const getComputedColumns = () => {
-    const padding = 60; 
+    const padding = 140; 
     const gap = 18;
     const colWidth = settings.boardWidth + gap;
     const maxFitting = Math.max(1, Math.floor((windowWidth - padding + gap) / colWidth));
@@ -251,6 +297,7 @@ function App() {
   };
 
   const TOTAL_SLOTS = getComputedColumns();
+  const sideMarginWidth = Math.max(32, Math.floor((windowWidth - (TOTAL_SLOTS * (settings.boardWidth + 18) - 18)) / 2) - 12);
 
   const appStyle = {
     // We'll inject these globally into :root using a style tag to ensure backdrop-filter repaints properly
@@ -262,6 +309,11 @@ function App() {
     :root {
       --primary-color: ${settings.primaryColor};
       --glass-bg: rgba(${hexToRgb(settings.boardColor)}, ${settings.opacity / 100});
+      --glass-bg-hover: rgba(${hexToRgb(settings.boardColor)}, ${Math.min(1, (settings.opacity / 100) + 0.15)});
+      --dropdown-bg: rgba(${hexToRgb(settings.boardColor)}, ${Math.max(0.92, settings.opacity / 100)});
+      --dropdown-border: ${isLightBoard ? 'rgba(0, 0, 0, 0.15)' : 'rgba(255, 255, 255, 0.22)'};
+      --dropdown-shadow: ${isLightBoard ? '0 14px 40px rgba(0, 0, 0, 0.25)' : '0 14px 50px rgba(0, 0, 0, 0.65)'};
+      --item-hover-bg: ${isLightBoard ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.12)'};
       --glass-blur: blur(${settings.blur}px);
       --board-width: ${settings.boardWidth}px;
       --font-size-base: ${settings.textSize === 'S' ? '0.80rem' : settings.textSize === 'M' ? '0.88rem' : '0.96rem'};
@@ -270,9 +322,9 @@ function App() {
       --text-muted: ${isLightBoard ? '#64748b' : '#94a3b8'};
     }
     
-    .glass-panel, .tabs-container, .search-bar, .fab, .dropdown-menu, .placeholder-board:hover {
-      backdrop-filter: blur(${settings.blur}px) !important;
-      -webkit-backdrop-filter: blur(${settings.blur}px) !important;
+    .glass-panel, .tabs-container, .search-bar, .fab, .dropdown-menu, .placeholder-board:hover, .header-pill-widget {
+      backdrop-filter: blur(${Math.max(16, settings.blur)}px) !important;
+      -webkit-backdrop-filter: blur(${Math.max(16, settings.blur)}px) !important;
     }
   `;
 
@@ -309,6 +361,12 @@ function App() {
         />
       )}
       <div className="app-container">
+      {isDragging && (
+        <>
+          <div className="drop-barrier" style={{ width: `${sideMarginWidth}px`, left: 0 }} title="Drop not allowed here" />
+          <div className="drop-barrier" style={{ width: `${sideMarginWidth}px`, right: 0 }} title="Drop not allowed here" />
+        </>
+      )}
       <header className="top-header">
         <div style={{ display: 'flex', justifyContent: 'flex-start', maxWidth: '100%', overflow: 'hidden', paddingRight: '16px' }}>
           <PagesTabs
@@ -317,10 +375,7 @@ function App() {
             onSelectPage={(id) => setCurrentPageId(id)}
             onAddPage={() => addPage()}
             onRenamePage={renamePage}
-            onDeletePage={(id) => {
-              deleteBoardsByPage(id);
-              deletePage(id);
-            }}
+            onDeletePage={handleDeletePage}
           />
         </div>
         <div className="search-container">
@@ -331,12 +386,18 @@ function App() {
         </div>
       </header>
       
-      <main className="dashboard-grid">
+      <main className="dashboard-grid" style={{ paddingRight: settings?.alwaysShowAllButtons ? '72px' : '16px' }}>
         <DndContext 
           sensors={sensors} 
           collisionDetection={customCollisionDetection} 
+          modifiers={[customRestrictToWindowMargins]}
+          onDragStart={() => setIsDragging(true)}
           onDragOver={handleDragOver}
-          onDragEnd={handleDragEnd}
+          onDragEnd={(event) => {
+            setIsDragging(false);
+            handleDragEnd(event);
+          }}
+          onDragCancel={() => setIsDragging(false)}
         >
           {Array.from({ length: TOTAL_SLOTS }).map((_, i) => {
             const columnBoards = clampedBoards.filter(b => (b.pageId || 'page-home') === currentPageId && b.slotIndex === i);
@@ -351,7 +412,7 @@ function App() {
                 addBookmark={addBookmark}
                 renameBoard={renameBoard}
                 updateBoard={updateBoard}
-                deleteBoard={deleteBoard}
+                deleteBoard={handleDeleteBoard}
                 editBookmark={editBookmark}
                 deleteBookmark={deleteBookmark}
                 settings={settings}
@@ -384,7 +445,7 @@ function App() {
       </Modal>
 
       <div className="fab-container">
-        {isFabMenuOpen && (
+        {(isFabMenuOpen || settings?.alwaysShowAllButtons) && (
           <div className="fab-menu-items">
             <button className="fab" title="Search" onClick={() => {
               setIsFabMenuOpen(false);
@@ -402,12 +463,17 @@ function App() {
               setIsFabMenuOpen(false);
               setIsModalOpen(true);
             }}><Bookmark size={20} /></button>
-            <button className="fab" title="Clear Data"><Trash2 size={20} /></button>
+            <button className="fab" title="Trash" onClick={() => {
+              setIsFabMenuOpen(false);
+              setIsTrashModalOpen(true);
+            }}><Trash2 size={20} /></button>
           </div>
         )}
-        <button className="fab" title="Menu" onClick={() => setIsFabMenuOpen(!isFabMenuOpen)}>
-          {isFabMenuOpen ? <X size={20} /> : <Menu size={20} />}
-        </button>
+        {!settings?.alwaysShowAllButtons && (
+          <button className="fab" title="Menu" onClick={() => setIsFabMenuOpen(!isFabMenuOpen)}>
+            {isFabMenuOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        )}
         <button className="fab fab-primary" title="Settings" onClick={() => setIsSettingsModalOpen(true)}>
           <Settings size={20} />
         </button>
@@ -422,6 +488,14 @@ function App() {
       />
       <WidgetsMenu isOpen={isWidgetsMenuOpen} onClose={() => setIsWidgetsMenuOpen(false)} addBoard={(config, slot) => addBoard(config, slot, TOTAL_SLOTS, currentPageId)} />
       <SettingsModal isOpen={isSettingsModalOpen} onClose={() => setIsSettingsModalOpen(false)} settings={settings} setSettings={setSettings} boards={boards} />
+      <TrashModal 
+        isOpen={isTrashModalOpen}
+        onClose={() => setIsTrashModalOpen(false)}
+        trashItems={trashItems}
+        onRestore={handleRestoreFromTrash}
+        onEmptyTrash={emptyTrash}
+        onPermanentDelete={removeFromTrash}
+      />
     </div>
     </>
   );

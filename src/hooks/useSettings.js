@@ -15,7 +15,7 @@ export const defaultSettings = {
   showDescriptions: true,
   quickSaveBoard: 'Barre de favoris',
   quickSaveShortcut: 'Not set',
-  region: 'Auto-detect',
+  region: 'Safi, Morocco',
   alwaysShowAllButtons: false
 };
 

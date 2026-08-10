@@ -6,6 +6,7 @@
   /* Glassmorphism Variables */
   --glass-bg: rgba(255, 255, 255, 0.85); /* Fallback */
   --glass-bg-hover: rgba(255, 255, 255, 0.95);
+  --item-hover-bg: rgba(0, 0, 0, 0.08);
   --glass-border: rgba(255, 255, 255, 0.4);
   --glass-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   --glass-blur: blur(24px); /* Fallback */
@@ -31,6 +32,7 @@
   :root {
     --glass-bg: rgba(15, 23, 42, 0.85);
     --glass-bg-hover: rgba(15, 23, 42, 0.95);
+    --item-hover-bg: rgba(255, 255, 255, 0.12);
     --glass-border: rgba(255, 255, 255, 0.1);
     --text-color: #f1f1f1;
     --text-muted: #aaa;
@@ -96,7 +98,7 @@ body {
 }
 
 .glass-item:hover {
-  background: rgba(0, 0, 0, 0.05);
+  background: var(--item-hover-bg);
 }
 
 button {
@@ -146,10 +148,10 @@ a {
   display: inline-flex;
   align-items: center;
   padding: 4px;
-  background: rgba(35, 42, 54, 0.55);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-pill);
   gap: 3px;
   max-width: 100%;
@@ -168,7 +170,8 @@ a {
   border-radius: 12px;
   font-weight: 500;
   font-size: 0.86rem;
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--text-color);
+  opacity: 0.8;
   letter-spacing: 0.01em;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
@@ -178,16 +181,18 @@ a {
 }
 
 .tab-btn:hover:not(.active) {
-  background: rgba(255, 255, 255, 0.08);
-  color: #ffffff;
+  background: var(--item-hover-bg);
+  color: var(--text-color);
+  opacity: 1;
 }
 
 .tab-btn.active {
-  background: #141c2b;
+  background: var(--primary-color);
   color: #ffffff;
+  opacity: 1;
   font-weight: 700;
   border-radius: 12px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
 }
 
 .tab-add-btn {
@@ -197,7 +202,7 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--text-muted);
   background: transparent;
   border: none;
   transition: all 0.2s ease;
@@ -206,8 +211,8 @@ a {
 }
 
 .tab-add-btn:hover {
-  background: rgba(255, 255, 255, 0.12);
-  color: #ffffff;
+  background: var(--item-hover-bg);
+  color: var(--text-color);
   transform: rotate(90deg);
 }
 
@@ -223,16 +228,16 @@ a {
   display: flex;
   align-items: center;
   padding: 6px 16px;
-  background: rgba(35, 42, 54, 0.55);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-pill);
   width: 100%;
   min-width: 320px;
   max-width: 400px;
   height: 38px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--glass-shadow);
 }
 
 .search-bar input {
@@ -240,13 +245,13 @@ a {
   background: transparent;
   border: none;
   outline: none;
-  color: #ffffff;
+  color: var(--text-color);
   font-size: 0.88rem;
   margin-left: 10px;
 }
 
 .search-bar input::placeholder {
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--text-muted);
 }
 
 /* Header Right Pill Widgets */
@@ -256,27 +261,27 @@ a {
   align-items: center;
   justify-content: center;
   padding: 5px 16px;
-  background: rgba(35, 42, 54, 0.55);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
   border-radius: 14px;
   min-width: 95px;
   height: 38px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--glass-shadow);
   transition: all 0.2s ease;
   user-select: none;
 }
 
 .header-pill-widget:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.15);
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border);
 }
 
 .pill-widget-label {
   font-size: 0.58rem;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--text-muted);
   letter-spacing: 0.05em;
   text-transform: uppercase;
   white-space: nowrap;
@@ -286,7 +291,7 @@ a {
 .pill-widget-value {
   font-size: 0.92rem;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--text-color);
   margin-top: 1px;
   line-height: 1.1;
   white-space: nowrap;
@@ -296,7 +301,7 @@ a {
 .dashboard-grid {
   display: flex;
   flex-direction: row;
-  justify-content: center;
+  justify-content: safe center;
   gap: 18px;
   align-items: start;
   flex: 1;
@@ -305,7 +310,7 @@ a {
   box-sizing: border-box;
   overflow-y: auto;
   overflow-x: hidden;
-  padding-bottom: 24px; 
+  padding: 0 16px 24px 16px; 
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
@@ -390,18 +395,29 @@ a {
   opacity: 1;
 }
 
+.board-column:hover,
+.board-column:focus-within,
+.board:hover,
+.board:focus-within,
+.bookmark-item:hover,
+.bookmark-item:focus-within,
+.widget:hover,
+.widget:focus-within {
+  z-index: 9999 !important;
+}
+
 .dropdown-menu {
   position: absolute;
   top: 100%;
   right: 0;
   margin-top: 8px;
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
+  background: var(--dropdown-bg, var(--glass-bg)) !important;
+  border: 1px solid var(--dropdown-border, var(--glass-border)) !important;
   border-radius: 12px;
   padding: 8px 0;
   min-width: 180px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-  z-index: 100;
+  box-shadow: var(--dropdown-shadow, 0 10px 40px rgba(0, 0, 0, 0.45)) !important;
+  z-index: 10000 !important;
   display: flex;
   flex-direction: column;
 }
@@ -421,12 +437,12 @@ a {
 }
 
 .dropdown-item:hover {
-  background: rgba(0, 0, 0, 0.1);
+  background: var(--item-hover-bg, rgba(0, 0, 0, 0.1)) !important;
 }
 
 .dropdown-divider {
   height: 1px;
-  background: var(--glass-border);
+  background: var(--dropdown-border, var(--glass-border));
   margin: 6px 16px;
 }
 
@@ -435,12 +451,12 @@ a {
 }
 
 .dropdown-item.danger:hover {
-  background: rgba(220, 53, 69, 0.1);
+  background: rgba(220, 53, 69, 0.15) !important;
 }
 
 @media (prefers-color-scheme: dark) {
   .dropdown-menu {
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    box-shadow: var(--dropdown-shadow, 0 12px 45px rgba(0, 0, 0, 0.6)) !important;
   }
 }
 
@@ -473,10 +489,22 @@ a {
   color: rgba(255,255,255,0.8);
 }
 
+/* Invisible Drop Barriers on Screen Edges during Dragging */
+.drop-barrier {
+  position: fixed;
+  top: 0;
+  height: 100vh;
+  z-index: 99999 !important;
+  cursor: no-drop !important;
+  cursor: not-allowed !important;
+  background: transparent;
+  pointer-events: auto !important;
+}
+
 /* Floating Action Buttons (FAB) */
 .fab-container {
   position: absolute;
-  bottom: 0;
+  bottom: 4px;
   right: 0;
   display: flex;
   flex-direction: column;

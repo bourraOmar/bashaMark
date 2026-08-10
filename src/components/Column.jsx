@@ -7,6 +7,7 @@ import NotesWidget from './widgets/NotesWidget';
 import CalendarWidget from './widgets/CalendarWidget';
 import PomodoroWidget from './widgets/PomodoroWidget';
 import PrayerWidget from './widgets/PrayerWidget';
+import WeatherWidget from './widgets/WeatherWidget';
 import { PenTool, Calendar, Clock } from 'lucide-react';
 
 export default function Column({ id, slotIndex, boards, addBoard, addBookmark, renameBoard, updateBoard, deleteBoard, editBookmark, deleteBookmark, settings }) {
@@ -58,6 +59,9 @@ export default function Column({ id, slotIndex, boards, addBoard, addBookmark, r
           }
           if (board.type === 'prayer') {
             return <PrayerWidget key={board.id} id={board.id} board={board} onUpdate={updateBoard} onDelete={() => deleteBoard(board.id)} settings={settings} />;
+          }
+          if (board.type === 'weather') {
+            return <WeatherWidget key={board.id} id={board.id} board={board} onUpdate={updateBoard} onDelete={() => deleteBoard(board.id)} settings={settings} />;
           }
           
           return (
