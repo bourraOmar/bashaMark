@@ -145,7 +145,7 @@ export default function PrayerWidget({ id, board, onUpdate, onDelete }) {
           </h3>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+        <div className="board-header-actions" style={{ gap: '4px' }} onPointerDown={(e) => e.stopPropagation()}>
           <button 
             onClick={() => setIsSettingsOpen(!isSettingsOpen)}
             title="Configure Location & Method"

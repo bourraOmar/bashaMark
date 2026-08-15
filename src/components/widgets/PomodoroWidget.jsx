@@ -139,8 +139,8 @@ export default function PomodoroWidget({ id, onDelete, settings: appSettings }) 
         >
           Pomodoro
         </div>
-        <div style={{ display: 'flex', gap: '8px', color: 'var(--text-muted)', opacity: 0.7 }}>
-          <div style={{ position: 'relative' }} ref={settingsRef} onPointerDown={(e) => e.stopPropagation()}>
+        <div className="board-header-actions" style={{ gap: '8px' }} onPointerDown={(e) => e.stopPropagation()}>
+          <div style={{ position: 'relative' }} ref={settingsRef}>
             <button onClick={() => {
               if (!isSettingsOpen && settingsRef.current) {
                 const rect = settingsRef.current.getBoundingClientRect();
@@ -187,7 +187,7 @@ export default function PomodoroWidget({ id, onDelete, settings: appSettings }) 
             )}
           </div>
 
-          <div style={{ position: 'relative' }} ref={menuRef} onPointerDown={(e) => e.stopPropagation()}>
+          <div style={{ position: 'relative' }} ref={menuRef}>
             <button onClick={() => {
               if (!isMenuOpen && menuRef.current) {
                 const rect = menuRef.current.getBoundingClientRect();

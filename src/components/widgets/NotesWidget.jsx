@@ -4,7 +4,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { MoreHorizontal, Trash2 } from 'lucide-react';
 import ConfirmModal from '../ConfirmModal';
 
-export default function NotesWidget({ id, initialText = '', onUpdate, onDelete }) {
+export default function NotesWidget({ id, initialText = '', board, onUpdate, onDelete }) {
   const [text, setText] = useState(initialText);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -34,7 +34,8 @@ export default function NotesWidget({ id, initialText = '', onUpdate, onDelete }
     padding: '14px 14px',
     display: 'flex',
     flexDirection: 'column',
-    height: '220px'
+    height: 'auto',
+    minHeight: '120px'
   };
 
   // Debounced auto-save
@@ -63,7 +64,7 @@ export default function NotesWidget({ id, initialText = '', onUpdate, onDelete }
         >
           Notes
         </div>
-        <div style={{ position: 'relative' }} ref={menuRef} onPointerDown={(e) => e.stopPropagation()}>
+        <div className="board-header-actions" style={{ position: 'relative' }} ref={menuRef} onPointerDown={(e) => e.stopPropagation()}>
           <button onClick={() => {
             if (!isMenuOpen && menuRef.current) {
               const rect = menuRef.current.getBoundingClientRect();
@@ -95,9 +96,10 @@ export default function NotesWidget({ id, initialText = '', onUpdate, onDelete }
         onChange={(e) => setText(e.target.value)}
         placeholder="Write anything..."
         style={{
-          flex: 1,
           width: '100%',
-          resize: 'none',
+          height: board?.height ? `${board.height}px` : '170px',
+          minHeight: '50px',
+          resize: 'vertical',
           background: 'transparent',
           border: 'none',
           outline: 'none',
@@ -105,6 +107,14 @@ export default function NotesWidget({ id, initialText = '', onUpdate, onDelete }
           fontSize: '0.95rem',
           lineHeight: 1.5,
           fontFamily: 'inherit'
+        }}
+        onMouseUp={(e) => {
+          if (board && e.target.offsetHeight) {
+            const currentSavedHeight = board.height || 170;
+            if (e.target.offsetHeight !== currentSavedHeight) {
+              onUpdate(id, { ...board, height: e.target.offsetHeight });
+            }
+          }
         }}
       />
       

@@ -9,7 +9,9 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
   // and sync to global on change. Actually, syncing directly works fine if performance is okay.
   // We'll sync directly to global state so changes are instantly reflected in CSS variables.
   
+  // Local state for fast updates without triggering full app re-renders immediately
   const [shortcutLabel, setShortcutLabel] = useState('Not set');
+  const [columnAlertMessage, setColumnAlertMessage] = useState(null);
 
   useEffect(() => {
     if (typeof chrome !== 'undefined' && chrome.commands) {
@@ -33,38 +35,60 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
     setSettings(defaultSettings);
   };
 
-  const getMaxColumns = () => {
+  const getAbsoluteMaxColumns = () => {
     const screenWidth = window.innerWidth;
-    const available = screenWidth - 40; 
-    const colWidth = settings.boardWidth + 24;
-    return Math.max(1, Math.floor(available / colWidth));
+    // App.jsx uses padding = 140, gap = 18. Formula: (screenWidth - 140 + 18) / (boardWidth + 18)
+    const availableWidth = screenWidth - 140 + 18;
+    // Min allowed width is 190, gap is 18
+    return Math.max(1, Math.floor(availableWidth / (190 + 18)));
   };
 
-  const maxColumns = getMaxColumns();
+  const getRawMaxWidth = (cols) => {
+    const screenWidth = window.innerWidth;
+    const availableWidth = screenWidth - 140 + 18;
+    return Math.floor((availableWidth / cols) - 18);
+  };
+
+  const getMinBoardWidth = (cols = settings.numberOfColumns) => {
+    if (cols === 'Auto') return 190;
+    const numCols = parseInt(cols, 10);
+    // Min width to ensure it doesn't fit numCols + 1
+    return Math.max(190, getRawMaxWidth(numCols + 1) + 1);
+  };
 
   const getMaxBoardWidth = (cols = settings.numberOfColumns) => {
-    if (cols === 'Auto') return 500;
-    const screenWidth = window.innerWidth;
+    if (cols === 'Auto') return 380;
     const numCols = parseInt(cols, 10);
-    const max = Math.floor((screenWidth - 40 - (numCols - 1) * 24) / numCols);
-    return Math.max(200, Math.min(max, 500));
+    // Max width to ensure it still fits numCols
+    return Math.min(380, getRawMaxWidth(numCols));
   };
 
   const handleColumnsChange = (val) => {
+    setColumnAlertMessage(null); // Clear previous alerts
+    let newSettings = { ...settings };
+
     if (val !== 'Auto') {
-      const num = parseInt(val, 10);
-      if (num > maxColumns) {
-        alert(`Your screen fits up to ${maxColumns} columns with the current board width.`);
-        val = maxColumns;
+      let num = parseInt(val, 10);
+      const absMax = getAbsoluteMaxColumns();
+      if (num > absMax) {
+        setColumnAlertMessage(`Your screen fits up to ${absMax} columns.`);
+        num = absMax;
+        val = String(num);
       }
       
-      // Clamp board width if it exceeds the new max
-      const newMaxWidth = getMaxBoardWidth(val);
-      if (settings.boardWidth > newMaxWidth) {
-        handleChange('boardWidth', newMaxWidth);
-      }
+      // Clamp board width into the exact bounds for this new column count
+      const newMin = getMinBoardWidth(val);
+      const newMax = getMaxBoardWidth(val);
+      let newWidth = settings.boardWidth;
+      
+      if (newWidth > newMax) newWidth = newMax;
+      if (newWidth < newMin) newWidth = newMin;
+      
+      newSettings.boardWidth = newWidth;
     }
-    handleChange('numberOfColumns', val);
+    
+    newSettings.numberOfColumns = val;
+    setSettings(newSettings);
   };
 
   const getSliderBackground = (value, min, max) => {
@@ -209,13 +233,33 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
               onChange={(val) => handleColumnsChange(val)}
               options={[
                 { value: 'Auto', label: 'Auto' },
-                ...(settings.numberOfColumns !== 'Auto' && settings.numberOfColumns < 4 
-                  ? [{ value: settings.numberOfColumns, label: String(settings.numberOfColumns) }] 
-                  : []),
-                ...[4, 5, 6, 7, 8, 9].map(num => ({ value: num, label: String(num) }))
+                ...[4, 5, 6, 7, 8, 9]
+                  .filter(num => num <= getAbsoluteMaxColumns())
+                  .map(num => ({ value: String(num), label: String(num) }))
               ]}
             />
           </div>
+          
+          {columnAlertMessage && (
+            <div style={{
+              display: 'flex', 
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              backgroundColor: 'rgba(255, 255, 255, 0.1)',
+              padding: '10px 14px',
+              borderRadius: '8px',
+              marginBottom: '16px',
+              fontSize: '0.85rem'
+            }}>
+              <span style={{ color: '#d1d5db' }}>{columnAlertMessage}</span>
+              <button 
+                onClick={() => setColumnAlertMessage(null)}
+                style={{ background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', display: 'flex' }}
+              >
+                <X size={14} />
+              </button>
+            </div>
+          )}
 
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -224,15 +268,15 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
             </div>
             <input 
               type="range" 
-              min="200" max={getMaxBoardWidth()} 
+              min={getMinBoardWidth()} 
+              max={getMaxBoardWidth()} 
               value={settings.boardWidth} 
               onChange={(e) => {
                 const val = parseInt(e.target.value, 10);
-                // Also clamp when sliding just in case
-                handleChange('boardWidth', Math.min(val, getMaxBoardWidth()));
+                handleChange('boardWidth', Math.max(getMinBoardWidth(), Math.min(val, getMaxBoardWidth())));
               }}
               className="custom-slider"
-              style={{ background: getSliderBackground(settings.boardWidth, 200, getMaxBoardWidth()) }}
+              style={{ background: getSliderBackground(settings.boardWidth, getMinBoardWidth(), getMaxBoardWidth()) }}
             />
           </div>
         </div>

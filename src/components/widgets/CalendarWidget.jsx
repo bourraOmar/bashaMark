@@ -78,7 +78,7 @@ export default function CalendarWidget({ id, onDelete, settings }) {
           <button onClick={nextMonth} style={{ padding: '4px', borderRadius: '8px', cursor: 'pointer', border: 'none', background: 'transparent', color: 'var(--text-muted)' }}>
             <ChevronRight size={16} />
           </button>
-          <div style={{ position: 'relative' }} ref={menuRef} onPointerDown={(e) => e.stopPropagation()}>
+          <div className="board-header-actions" style={{ position: 'relative' }} ref={menuRef} onPointerDown={(e) => e.stopPropagation()}>
             <button onClick={() => {
               if (!isMenuOpen && menuRef.current) {
                 const rect = menuRef.current.getBoundingClientRect();

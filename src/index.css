@@ -356,6 +356,18 @@ a {
   color: var(--text-muted);
 }
 
+@media (hover: hover) {
+  .board-header-actions {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+  
+  .board:hover .board-header-actions,
+  .board-header-actions:focus-within {
+    opacity: 1;
+  }
+}
+
 .bookmark-list {
   display: flex;
   flex-direction: column;
@@ -725,4 +737,16 @@ a {
   cursor: pointer;
   border: none;
   box-shadow: 0 0 4px rgba(0,0,0,0.3);
+}
+
+/* Custom Textarea Resize Handle */
+textarea::-webkit-resizer {
+  background-color: transparent;
+  background-image: 
+    radial-gradient(circle at 75% 25%, var(--text-muted) 1.5px, transparent 2px),
+    radial-gradient(circle at 25% 75%, var(--text-muted) 1.5px, transparent 2px),
+    radial-gradient(circle at 75% 75%, var(--text-muted) 1.5px, transparent 2px);
+  background-size: 12px 12px;
+  background-repeat: no-repeat;
+  background-position: bottom 3px right 3px;
 }

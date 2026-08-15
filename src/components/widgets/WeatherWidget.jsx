@@ -328,7 +328,7 @@ export default function WeatherWidget({ id, board, onUpdate, onDelete }) {
           </h3>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+        <div className="board-header-actions" style={{ gap: '2px' }} onPointerDown={(e) => e.stopPropagation()}>
           <button 
             onClick={fetchWeather}
             title="Refresh Weather"
