@@ -6,7 +6,7 @@ export function isVideoUrl(url) {
 }
 
 export function useBackground() {
-  const [background, setBackground] = useState(null);
+  const [background, setBackground] = useState('/background/bashaMark-background1.jpg');
 
   const applyBodyBackground = (bg) => {
     if (!bg) {
@@ -24,22 +24,24 @@ export function useBackground() {
   useEffect(() => {
     // Load from storage on mount
     const loadBackground = async () => {
-      let bg = null;
+
       if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
         chrome.storage.local.get(['customBackground'], (result) => {
-          if (result.customBackground) {
-            bg = result.customBackground;
-            setBackground(bg);
-            applyBodyBackground(bg);
+          let bg = result.customBackground;
+          if (bg === undefined) {
+            bg = '/background/bashaMark-background1.jpg';
           }
+          setBackground(bg);
+          applyBodyBackground(bg);
         });
       } else {
         const stored = localStorage.getItem('customBackground');
-        if (stored) {
-          bg = stored;
-          setBackground(bg);
-          applyBodyBackground(bg);
+        let bg = stored;
+        if (bg === null) {
+          bg = '/background/bashaMark-background1.jpg';
         }
+        setBackground(bg);
+        applyBodyBackground(bg);
       }
     };
     loadBackground();

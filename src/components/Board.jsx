@@ -27,7 +27,7 @@ function extractTitleFromUrl(inputUrl) {
     if (domain.toLowerCase() === 'reddit') return 'Reddit';
     
     return domain.charAt(0).toUpperCase() + domain.slice(1);
-  } catch (e) {
+  } catch {
     return inputUrl.trim();
   }
 }

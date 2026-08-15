@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import { X, ChevronDown, Wand } from 'lucide-react';
+import { X, ChevronDown } from 'lucide-react';
 import { defaultSettings } from '../hooks/useSettings';
 import { useBackground } from '../hooks/useBackground';
-import { extractColorsFromImage } from '../utils/colorMatcher';
 
 export default function SettingsModal({ isOpen, onClose, settings, setSettings, boards }) {
   // Local state for fast updates without triggering full app re-renders immediately,
@@ -23,21 +22,6 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
     }
   }, []);
 
-  const { background } = useBackground();
-
-  const handleMatchWallpaper = async () => {
-    if (!background) {
-      alert("No wallpaper selected!");
-      return;
-    }
-
-    try {
-      const { primary, board } = await extractColorsFromImage(background);
-      setSettings({ ...settings, primaryColor: primary, boardColor: board });
-    } catch (e) {
-      alert("Could not extract colors from this wallpaper due to security restrictions (CORS).");
-    }
-  };
 
   if (!isOpen) return null;
 

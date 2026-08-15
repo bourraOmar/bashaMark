@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 
 export const defaultSettings = {
-  primaryColor: '#b47b44', // Orange/brown color from screenshot
-  boardColor: '#1e293b', // Sleek slate instead of pitch black
+  primaryColor: '#00003b', // Matches first wallpaper
+  boardColor: '#00002f', // Matches first wallpaper
   opacity: 20, // 20%
   blur: 12, // 12px
   textSize: 'M', // S, M, L
@@ -16,7 +16,8 @@ export const defaultSettings = {
   quickSaveBoard: 'Barre de favoris',
   quickSaveShortcut: 'Not set',
   region: 'Safi, Morocco',
-  alwaysShowAllButtons: false
+  alwaysShowAllButtons: false,
+  hasCompletedTour: false
 };
 
 export function useSettings() {
@@ -28,6 +29,11 @@ export function useSettings() {
       chrome.storage.local.get(['settings'], (result) => {
         if (result.settings) {
           const loaded = { ...defaultSettings, ...result.settings };
+          // If this is an existing user updating, they won't have hasCompletedTour in their saved settings.
+          // We set it to true so we don't bother them with the tour.
+          if (result.settings.hasCompletedTour === undefined) {
+            loaded.hasCompletedTour = true;
+          }
           if (loaded.boardWidth === 264) loaded.boardWidth = 250;
           setSettingsState(loaded);
         }
@@ -36,7 +42,11 @@ export function useSettings() {
     } else {
       const local = localStorage.getItem('settings');
       if (local) {
-        const loaded = { ...defaultSettings, ...JSON.parse(local) };
+        const parsed = JSON.parse(local);
+        const loaded = { ...defaultSettings, ...parsed };
+        if (parsed.hasCompletedTour === undefined) {
+          loaded.hasCompletedTour = true;
+        }
         if (loaded.boardWidth === 264) loaded.boardWidth = 250;
         setSettingsState(loaded);
       }

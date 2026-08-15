@@ -23,7 +23,7 @@ export default function HeaderRightWidgets() {
             lat = parseFloat(geo.latitude);
             lon = parseFloat(geo.longitude);
           }
-        } catch (e) {}
+        } catch {}
 
         const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=2`);
         const json = await res.json();

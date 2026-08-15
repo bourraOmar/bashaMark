@@ -1,14 +1,14 @@
 import { useState, useRef, useEffect } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { Plus, MoreHorizontal } from 'lucide-react';
+
 import Board from './Board';
 import NotesWidget from './widgets/NotesWidget';
 import CalendarWidget from './widgets/CalendarWidget';
 import PomodoroWidget from './widgets/PomodoroWidget';
 import PrayerWidget from './widgets/PrayerWidget';
 import WeatherWidget from './widgets/WeatherWidget';
-import { PenTool, Calendar, Clock } from 'lucide-react';
+
 
 export default function Column({ id, slotIndex, boards, addBoard, addBookmark, renameBoard, updateBoard, deleteBoard, editBookmark, deleteBookmark, settings }) {
   const [isAdding, setIsAdding] = useState(false);
@@ -75,6 +75,7 @@ export default function Column({ id, slotIndex, boards, addBoard, addBookmark, r
               onDeleteBoard={deleteBoard}
               onEditBookmark={editBookmark}
               onDeleteBookmark={deleteBookmark}
+              onUpdate={updateBoard}
               settings={settings}
             />
           );
@@ -109,27 +110,7 @@ export default function Column({ id, slotIndex, boards, addBoard, addBookmark, r
               }}
             />
           </div>
-          
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '4px' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)' }}>OR ADD WIDGET:</span>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <button 
-                onClick={() => { addBoard({ type: 'notes' }, slotIndex); setIsAdding(false); }}
-                style={{ padding: '6px', borderRadius: '8px', backgroundColor: 'rgba(0,0,0,0.05)', color: 'var(--text-color)' }}
-                title="Notes"
-              ><PenTool size={16} /></button>
-              <button 
-                onClick={() => { addBoard({ type: 'calendar' }, slotIndex); setIsAdding(false); }}
-                style={{ padding: '6px', borderRadius: '8px', backgroundColor: 'rgba(0,0,0,0.05)', color: 'var(--text-color)' }}
-                title="Calendar"
-              ><Calendar size={16} /></button>
-              <button 
-                onClick={() => { addBoard({ type: 'pomodoro' }, slotIndex); setIsAdding(false); }}
-                style={{ padding: '6px', borderRadius: '8px', backgroundColor: 'rgba(0,0,0,0.05)', color: 'var(--text-color)' }}
-                title="Pomodoro"
-              ><Clock size={16} /></button>
-            </div>
-          </div>
+
         </div>
       ) : (
         <div 

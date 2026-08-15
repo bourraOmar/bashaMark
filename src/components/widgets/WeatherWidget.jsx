@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Cloud, Settings, MoreHorizontal, Trash2, MapPin, Check, RefreshCw, Wind } from 'lucide-react';
+import { Cloud, Settings, MoreHorizontal, Trash2, MapPin, Check, RefreshCw, Wind, WifiOff } from 'lucide-react';
 import ConfirmModal from '../ConfirmModal';
 
 function getSamsungWeatherIcon(iconCode, size = 'large') {
@@ -127,7 +127,7 @@ function getWMODescription(code, isNight = false) {
   return { condition: base, icon };
 }
 
-export default function WeatherWidget({ id, board, onUpdate, onDelete, settings: appSettings }) {
+export default function WeatherWidget({ id, board, onUpdate, onDelete }) {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -264,6 +264,7 @@ export default function WeatherWidget({ id, board, onUpdate, onDelete, settings:
     }
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     fetchWeather();
   }, []);
@@ -309,7 +310,7 @@ export default function WeatherWidget({ id, board, onUpdate, onDelete, settings:
       )}
       
       {/* Header Controls */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', position: 'relative', zIndex: 1 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', position: 'relative', zIndex: 10 }}>
         <div 
           {...attributes} 
           {...listeners} 
@@ -470,8 +471,16 @@ export default function WeatherWidget({ id, board, onUpdate, onDelete, settings:
               Loading weather...
             </div>
           ) : error ? (
-            <div style={{ padding: '20px 10px', textAlign: 'center', color: '#ff6b6b', fontSize: '0.85rem' }}>
-              {error}
+            <div style={{ display: 'flex', flexDirection: 'column', flex: 1, alignItems: 'center', justifyContent: 'center', textAlign: 'center', gap: '8px', padding: '20px 10px', opacity: 0.8 }}>
+              <WifiOff size={28} style={{ color: 'var(--text-muted)' }} />
+              <div style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-color)' }}>Connection Lost</div>
+              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Unable to fetch data</div>
+              <button 
+                onClick={fetchWeather}
+                style={{ marginTop: '8px', background: 'var(--primary-color)', color: '#fff', border: 'none', padding: '6px 16px', borderRadius: '16px', fontSize: '0.8rem', cursor: 'pointer', fontWeight: 600 }}
+              >
+                Retry
+              </button>
             </div>
           ) : currentWeather ? (
             <>

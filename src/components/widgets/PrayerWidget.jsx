@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Compass, Settings, MoreHorizontal, Trash2, MapPin, Check } from 'lucide-react';
+import { Compass, Settings, MoreHorizontal, Trash2, MapPin, Check, WifiOff } from 'lucide-react';
 import ConfirmModal from '../ConfirmModal';
 
 const CALCULATION_METHODS = [
@@ -19,7 +19,7 @@ const CALCULATION_METHODS = [
   { id: 13, name: 'Diyanet İşleri Başkanlığı, Turkey' },
 ];
 
-export default function PrayerWidget({ id, board, onUpdate, onDelete, settings: appSettings }) {
+export default function PrayerWidget({ id, board, onUpdate, onDelete }) {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -88,13 +88,14 @@ export default function PrayerWidget({ id, board, onUpdate, onDelete, settings: 
       } else {
         setError('Could not load prayer times. Check location.');
       }
-    } catch (e) {
+    } catch {
       setError('Network error loading prayer times.');
     } finally {
       setLoading(false);
     }
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     fetchPrayerTimes();
   }, [city, country, method]);
@@ -284,8 +285,16 @@ export default function PrayerWidget({ id, board, onUpdate, onDelete, settings: 
               Loading times...
             </div>
           ) : error ? (
-            <div style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center', color: '#ff6b6b', textAlign: 'center', fontSize: '0.85rem', padding: '10px' }}>
-              {error}
+            <div style={{ display: 'flex', flexDirection: 'column', flex: 1, alignItems: 'center', justifyContent: 'center', textAlign: 'center', gap: '8px', padding: '10px', opacity: 0.85 }}>
+              <WifiOff size={24} style={{ color: 'var(--text-muted)' }} />
+              <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-color)', marginTop: '2px' }}>Connection Lost</div>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '4px' }}>Unable to fetch prayer times</div>
+              <button 
+                onClick={fetchPrayerTimes}
+                style={{ background: 'var(--primary-color)', color: '#fff', border: 'none', padding: '5px 14px', borderRadius: '12px', fontSize: '0.75rem', cursor: 'pointer', fontWeight: 600, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
+              >
+                Retry
+              </button>
             </div>
           ) : prayerTimes ? (
             <>

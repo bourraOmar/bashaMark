@@ -115,7 +115,7 @@ export function extractColorsFromImage(mediaUrl) {
           } else {
             processVideoFrame();
           }
-        } catch (err) {
+        } catch {
           processVideoFrame();
         }
       };

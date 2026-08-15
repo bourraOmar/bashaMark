@@ -20,7 +20,7 @@ export default function PagesTabs({
 
   // Close dropdown menu when clicking anywhere on the document outside the open menu
   useEffect(() => {
-    const handleOutsideClick = (e) => {
+    const handleOutsideClick = (_e) => {
       if (menu !== null) {
         setMenu(null);
       }

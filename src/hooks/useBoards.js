@@ -1,17 +1,6 @@
 import { useState, useEffect } from 'react';
 
-const defaultBoards = [
-  {
-    id: 'board-1',
-    title: 'Work',
-    slotIndex: 0,
-    pageId: 'page-home',
-    bookmarks: [
-      { id: 'bm-1', title: 'Gmail', url: 'https://mail.google.com' },
-      { id: 'bm-2', title: 'Google Calendar', url: 'https://calendar.google.com' }
-    ]
-  }
-];
+const defaultBoards = [];
 
 export function useBoards() {
   const [boards, setBoards] = useState(null);

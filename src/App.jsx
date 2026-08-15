@@ -38,6 +38,7 @@ import PagesTabs from './components/PagesTabs';
 import HeaderRightWidgets from './components/HeaderRightWidgets';
 import TrashModal from './components/TrashModal';
 import { useTrash } from './hooks/useTrash';
+import TourGuide from './components/TourGuide';
 
 function App() {
   const { boards, setBoards, saveBoards, addBoard, addBookmark, renameBoard, updateBoard, deleteBoard, deleteBoardsByPage, editBookmark, deleteBookmark } = useBoards();
@@ -46,6 +47,7 @@ function App() {
   const { pages, currentPageId, setCurrentPageId, addPage, renamePage, deletePage, isPagesLoaded } = usePages();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  const [showTour, setShowTour] = useState(false);
   const [targetSlotIndex, setTargetSlotIndex] = useState(null);
   const [bookmarkFolders, setBookmarkFolders] = useState([]);
   const [isFabMenuOpen, setIsFabMenuOpen] = useState(false);
@@ -227,7 +229,7 @@ function App() {
           url: node.url
         }))
     };
-    setBoards([...(boards || []), newBoard]);
+    saveBoards([...(boards || []), newBoard]);
     setIsModalOpen(false);
     setTargetSlotIndex(null);
   };
@@ -260,10 +262,7 @@ function App() {
     deletePage(pageId);
   };
 
-  const openModalForSlot = (index) => {
-    setTargetSlotIndex(index);
-    setIsModalOpen(true);
-  };
+
 
   // Convert hex to rgb for rgba usage
   const hexToRgb = (hex) => {
@@ -299,9 +298,7 @@ function App() {
   const TOTAL_SLOTS = getComputedColumns();
   const sideMarginWidth = Math.max(32, Math.floor((windowWidth - (TOTAL_SLOTS * (settings.boardWidth + 18) - 18)) / 2) - 12);
 
-  const appStyle = {
-    // We'll inject these globally into :root using a style tag to ensure backdrop-filter repaints properly
-  };
+
 
   const isLightBoard = getLuminance(settings.boardColor) > 0.55;
 
@@ -335,11 +332,25 @@ function App() {
     );
   }, [boards, TOTAL_SLOTS]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (isLoaded && settings && !settings.hasCompletedTour) {
+      setShowTour(true);
+      setSettings({ ...settings, hasCompletedTour: true });
+    }
+  }, [isLoaded, settings]);
+
   if (!isLoaded || !isPagesLoaded || !boards) return null;
 
   return (
     <>
       <style>{dynamicCSS}</style>
+      {showTour && (
+        <TourGuide 
+          onComplete={() => setShowTour(false)} 
+          onImportClick={() => setIsModalOpen(true)} 
+        />
+      )}
       {isVideoBackground && background && (
         <video
           key={background}

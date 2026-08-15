@@ -494,7 +494,7 @@ export default function WallpaperModal({ isOpen, onClose, settings, setSettings 
                     style={{
                       aspectRatio: '16/9',
                       borderRadius: '8px',
-                      backgroundImage: `url(${url})`,
+                      backgroundImage: `url(${url.replace('/background/', '/background/thumbnails/')})`,
                       backgroundSize: 'cover',
                       backgroundPosition: 'center',
                       cursor: 'pointer',
