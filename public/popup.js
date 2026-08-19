@@ -18,9 +18,11 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // 2. Load boards and settings
-  chrome.storage.local.get(['settings', 'boards'], (data) => {
+  const localBoardsStr = localStorage.getItem('boards');
+  const boards = localBoardsStr ? JSON.parse(localBoardsStr).filter(b => !b.type || b.type === 'board') : [];
+  
+  chrome.storage.local.get(['settings'], (data) => {
     const settings = data.settings || {};
-    const boards = (data.boards || []).filter(b => !b.type || b.type === 'board');
     const targetBoardId = settings.quickSaveBoard;
 
     if (boards.length === 0) {
@@ -69,39 +71,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const newUrl = urlInput.value.trim();
     const newTitle = titleInput.value.trim();
+    
+    const newBookmark = { 
+      boardId: selectedBoardId,
+      id: Date.now().toString(), 
+      title: newTitle || 'Untitled', 
+      url: newUrl, 
+      iconUrl: currentIconUrl,
+      description: '' 
+    };
 
-    chrome.storage.local.get(['boards'], (data) => {
-      const boards = data.boards || [];
-      let boardFound = false;
-      
-      const newBoards = boards.map(board => {
-        if (board.id === selectedBoardId) {
-          boardFound = true;
-          return {
-            ...board,
-            bookmarks: [
-              ...board.bookmarks,
-              { 
-                id: Date.now().toString(), 
-                title: newTitle || 'Untitled', 
-                url: newUrl, 
-                iconUrl: currentIconUrl,
-                description: '' 
-              }
-            ]
-          };
-        }
-        return board;
-      });
-
-      if (boardFound) {
-        chrome.storage.local.set({ boards: newBoards }, () => {
-          // Close popup immediately after save
-          window.close();
-        });
-      } else {
+    // Save to pending queue for the main app to process and sync
+    chrome.storage.local.get(['pendingBookmarks'], (data) => {
+      const pending = data.pendingBookmarks || [];
+      pending.push(newBookmark);
+      chrome.storage.local.set({ pendingBookmarks: pending }, () => {
         window.close();
-      }
+      });
     });
   });
 });

@@ -10,7 +10,7 @@ import PrayerWidget from './widgets/PrayerWidget';
 import WeatherWidget from './widgets/WeatherWidget';
 
 
-export default function Column({ id, slotIndex, boards, addBoard, addBookmark, renameBoard, updateBoard, deleteBoard, editBookmark, deleteBookmark, settings }) {
+export default function Column({ id, slotIndex, boards, pages, addBoard, addBookmark, renameBoard, updateBoard, deleteBoard, editBookmark, deleteBookmark, settings }) {
   const [isAdding, setIsAdding] = useState(false);
   const [newTitle, setNewTitle] = useState('');
   const addBoardRef = useRef(null);
@@ -49,19 +49,19 @@ export default function Column({ id, slotIndex, boards, addBoard, addBookmark, r
       <SortableContext items={boards.map(b => b.id)} strategy={verticalListSortingStrategy}>
         {boards.map(board => {
           if (board.type === 'notes') {
-            return <NotesWidget key={board.id} id={board.id} initialText={board.text} board={board} onUpdate={updateBoard} onDelete={() => deleteBoard(board.id)} settings={settings} />;
+            return <NotesWidget key={board.id} id={board.id} initialText={board.text} board={board} onUpdate={updateBoard} onDelete={() => deleteBoard(board.id)} settings={settings} pages={pages} />;
           }
           if (board.type === 'calendar') {
-            return <CalendarWidget key={board.id} id={board.id} onDelete={() => deleteBoard(board.id)} settings={settings} />;
+            return <CalendarWidget key={board.id} id={board.id} onDelete={() => deleteBoard(board.id)} settings={settings} pages={pages} onUpdate={updateBoard} />;
           }
           if (board.type === 'pomodoro') {
-            return <PomodoroWidget key={board.id} id={board.id} onDelete={() => deleteBoard(board.id)} settings={settings} />;
+            return <PomodoroWidget key={board.id} id={board.id} onDelete={() => deleteBoard(board.id)} settings={settings} pages={pages} onUpdate={updateBoard} />;
           }
           if (board.type === 'prayer') {
-            return <PrayerWidget key={board.id} id={board.id} board={board} onUpdate={updateBoard} onDelete={() => deleteBoard(board.id)} settings={settings} />;
+            return <PrayerWidget key={board.id} id={board.id} board={board} onUpdate={updateBoard} onDelete={() => deleteBoard(board.id)} settings={settings} pages={pages} />;
           }
           if (board.type === 'weather') {
-            return <WeatherWidget key={board.id} id={board.id} board={board} onUpdate={updateBoard} onDelete={() => deleteBoard(board.id)} settings={settings} />;
+            return <WeatherWidget key={board.id} id={board.id} board={board} onUpdate={updateBoard} onDelete={() => deleteBoard(board.id)} settings={settings} pages={pages} />;
           }
           
           return (
@@ -77,6 +77,7 @@ export default function Column({ id, slotIndex, boards, addBoard, addBookmark, r
               onDeleteBookmark={deleteBookmark}
               onUpdate={updateBoard}
               settings={settings}
+              pages={pages}
             />
           );
         })}

@@ -206,9 +206,28 @@ export default function PomodoroWidget({ id, onDelete, settings: appSettings }) 
                 marginRight: dropdownPosition === 'left' ? '8px' : 0, 
                 marginTop: 0 
               }}>
+                {pages && pages.length > 1 && (
+                  <>
+                    <div style={{ padding: '4px 12px', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Move to tab</div>
+                    {pages.map(page => (
+                      <button 
+                        key={page.id}
+                        className="dropdown-item" 
+                        onClick={() => {
+                          onUpdate(id, { pageId: page.id });
+                          setIsMenuOpen(false);
+                        }}
+                        style={{ paddingLeft: '24px' }}
+                      >
+                        {page.title}
+                      </button>
+                    ))}
+                    <div className="dropdown-divider"></div>
+                  </>
+                )}
                 <button className="dropdown-item danger" onClick={() => { setIsConfirmOpen(true); setIsMenuOpen(false); }}>
                   <Trash2 size={16} />
-                  Delete board
+                  Delete widget
                 </button>
               </div>
             )}
@@ -278,7 +297,7 @@ export default function PomodoroWidget({ id, onDelete, settings: appSettings }) 
           onClick={toggleTimer}
           style={{ width: '48px', height: '48px', borderRadius: '50%', border: 'none', backgroundColor: appSettings?.primaryColor || '#5c8c9e', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: `0 4px 12px ${appSettings?.primaryColor || '#5c8c9e'}4D` }}
         >
-          {isRunning ? <Pause size={22} fill="currentColor" /> : <Play size={22} fill="currentColor" style={{ marginLeft: '3px' }} />}
+          {isRunning ? <Pause size={22} fill="currentColor" /> : <Play size={22} fill="currentColor" style={{ marginLeft: '2px' }} />}
         </button>
 
         <button 

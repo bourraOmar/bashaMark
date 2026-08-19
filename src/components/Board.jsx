@@ -32,7 +32,7 @@ function extractTitleFromUrl(inputUrl) {
   }
 }
 
-export default function Board({ id, title, bookmarks, onAddBookmark, onRenameBoard, onDeleteBoard, onEditBookmark, onDeleteBookmark, settings }) {
+export default function Board({ id, title, bookmarks, onAddBookmark, onRenameBoard, onDeleteBoard, onEditBookmark, onDeleteBookmark, onUpdate, settings, pages }) {
   const [isAdding, setIsAdding] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -263,6 +263,27 @@ export default function Board({ id, title, bookmarks, onAddBookmark, onRenameBoa
                   <Layers size={16} />
                   Open all links
                 </button>
+                
+                {pages && pages.length > 1 && (
+                  <>
+                    <div className="dropdown-divider"></div>
+                    <div style={{ padding: '4px 12px', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Move to tab</div>
+                    {pages.map(page => (
+                      <button 
+                        key={page.id}
+                        className="dropdown-item" 
+                        onClick={() => {
+                          onUpdate(id, { pageId: page.id });
+                          setIsMenuOpen(false);
+                        }}
+                        style={{ paddingLeft: '24px' }}
+                      >
+                        {page.title}
+                      </button>
+                    ))}
+                  </>
+                )}
+
                 <div className="dropdown-divider"></div>
                 <button className="dropdown-item danger" onClick={handleDelete}>
                   <Trash2 size={16} />

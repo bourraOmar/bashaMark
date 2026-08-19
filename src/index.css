@@ -743,10 +743,24 @@ a {
 textarea::-webkit-resizer {
   background-color: transparent;
   background-image: 
-    radial-gradient(circle at 75% 25%, var(--text-muted) 1.5px, transparent 2px),
-    radial-gradient(circle at 25% 75%, var(--text-muted) 1.5px, transparent 2px),
-    radial-gradient(circle at 75% 75%, var(--text-muted) 1.5px, transparent 2px);
-  background-size: 12px 12px;
+    radial-gradient(circle at 75% 25%, var(--text-muted) 1px, transparent 1.5px),
+    radial-gradient(circle at 25% 75%, var(--text-muted) 1px, transparent 1.5px),
+    radial-gradient(circle at 75% 75%, var(--text-muted) 1px, transparent 1.5px);
+  background-size: 10px 10px;
   background-repeat: no-repeat;
   background-position: bottom 3px right 3px;
+}
+
+@media (hover: hover) {
+  textarea::-webkit-resizer {
+    background-image: none;
+  }
+  
+  textarea:hover::-webkit-resizer,
+  textarea:focus::-webkit-resizer {
+    background-image: 
+      radial-gradient(circle at 75% 25%, var(--text-muted) 1px, transparent 1.5px),
+      radial-gradient(circle at 25% 75%, var(--text-muted) 1px, transparent 1.5px),
+      radial-gradient(circle at 75% 75%, var(--text-muted) 1px, transparent 1.5px);
+  }
 }

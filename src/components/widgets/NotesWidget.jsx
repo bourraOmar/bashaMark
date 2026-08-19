@@ -4,7 +4,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { MoreHorizontal, Trash2 } from 'lucide-react';
 import ConfirmModal from '../ConfirmModal';
 
-export default function NotesWidget({ id, initialText = '', board, onUpdate, onDelete }) {
+export default function NotesWidget({ id, initialText = '', board, onUpdate, onDelete, pages }) {
   const [text, setText] = useState(initialText);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -83,6 +83,25 @@ export default function NotesWidget({ id, initialText = '', board, onUpdate, onD
               marginRight: dropdownPosition === 'left' ? '8px' : 0, 
               marginTop: 0 
             }}>
+              {pages && pages.length > 1 && (
+                <>
+                  <div style={{ padding: '4px 12px', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Move to tab</div>
+                  {pages.map(page => (
+                    <button 
+                      key={page.id}
+                      className="dropdown-item" 
+                      onClick={() => {
+                        onUpdate(id, { pageId: page.id });
+                        setIsMenuOpen(false);
+                      }}
+                      style={{ paddingLeft: '24px' }}
+                    >
+                      {page.title}
+                    </button>
+                  ))}
+                  <div className="dropdown-divider"></div>
+                </>
+              )}
               <button className="dropdown-item danger" onClick={() => { setIsConfirmOpen(true); setIsMenuOpen(false); }}>
                 <Trash2 size={16} />
                 Delete board

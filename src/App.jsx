@@ -39,12 +39,112 @@ import HeaderRightWidgets from './components/HeaderRightWidgets';
 import TrashModal from './components/TrashModal';
 import { useTrash } from './hooks/useTrash';
 import TourGuide from './components/TourGuide';
+import { onAuthStateChange, subscribeToCloudData } from './utils/sync';
 
 function App() {
-  const { boards, setBoards, saveBoards, addBoard, addBookmark, renameBoard, updateBoard, deleteBoard, deleteBoardsByPage, editBookmark, deleteBookmark } = useBoards();
+  const [user, setUser] = useState(null);
+  
+  // Listen to Auth State
+  useEffect(() => {
+    const unsubscribe = onAuthStateChange((currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const { boards, setBoards, saveBoards, addBoard, addBookmark, renameBoard, updateBoard, deleteBoard, deleteBoardsByPage, editBookmark, deleteBookmark } = useBoards(user);
+  const { pages, currentPageId, setCurrentPageId, addPage, renamePage, deletePage, isPagesLoaded, savePages } = usePages(user);
+  
+  // Listen to Cloud Data
+  useEffect(() => {
+    if (user) {
+      const unsubscribe = subscribeToCloudData(user.uid, (cloudData) => {
+        if (cloudData) {
+          if (cloudData.boards) saveBoards(cloudData.boards, false);
+          if (cloudData.pages) savePages(cloudData.pages, false);
+        } else if (boards && boards.length > 0) {
+          // Cloud has no data for this user yet. Push our local data to the cloud.
+          import('./utils/sync').then(({ syncDataToCloud }) => {
+            syncDataToCloud(user.uid, { boards, pages });
+          });
+        }
+      });
+      return () => unsubscribe();
+    }
+  }, [user]); // We intentionally do not include 'boards' or 'pages' in the dependency array to prevent loops.
+
   const { trashItems, addToTrash, removeFromTrash, emptyTrash } = useTrash();
   const { settings, setSettings, isLoaded } = useSettings();
-  const { pages, currentPageId, setCurrentPageId, addPage, renamePage, deletePage, isPagesLoaded } = usePages();
+
+  // AUTO-FIX: If any boards belong to a page that no longer exists, move them to the current page
+  useEffect(() => {
+    if (boards && boards.length > 0 && pages && pages.length > 0 && currentPageId) {
+      const validPageIds = pages.map(p => p.id);
+      let needsFix = false;
+      const fixedBoards = boards.map(b => {
+        if (!b.pageId || !validPageIds.includes(b.pageId)) {
+          needsFix = true;
+          return { ...b, pageId: currentPageId };
+        }
+        return b;
+      });
+      
+      if (needsFix) {
+        console.log("Auto-fixing orphaned boards!");
+        saveBoards(fixedBoards, true);
+      }
+    }
+  }, [boards, pages, currentPageId]); // intentionally omitting saveBoards to avoid infinite loop
+
+  // Consume pending bookmarks from Quick Save
+  useEffect(() => {
+    const processPending = () => {
+      if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local && boards && boards.length > 0) {
+        chrome.storage.local.get(['pendingBookmarks'], (data) => {
+          if (data.pendingBookmarks && data.pendingBookmarks.length > 0) {
+            let updated = false;
+            let newBoards = [...boards];
+            
+            data.pendingBookmarks.forEach(bm => {
+              const boardIndex = newBoards.findIndex(b => b.id === bm.boardId);
+              if (boardIndex >= 0) {
+                const { boardId, ...bookmarkData } = bm;
+                newBoards[boardIndex] = {
+                  ...newBoards[boardIndex],
+                  bookmarks: [...newBoards[boardIndex].bookmarks, bookmarkData]
+                };
+                updated = true;
+              }
+            });
+            
+            if (updated) {
+              saveBoards(newBoards, true);
+              chrome.storage.local.remove(['pendingBookmarks']);
+            }
+          }
+        });
+      }
+    };
+
+    // Run on mount
+    processPending();
+
+    // Run when storage changes (so popup can trigger instant updates)
+    const listener = (changes, area) => {
+      if (area === 'local' && changes.pendingBookmarks) {
+        processPending();
+      }
+    };
+    if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.onChanged) {
+      chrome.storage.onChanged.addListener(listener);
+    }
+    return () => {
+      if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.onChanged) {
+        chrome.storage.onChanged.removeListener(listener);
+      }
+    };
+  }, [boards, saveBoards]);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [showTour, setShowTour] = useState(false);
@@ -419,6 +519,7 @@ function App() {
                 id={`column-${i}`}
                 slotIndex={i}
                 boards={columnBoards}
+                pages={pages}
                 addBoard={(config, slot) => addBoard(config, slot, TOTAL_SLOTS, currentPageId)}
                 addBookmark={addBookmark}
                 renameBoard={renameBoard}
@@ -498,7 +599,7 @@ function App() {
         setSettings={setSettings}
       />
       <WidgetsMenu isOpen={isWidgetsMenuOpen} onClose={() => setIsWidgetsMenuOpen(false)} addBoard={(config, slot) => addBoard(config, slot, TOTAL_SLOTS, currentPageId)} />
-      <SettingsModal isOpen={isSettingsModalOpen} onClose={() => setIsSettingsModalOpen(false)} settings={settings} setSettings={setSettings} boards={boards} />
+      <SettingsModal isOpen={isSettingsModalOpen} onClose={() => setIsSettingsModalOpen(false)} settings={settings} setSettings={setSettings} boards={boards} user={user} />
       <TrashModal 
         isOpen={isTrashModalOpen}
         onClose={() => setIsTrashModalOpen(false)}

@@ -4,57 +4,42 @@ const defaultPages = [
   { id: 'page-home', title: 'Home' }
 ];
 
-export function usePages() {
-  const [pages, setPagesState] = useState(defaultPages);
-  const [currentPageId, setCurrentPageIdState] = useState('page-home');
-  const [isPagesLoaded, setIsPagesLoaded] = useState(false);
-
-  useEffect(() => {
-    if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-      chrome.storage.local.get(['pages', 'currentPageId'], (result) => {
-        const loadedPages = (result.pages && Array.isArray(result.pages) && result.pages.length > 0) ? result.pages : defaultPages;
-        setPagesState(loadedPages);
-
-        if (result.currentPageId && loadedPages.some(p => p.id === result.currentPageId)) {
-          setCurrentPageIdState(result.currentPageId);
-        } else {
-          setCurrentPageIdState(loadedPages[0].id);
-        }
-        setIsPagesLoaded(true);
-      });
-    } else {
-      const localPages = localStorage.getItem('pages');
-      const localCurrent = localStorage.getItem('currentPageId');
-      const parsedPages = localPages ? JSON.parse(localPages) : defaultPages;
-      const loadedPages = (Array.isArray(parsedPages) && parsedPages.length > 0) ? parsedPages : defaultPages;
-      setPagesState(loadedPages);
-
-      if (localCurrent && loadedPages.some(p => p.id === localCurrent)) {
-        setCurrentPageIdState(localCurrent);
-      } else {
-        setCurrentPageIdState(loadedPages[0].id);
-      }
-      setIsPagesLoaded(true);
+export function usePages(user) {
+  const [pages, setPagesState] = useState(() => {
+    const localPages = localStorage.getItem('pages');
+    const parsedPages = localPages ? JSON.parse(localPages) : defaultPages;
+    return (Array.isArray(parsedPages) && parsedPages.length > 0) ? parsedPages : defaultPages;
+  });
+  
+  const [currentPageId, setCurrentPageIdState] = useState(() => {
+    const localCurrent = localStorage.getItem('currentPageId');
+    const localPages = localStorage.getItem('pages');
+    const parsedPages = localPages ? JSON.parse(localPages) : defaultPages;
+    const loadedPages = (Array.isArray(parsedPages) && parsedPages.length > 0) ? parsedPages : defaultPages;
+    
+    if (localCurrent && loadedPages.some(p => p.id === localCurrent)) {
+      return localCurrent;
     }
-  }, []);
+    return loadedPages[0].id;
+  });
+  
+  const [isPagesLoaded, setIsPagesLoaded] = useState(true);
 
-  const savePages = (newPages) => {
+  const savePages = useCallback((newPages, shouldSyncToCloud = true) => {
     setPagesState(newPages);
-    if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-      chrome.storage.local.set({ pages: newPages });
-    } else {
-      localStorage.setItem('pages', JSON.stringify(newPages));
+    localStorage.setItem('pages', JSON.stringify(newPages));
+    
+    if (shouldSyncToCloud && user) {
+      import('../utils/sync').then(({ syncDataToCloud }) => {
+        syncDataToCloud(user.uid, { pages: newPages });
+      });
     }
-  };
+  }, [user]);
 
-  const setCurrentPageId = (newId) => {
+  const setCurrentPageId = useCallback((newId) => {
     setCurrentPageIdState(newId);
-    if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-      chrome.storage.local.set({ currentPageId: newId });
-    } else {
-      localStorage.setItem('currentPageId', newId);
-    }
-  };
+    localStorage.setItem('currentPageId', newId);
+  }, []);
 
   const addPage = useCallback(() => {
     const newPageId = `page-${Date.now()}`;
@@ -63,13 +48,13 @@ export function usePages() {
     savePages(newPages);
     setCurrentPageId(newPageId);
     return newPageId;
-  }, [pages]);
+  }, [pages, savePages, setCurrentPageId]);
 
   const renamePage = useCallback((pageId, newTitle) => {
     const trimmed = newTitle.trim() || 'Untitled';
     const newPages = pages.map(p => p.id === pageId ? { ...p, title: trimmed } : p);
     savePages(newPages);
-  }, [pages]);
+  }, [pages, savePages]);
 
   const deletePage = useCallback((pageId) => {
     if (pages.length <= 1) return null; // Cannot delete the only existing page
@@ -82,7 +67,7 @@ export function usePages() {
       setCurrentPageId(nextCurrentId);
     }
     return nextCurrentId;
-  }, [pages, currentPageId]);
+  }, [pages, currentPageId, savePages, setCurrentPageId]);
 
   return {
     pages,
@@ -91,6 +76,7 @@ export function usePages() {
     addPage,
     renamePage,
     deletePage,
-    isPagesLoaded
+    isPagesLoaded,
+    savePages
   };
 }

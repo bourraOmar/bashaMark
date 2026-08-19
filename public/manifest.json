@@ -17,8 +17,16 @@
     "unlimitedStorage",
     "bookmarks",
     "favicon",
-    "tabs"
+    "tabs",
+    "identity"
   ],
+  "oauth2": {
+    "client_id": "181936506374-ebrbt7foc9rt78u71n6rjhai4mnkcqki.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/userinfo.email",
+      "https://www.googleapis.com/auth/userinfo.profile"
+    ]
+  },
   "host_permissions": [
     "https://*/*",
     "http://*/*"

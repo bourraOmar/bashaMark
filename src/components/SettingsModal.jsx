@@ -2,8 +2,9 @@ import { useState, useEffect, useRef } from 'react';
 import { X, ChevronDown } from 'lucide-react';
 import { defaultSettings } from '../hooks/useSettings';
 import { useBackground } from '../hooks/useBackground';
+import { signInWithGoogle, logoutUser, onAuthStateChange } from '../utils/sync';
 
-export default function SettingsModal({ isOpen, onClose, settings, setSettings, boards }) {
+export default function SettingsModal({ isOpen, onClose, settings, setSettings, boards, user }) {
   // Local state for fast updates without triggering full app re-renders immediately,
   // or we can just use the global state. Let's use local state for the sliders for performance,
   // and sync to global on change. Actually, syncing directly works fine if performance is okay.
@@ -29,6 +30,29 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
 
   const handleChange = (key, value) => {
     setSettings({ ...settings, [key]: value });
+  };
+
+  const handleSignIn = async () => {
+    try {
+      await signInWithGoogle();
+    } catch (error) {
+      console.error('Sign in error:', error);
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await logoutUser();
+      localStorage.removeItem('boards');
+      localStorage.removeItem('pages');
+      localStorage.removeItem('currentPageId');
+      if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+        chrome.storage.local.remove(['boards', 'pendingBookmarks']);
+      }
+      window.location.reload();
+    } catch (error) {
+      console.error('Sign out error:', error);
+    }
   };
 
   const handleReset = () => {
@@ -115,6 +139,58 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
           <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: '#8892a0', cursor: 'pointer' }}>
             <X size={20} />
           </button>
+        </div>
+
+        {/* ACCOUNT SECTION */}
+        <div className="settings-section" style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '20px', marginTop: '-10px', marginBottom: '20px' }}>
+          <SectionTitle>ACCOUNT</SectionTitle>
+          {!user ? (
+            <>
+              <p style={{ color: '#8892a0', fontSize: '0.9rem', marginBottom: '16px' }}>
+                Sign in to sync your boards and widgets across devices.
+              </p>
+              <button 
+                onClick={handleSignIn}
+                style={{ 
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px',
+                  width: '100%', padding: '10px', borderRadius: '8px', 
+                  backgroundColor: '#f1f1f1', color: '#111', 
+                  fontWeight: 600, cursor: 'pointer', border: 'none',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                }}
+              >
+                <img src="https://www.google.com/favicon.ico" alt="Google" style={{ width: '18px', height: '18px' }} />
+                Sign in with Google
+              </button>
+            </>
+          ) : (
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ 
+                  width: '44px', height: '44px', borderRadius: '50%', 
+                  backgroundColor: '#e65100', color: 'white', 
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: '1.2rem', fontWeight: 600
+                }}>
+                  {user.displayName ? user.displayName.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <div style={{ fontWeight: 600, fontSize: '0.95rem' }}>{user.displayName || 'User'}</div>
+                  <div style={{ color: '#8892a0', fontSize: '0.85rem' }}>{user.email}</div>
+                </div>
+              </div>
+              <button 
+                onClick={handleSignOut}
+                style={{ 
+                  padding: '6px 16px', borderRadius: '6px', 
+                  backgroundColor: 'rgba(255,255,255,0.1)', color: '#f1f1f1', 
+                  border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer'
+                }}
+              >
+                Sign out
+              </button>
+            </div>
+          )}
         </div>
 
         {/* APPEARANCE SECTION */}
