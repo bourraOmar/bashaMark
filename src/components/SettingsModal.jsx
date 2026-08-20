@@ -4,15 +4,14 @@ import { defaultSettings } from '../hooks/useSettings';
 import { useBackground } from '../hooks/useBackground';
 import { signInWithGoogle, logoutUser, onAuthStateChange } from '../utils/sync';
 
+import { extractColorsFromImage } from '../utils/colorMatcher';
+
 export default function SettingsModal({ isOpen, onClose, settings, setSettings, boards, user }) {
-  // Local state for fast updates without triggering full app re-renders immediately,
-  // or we can just use the global state. Let's use local state for the sliders for performance,
-  // and sync to global on change. Actually, syncing directly works fine if performance is okay.
-  // We'll sync directly to global state so changes are instantly reflected in CSS variables.
-  
   // Local state for fast updates without triggering full app re-renders immediately
   const [shortcutLabel, setShortcutLabel] = useState('Not set');
   const [columnAlertMessage, setColumnAlertMessage] = useState(null);
+  
+  const { background } = useBackground();
 
   useEffect(() => {
     if (typeof chrome !== 'undefined' && chrome.commands) {
@@ -24,7 +23,6 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
       });
     }
   }, []);
-
 
   if (!isOpen) return null;
 
@@ -55,8 +53,29 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
     }
   };
 
-  const handleReset = () => {
-    setSettings(defaultSettings);
+  const handleReset = async () => {
+    let newSettings = { 
+      ...settings, 
+      opacity: defaultSettings.opacity, 
+      blur: defaultSettings.blur 
+    };
+
+    if (background) {
+      try {
+        const { primary, board } = await extractColorsFromImage(background);
+        newSettings.primaryColor = primary;
+        newSettings.boardColor = board;
+      } catch (e) {
+        console.warn("Could not extract color from wallpaper", e);
+        newSettings.primaryColor = defaultSettings.primaryColor;
+        newSettings.boardColor = defaultSettings.boardColor;
+      }
+    } else {
+      newSettings.primaryColor = defaultSettings.primaryColor;
+      newSettings.boardColor = defaultSettings.boardColor;
+    }
+
+    setSettings(newSettings);
   };
 
   const getAbsoluteMaxColumns = () => {
