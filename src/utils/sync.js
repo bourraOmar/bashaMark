@@ -80,29 +80,24 @@ export const onAuthStateChange = (callback) => {
 
 // Database Sync Functions
 export const syncDataToCloud = async (userId, data) => {
-  console.log("SYNCING DATA TO CLOUD FOR USER", userId, data);
   if (!userId || !data) return;
   try {
     const userDoc = doc(db, 'users', userId);
     await setDoc(userDoc, data, { merge: true });
-    console.log("SUCCESSFULLY SYNCED TO CLOUD!");
   } catch (e) {
     console.error("FAILED TO SYNC TO CLOUD:", e);
   }
 };
 
 export const subscribeToCloudData = (userId, onUpdate) => {
-  console.log("SUBSCRIBING TO CLOUD DATA FOR USER", userId);
   if (!userId) return () => {};
   
   const userDoc = doc(db, 'users', userId);
   return onSnapshot(userDoc, (docSnap) => {
     if (docSnap.exists()) {
       const data = docSnap.data();
-      console.log("RECEIVED DATA FROM CLOUD:", data);
       onUpdate(data);
     } else {
-      console.log("NO DOCUMENT IN CLOUD FOR THIS USER YET");
       onUpdate(null);
     }
   }, (error) => {

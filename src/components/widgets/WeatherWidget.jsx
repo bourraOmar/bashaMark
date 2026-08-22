@@ -127,7 +127,7 @@ function getWMODescription(code, isNight = false) {
   return { condition: base, icon };
 }
 
-export default function WeatherWidget({ id, board, onUpdate, onDelete }) {
+export default function WeatherWidget({ id, board, onUpdate, onDelete, pages }) {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);

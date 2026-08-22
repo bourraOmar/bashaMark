@@ -19,7 +19,7 @@ const CALCULATION_METHODS = [
   { id: 13, name: 'Diyanet İşleri Başkanlığı, Turkey' },
 ];
 
-export default function PrayerWidget({ id, board, onUpdate, onDelete }) {
+export default function PrayerWidget({ id, board, onUpdate, onDelete, pages }) {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -69,7 +69,7 @@ export default function PrayerWidget({ id, board, onUpdate, onDelete }) {
     try {
       const targetCity = city;
       const targetCountry = country;
-      const url = `https://api.aladhan.com/v1/timingsByCity?city=${encodeURIComponent(targetCity)}&country=${encodeURIComponent(targetCountry)}&method=${method}`;
+      const url = `https://api.aladhan.com/v1/timingsByCity/today?city=${encodeURIComponent(targetCity)}&country=${encodeURIComponent(targetCountry)}&method=${method}`;
       const locLabel = `${targetCity}, ${targetCountry}`;
 
       const res = await fetch(url);

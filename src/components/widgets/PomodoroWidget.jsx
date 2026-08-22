@@ -11,7 +11,7 @@ const MODES = {
   LONG_BREAK: { label: 'Long Break', time: 15 * 60 }
 };
 
-export default function PomodoroWidget({ id, onDelete, settings: appSettings }) {
+export default function PomodoroWidget({ id, onDelete, settings: appSettings, pages, onUpdate, board }) {
   const [mode, setMode] = useState('FOCUS');
   const [timeLeft, setTimeLeft] = useState(MODES.FOCUS.time);
   const [isRunning, setIsRunning] = useState(false);

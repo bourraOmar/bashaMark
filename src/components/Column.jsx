@@ -52,10 +52,10 @@ export default function Column({ id, slotIndex, boards, pages, addBoard, addBook
             return <NotesWidget key={board.id} id={board.id} initialText={board.text} board={board} onUpdate={updateBoard} onDelete={() => deleteBoard(board.id)} settings={settings} pages={pages} />;
           }
           if (board.type === 'calendar') {
-            return <CalendarWidget key={board.id} id={board.id} onDelete={() => deleteBoard(board.id)} settings={settings} pages={pages} onUpdate={updateBoard} />;
+            return <CalendarWidget key={board.id} id={board.id} board={board} onDelete={() => deleteBoard(board.id)} settings={settings} pages={pages} onUpdate={updateBoard} />;
           }
           if (board.type === 'pomodoro') {
-            return <PomodoroWidget key={board.id} id={board.id} onDelete={() => deleteBoard(board.id)} settings={settings} pages={pages} onUpdate={updateBoard} />;
+            return <PomodoroWidget key={board.id} id={board.id} board={board} onDelete={() => deleteBoard(board.id)} settings={settings} pages={pages} onUpdate={updateBoard} />;
           }
           if (board.type === 'prayer') {
             return <PrayerWidget key={board.id} id={board.id} board={board} onUpdate={updateBoard} onDelete={() => deleteBoard(board.id)} settings={settings} pages={pages} />;
