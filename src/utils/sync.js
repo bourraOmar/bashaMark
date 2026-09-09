@@ -32,7 +32,7 @@ export const db = getFirestore(app);
 export const signInWithGoogle = async () => {
   return new Promise((resolve, reject) => {
     try {
-      const WEB_CLIENT_ID = "181936506374-vc6d6f4u0cq8rkrrnno0e95epqufv18v.apps.googleusercontent.com";
+      const WEB_CLIENT_ID = "181936506374-efuakp5dt0lblsru66rpcq1atde2u087.apps.googleusercontent.com";
       const redirectUri = `https://${chrome.runtime.id}.chromiumapp.org/`;
       const nonce = Math.random().toString(36).substring(2);
       const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${WEB_CLIENT_ID}&response_type=id_token&redirect_uri=${encodeURIComponent(redirectUri)}&scope=openid%20email%20profile&nonce=${nonce}`;
