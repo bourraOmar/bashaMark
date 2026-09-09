@@ -90,7 +90,6 @@ function App() {
       });
       
       if (needsFix) {
-        console.log("Auto-fixing orphaned boards!");
         saveBoards(fixedBoards, true);
       }
     }
@@ -159,9 +158,13 @@ function App() {
   const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
-    const handleResize = () => setWindowWidth(window.innerWidth);
+    let timeout;
+    const handleResize = () => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => setWindowWidth(window.innerWidth), 150);
+    };
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    return () => { window.removeEventListener('resize', handleResize); clearTimeout(timeout); };
   }, []);
 
   // Initialize background loader
@@ -264,7 +267,6 @@ function App() {
     if (!over) return;
     
     if (active.id.toString().startsWith('board-')) {
-      // Always persist final board positions & slot indices to Chrome storage on drop
       saveBoards(prev => [...prev]);
       return;
     }
@@ -362,27 +364,22 @@ function App() {
     deletePage(pageId);
   };
 
-
-
-  // Convert hex to rgb for rgba usage
-  const hexToRgb = (hex) => {
+  // Memoize color helpers so they don't recreate every render
+  const hexToRgb = useCallback((hex) => {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '0, 0, 0';
-  };
+  }, []);
 
-  // Calculate relative perceived luminance to dynamically adjust text color for readability on bright vs dark boards
-  const getLuminance = (hex) => {
+  const getLuminance = useCallback((hex) => {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     if (!result) return 0;
     const r = parseInt(result[1], 16);
     const g = parseInt(result[2], 16);
     const b = parseInt(result[3], 16);
     return (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-  };
+  }, []);
 
-
-
-  const getComputedColumns = () => {
+  const getComputedColumns = useCallback(() => {
     const padding = 140; 
     const gap = 18;
     const colWidth = settings.boardWidth + gap;
@@ -393,16 +390,14 @@ function App() {
       return Math.max(1, Math.min(userCols, maxFitting));
     }
     return maxFitting;
-  };
+  }, [windowWidth, settings.boardWidth, settings.numberOfColumns]);
 
-  const TOTAL_SLOTS = getComputedColumns();
-  const sideMarginWidth = Math.max(32, Math.floor((windowWidth - (TOTAL_SLOTS * (settings.boardWidth + 18) - 18)) / 2) - 12);
+  const TOTAL_SLOTS = useMemo(() => getComputedColumns(), [getComputedColumns]);
+  const sideMarginWidth = useMemo(() => Math.max(32, Math.floor((windowWidth - (TOTAL_SLOTS * (settings.boardWidth + 18) - 18)) / 2) - 12), [windowWidth, TOTAL_SLOTS, settings.boardWidth]);
 
+  const isLightBoard = useMemo(() => getLuminance(settings.boardColor) > 0.55, [getLuminance, settings.boardColor]);
 
-
-  const isLightBoard = getLuminance(settings.boardColor) > 0.55;
-
-  const dynamicCSS = `
+  const dynamicCSS = useMemo(() => `
     :root {
       --primary-color: ${settings.primaryColor};
       --glass-bg: rgba(${hexToRgb(settings.boardColor)}, ${settings.opacity / 100});
@@ -423,7 +418,7 @@ function App() {
       backdrop-filter: blur(${Math.max(16, settings.blur)}px) !important;
       -webkit-backdrop-filter: blur(${Math.max(16, settings.blur)}px) !important;
     }
-  `;
+  `, [settings.primaryColor, settings.boardColor, settings.opacity, settings.blur, settings.boardWidth, settings.textSize, settings.textWeight, isLightBoard, hexToRgb]);
 
   const clampedBoards = useMemo(() => {
     if (!boards) return [];
@@ -534,27 +529,29 @@ function App() {
         </DndContext>
       </main>
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Add Board or Bookmark Folder">
-        <div className="folder-list">
-          <button className="folder-item create-empty" onClick={handleCreateEmptyBoard}>
-            <Plus size={16} style={{ marginRight: '8px' }} />
-            Create Empty Board
-          </button>
-          <div className="dropdown-divider"></div>
-          <h4 style={{ margin: '8px 12px', fontSize: '0.9rem', opacity: 0.7 }}>Import from Chrome</h4>
-          {bookmarkFolders.map(folder => (
-            <div key={folder.id} className="folder-item">
-              <div className="folder-info">
-                <span className="folder-name">{folder.title}</span>
-                <span className="folder-count">{folder.count} links</span>
+      {isModalOpen && (
+        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Add Board or Bookmark Folder">
+          <div className="folder-list">
+            <button className="folder-item create-empty" onClick={handleCreateEmptyBoard}>
+              <Plus size={16} style={{ marginRight: '8px' }} />
+              Create Empty Board
+            </button>
+            <div className="dropdown-divider"></div>
+            <h4 style={{ margin: '8px 12px', fontSize: '0.9rem', opacity: 0.7 }}>Import from Chrome</h4>
+            {bookmarkFolders.map(folder => (
+              <div key={folder.id} className="folder-item">
+                <div className="folder-info">
+                  <span className="folder-name">{folder.title}</span>
+                  <span className="folder-count">{folder.count} links</span>
+                </div>
+                <button className="glass-btn add-folder-btn" onClick={() => handleImportFolder(folder)}>
+                  Add
+                </button>
               </div>
-              <button className="glass-btn add-folder-btn" onClick={() => handleImportFolder(folder)}>
-                Add
-              </button>
-            </div>
-          ))}
-        </div>
-      </Modal>
+            ))}
+          </div>
+        </Modal>
+      )}
 
       <div className="fab-container">
         {(isFabMenuOpen || settings?.alwaysShowAllButtons) && (
@@ -591,23 +588,27 @@ function App() {
         </button>
       </div>
 
-      <BookmarkSearchModal isOpen={isSearchModalOpen} onClose={() => setIsSearchModalOpen(false)} />
-      <WallpaperModal 
-        isOpen={isWallpaperModalOpen} 
-        onClose={() => setIsWallpaperModalOpen(false)} 
-        settings={settings}
-        setSettings={setSettings}
-      />
-      <WidgetsMenu isOpen={isWidgetsMenuOpen} onClose={() => setIsWidgetsMenuOpen(false)} addBoard={(config, slot) => addBoard(config, slot, TOTAL_SLOTS, currentPageId)} />
-      <SettingsModal isOpen={isSettingsModalOpen} onClose={() => setIsSettingsModalOpen(false)} settings={settings} setSettings={setSettings} boards={boards} user={user} />
-      <TrashModal 
-        isOpen={isTrashModalOpen}
-        onClose={() => setIsTrashModalOpen(false)}
-        trashItems={trashItems}
-        onRestore={handleRestoreFromTrash}
-        onEmptyTrash={emptyTrash}
-        onPermanentDelete={removeFromTrash}
-      />
+      {isSearchModalOpen && <BookmarkSearchModal isOpen={isSearchModalOpen} onClose={() => setIsSearchModalOpen(false)} />}
+      {isWallpaperModalOpen && (
+        <WallpaperModal 
+          isOpen={isWallpaperModalOpen} 
+          onClose={() => setIsWallpaperModalOpen(false)} 
+          settings={settings}
+          setSettings={setSettings}
+        />
+      )}
+      {isWidgetsMenuOpen && <WidgetsMenu isOpen={isWidgetsMenuOpen} onClose={() => setIsWidgetsMenuOpen(false)} addBoard={(config, slot) => addBoard(config, slot, TOTAL_SLOTS, currentPageId)} />}
+      {isSettingsModalOpen && <SettingsModal isOpen={isSettingsModalOpen} onClose={() => setIsSettingsModalOpen(false)} settings={settings} setSettings={setSettings} boards={boards} user={user} />}
+      {isTrashModalOpen && (
+        <TrashModal 
+          isOpen={isTrashModalOpen}
+          onClose={() => setIsTrashModalOpen(false)}
+          trashItems={trashItems}
+          onRestore={handleRestoreFromTrash}
+          onEmptyTrash={emptyTrash}
+          onPermanentDelete={removeFromTrash}
+        />
+      )}
     </div>
     </>
   );
