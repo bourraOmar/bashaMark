@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "BashaMark",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A beautiful new tab featuring customizable bookmark boards, live wallpapers, and useful widgets like Pomodoro and Prayer Times.",
   "icons": {
     "16": "icon16.png",

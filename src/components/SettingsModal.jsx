@@ -483,7 +483,7 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
           
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
             <label style={labelStyle}>Version</label>
-            <span style={valueStyle}>0.0.0</span>
+            <span style={valueStyle}>{typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.getManifest ? chrome.runtime.getManifest().version : '1.0.1'}</span>
           </div>
           
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
