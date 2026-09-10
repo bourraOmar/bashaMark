@@ -156,6 +156,19 @@ function App() {
   const [isTrashModalOpen, setIsTrashModalOpen] = useState(false);
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
   const [isDragging, setIsDragging] = useState(false);
+  const wasDraggingRef = useRef(false);
+
+  useEffect(() => {
+    const preventClick = (e) => {
+      if (wasDraggingRef.current) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    };
+    // Use capture phase so we intercept before the <a> tag handles it
+    document.addEventListener('click', preventClick, true);
+    return () => document.removeEventListener('click', preventClick, true);
+  }, []);
 
   useEffect(() => {
     let timeout;
@@ -497,13 +510,20 @@ function App() {
           sensors={sensors} 
           collisionDetection={customCollisionDetection} 
           modifiers={[customRestrictToWindowMargins]}
-          onDragStart={() => setIsDragging(true)}
+          onDragStart={() => {
+            setIsDragging(true);
+            wasDraggingRef.current = true;
+          }}
           onDragOver={handleDragOver}
           onDragEnd={(event) => {
             setIsDragging(false);
             handleDragEnd(event);
+            setTimeout(() => { wasDraggingRef.current = false; }, 100);
           }}
-          onDragCancel={() => setIsDragging(false)}
+          onDragCancel={() => {
+            setIsDragging(false);
+            setTimeout(() => { wasDraggingRef.current = false; }, 100);
+          }}
         >
           {Array.from({ length: TOTAL_SLOTS }).map((_, i) => {
             const columnBoards = clampedBoards.filter(b => (b.pageId || 'page-home') === currentPageId && b.slotIndex === i);
