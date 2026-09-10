@@ -1,10 +1,10 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, memo } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { ChevronLeft, ChevronRight, MoreHorizontal, Trash2 } from 'lucide-react';
 import ConfirmModal from '../ConfirmModal';
 
-export default function CalendarWidget({ id, onDelete, settings, pages, onUpdate, board }) {
+export default memo(function CalendarWidget({ id, onDelete, settings, pages, onUpdate, board }) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState('right');
@@ -177,4 +177,4 @@ export default function CalendarWidget({ id, onDelete, settings, pages, onUpdate
       />
     </div>
   );
-}
+});

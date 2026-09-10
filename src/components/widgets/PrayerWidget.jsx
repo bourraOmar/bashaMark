@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, memo } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Compass, Settings, MoreHorizontal, Trash2, MapPin, Check, WifiOff } from 'lucide-react';
@@ -19,7 +19,7 @@ const CALCULATION_METHODS = [
   { id: 13, name: 'Diyanet İşleri Başkanlığı, Turkey' },
 ];
 
-export default function PrayerWidget({ id, board, onUpdate, onDelete, pages }) {
+export default memo(function PrayerWidget({ id, board, onUpdate, onDelete, pages }) {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -344,4 +344,4 @@ export default function PrayerWidget({ id, board, onUpdate, onDelete, pages }) {
       />
     </div>
   );
-}
+});

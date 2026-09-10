@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, memo } from 'react';
 import { SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import BookmarkItem from './BookmarkItem';
@@ -32,7 +32,7 @@ function extractTitleFromUrl(inputUrl) {
   }
 }
 
-export default function Board({ id, title, bookmarks, onAddBookmark, onRenameBoard, onDeleteBoard, onEditBookmark, onDeleteBookmark, onUpdate, settings, pages }) {
+export default memo(function Board({ id, title, bookmarks, onAddBookmark, onRenameBoard, onDeleteBoard, onEditBookmark, onDeleteBookmark, onUpdate, settings, pages }) {
   const [isAdding, setIsAdding] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -333,4 +333,4 @@ export default function Board({ id, title, bookmarks, onAddBookmark, onRenameBoa
       />
     </div>
   );
-}
+});

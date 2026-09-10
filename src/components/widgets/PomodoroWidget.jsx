@@ -1,9 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, memo } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Play, Pause, RotateCcw, SkipForward, Settings, MoreHorizontal, Trash2 } from 'lucide-react';
 import ConfirmModal from '../ConfirmModal';
-import { useRef } from 'react';
 
 const MODES = {
   FOCUS: { label: 'Focus', time: 25 * 60 },
@@ -11,7 +10,7 @@ const MODES = {
   LONG_BREAK: { label: 'Long Break', time: 15 * 60 }
 };
 
-export default function PomodoroWidget({ id, onDelete, settings: appSettings, pages, onUpdate, board }) {
+export default memo(function PomodoroWidget({ id, onDelete, settings: appSettings, pages, onUpdate, board }) {
   const [mode, setMode] = useState('FOCUS');
   const [timeLeft, setTimeLeft] = useState(MODES.FOCUS.time);
   const [isRunning, setIsRunning] = useState(false);
@@ -317,4 +316,4 @@ export default function PomodoroWidget({ id, onDelete, settings: appSettings, pa
       />
     </div>
   );
-}
+});

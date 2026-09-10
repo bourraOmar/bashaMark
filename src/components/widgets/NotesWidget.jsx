@@ -1,10 +1,10 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef, useEffect, memo } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { MoreHorizontal, Trash2 } from 'lucide-react';
 import ConfirmModal from '../ConfirmModal';
 
-export default function NotesWidget({ id, initialText = '', board, onUpdate, onDelete, pages }) {
+export default memo(function NotesWidget({ id, initialText = '', board, onUpdate, onDelete, settings, pages }) {
   const [text, setText] = useState(initialText);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -146,4 +146,4 @@ export default function NotesWidget({ id, initialText = '', board, onUpdate, onD
       />
     </div>
   );
-}
+});

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, memo, useCallback } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 
@@ -10,7 +10,7 @@ import PrayerWidget from './widgets/PrayerWidget';
 import WeatherWidget from './widgets/WeatherWidget';
 
 
-export default function Column({ id, slotIndex, boards, pages, addBoard, addBookmark, renameBoard, updateBoard, deleteBoard, editBookmark, deleteBookmark, settings }) {
+export default memo(function Column({ id, slotIndex, boards, pages, addBoard, addBookmark, renameBoard, updateBoard, deleteBoard, editBookmark, deleteBookmark, settings }) {
   const [isAdding, setIsAdding] = useState(false);
   const [newTitle, setNewTitle] = useState('');
   const addBoardRef = useRef(null);
@@ -38,6 +38,9 @@ export default function Column({ id, slotIndex, boards, pages, addBoard, addBook
     setIsAdding(false);
   };
 
+  // Stable delete handler factory - avoids creating new functions per board each render
+  const handleDeleteBoard = useCallback((boardId) => deleteBoard(boardId), [deleteBoard]);
+
   const baseStyle = { 
     display: 'flex', 
     flexDirection: 'column', 
@@ -49,19 +52,19 @@ export default function Column({ id, slotIndex, boards, pages, addBoard, addBook
       <SortableContext items={boards.map(b => b.id)} strategy={verticalListSortingStrategy}>
         {boards.map(board => {
           if (board.type === 'notes') {
-            return <NotesWidget key={board.id} id={board.id} initialText={board.text} board={board} onUpdate={updateBoard} onDelete={() => deleteBoard(board.id)} settings={settings} pages={pages} />;
+            return <NotesWidget key={board.id} id={board.id} initialText={board.text} board={board} onUpdate={updateBoard} onDelete={handleDeleteBoard} settings={settings} pages={pages} />;
           }
           if (board.type === 'calendar') {
-            return <CalendarWidget key={board.id} id={board.id} board={board} onDelete={() => deleteBoard(board.id)} settings={settings} pages={pages} onUpdate={updateBoard} />;
+            return <CalendarWidget key={board.id} id={board.id} board={board} onDelete={handleDeleteBoard} settings={settings} pages={pages} onUpdate={updateBoard} />;
           }
           if (board.type === 'pomodoro') {
-            return <PomodoroWidget key={board.id} id={board.id} board={board} onDelete={() => deleteBoard(board.id)} settings={settings} pages={pages} onUpdate={updateBoard} />;
+            return <PomodoroWidget key={board.id} id={board.id} board={board} onDelete={handleDeleteBoard} settings={settings} pages={pages} onUpdate={updateBoard} />;
           }
           if (board.type === 'prayer') {
-            return <PrayerWidget key={board.id} id={board.id} board={board} onUpdate={updateBoard} onDelete={() => deleteBoard(board.id)} settings={settings} pages={pages} />;
+            return <PrayerWidget key={board.id} id={board.id} board={board} onUpdate={updateBoard} onDelete={handleDeleteBoard} settings={settings} pages={pages} />;
           }
           if (board.type === 'weather') {
-            return <WeatherWidget key={board.id} id={board.id} board={board} onUpdate={updateBoard} onDelete={() => deleteBoard(board.id)} settings={settings} pages={pages} />;
+            return <WeatherWidget key={board.id} id={board.id} board={board} onUpdate={updateBoard} onDelete={handleDeleteBoard} settings={settings} pages={pages} />;
           }
           
           return (
@@ -124,4 +127,4 @@ export default function Column({ id, slotIndex, boards, pages, addBoard, addBook
       )}
     </div>
   );
-}
+});

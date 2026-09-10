@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, memo } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Cloud, Settings, MoreHorizontal, Trash2, MapPin, Check, RefreshCw, Wind, WifiOff } from 'lucide-react';
@@ -127,7 +127,7 @@ function getWMODescription(code, isNight = false) {
   return { condition: base, icon };
 }
 
-export default function WeatherWidget({ id, board, onUpdate, onDelete, pages }) {
+export default memo(function WeatherWidget({ id, board, onUpdate, onDelete, pages }) {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -574,4 +574,4 @@ export default function WeatherWidget({ id, board, onUpdate, onDelete, pages }) 
       />
     </div>
   );
-}
+});

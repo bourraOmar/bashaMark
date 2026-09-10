@@ -1,10 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 import { syncDataToCloud } from '../utils/sync';
 
 const defaultBoards = [];
 
 export function useBoards(user) {
+  const syncTimerRef = useRef(null);
+
   const [boards, setBoards] = useState(() => {
     const saved = localStorage.getItem('boards');
     if (saved) {
@@ -33,19 +35,30 @@ export function useBoards(user) {
     return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
+  // Cleanup debounce timer on unmount
+  useEffect(() => {
+    return () => {
+      if (syncTimerRef.current) clearTimeout(syncTimerRef.current);
+    };
+  }, []);
+
   const saveBoards = (newBoards, shouldSyncToCloud = true) => {
     setBoards((prevBoards) => {
       const resolved = typeof newBoards === 'function' ? newBoards(prevBoards) : newBoards;
       
-      // Update local storage
+      // Update local storage instantly for responsiveness
       if (resolved.length === 0) {
         localStorage.setItem('boards', JSON.stringify(defaultBoards));
       } else {
         localStorage.setItem('boards', JSON.stringify(resolved));
       }
       
+      // Debounce cloud sync to batch rapid changes (e.g. dragging)
       if (shouldSyncToCloud && user) {
-        syncDataToCloud(user.uid, { boards: resolved });
+        if (syncTimerRef.current) clearTimeout(syncTimerRef.current);
+        syncTimerRef.current = setTimeout(() => {
+          syncDataToCloud(user.uid, { boards: resolved });
+        }, 500);
       }
       
       return resolved;
