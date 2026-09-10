@@ -67,12 +67,28 @@ export default function BookmarkItem({ id, title, url, iconUrl, description, onE
     }
   };
 
+  const wasDragging = useRef(false);
+  if (isDragging) {
+    wasDragging.current = true;
+  }
+  
+  useEffect(() => {
+    if (!isDragging) {
+      // Reset wasDragging after a short delay so the click event has time to be blocked
+      const timeout = setTimeout(() => {
+        wasDragging.current = false;
+      }, 50);
+      return () => clearTimeout(timeout);
+    }
+  }, [isDragging]);
+
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners} className="bookmark-item glass-item">
       <img 
         src={favicon} 
         alt="" 
         className="bookmark-icon" 
+        draggable={false}
         onError={(e) => {
           e.target.onerror = null;
           e.target.src = fallbackIcon;
@@ -80,6 +96,13 @@ export default function BookmarkItem({ id, title, url, iconUrl, description, onE
       />
       <a 
         href={url} 
+        draggable={false}
+        onClick={(e) => {
+          if (wasDragging.current) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+        }}
         style={{ color: 'var(--text-color)', display: 'flex', flexDirection: 'column', gap: '2px', textDecoration: 'none' }}
         {...(settings.openLinksInNewTab ? { target: "_blank", rel: "noopener noreferrer" } : {})}
       >
