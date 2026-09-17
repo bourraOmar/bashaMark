@@ -70,7 +70,7 @@ function App() {
         }
       }, (error) => {
         if (error?.code === 'permission-denied') {
-          console.warn("Permissions denied by Firestore. Logging out user.");
+          // Silently log out on permission error to avoid Edge surfacing console warnings
           import('./utils/sync').then(({ logoutUser }) => logoutUser());
         }
       });
