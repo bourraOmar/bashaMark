@@ -68,11 +68,6 @@ function App() {
             syncDataToCloud(user.uid, { boards, pages });
           });
         }
-      }, (error) => {
-        if (error?.code === 'permission-denied') {
-          // Silently log out on permission error to avoid Edge surfacing console warnings
-          import('./utils/sync').then(({ logoutUser }) => logoutUser());
-        }
       });
       return () => unsubscribe();
     }

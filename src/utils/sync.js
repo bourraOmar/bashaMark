@@ -7,7 +7,7 @@ import {
   signOut 
 } from 'firebase/auth';
 import { 
-  getFirestore, 
+  initializeFirestore, 
   doc, 
   setDoc, 
   getDoc, 
@@ -26,7 +26,9 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
-export const db = getFirestore(app);
+export const db = initializeFirestore(app, {
+  experimentalForceLongPolling: true
+});
 
 // Authentication functions
 export const signInWithGoogle = async () => {
@@ -85,9 +87,7 @@ export const syncDataToCloud = async (userId, data) => {
     const userDoc = doc(db, 'users', userId);
     await setDoc(userDoc, data, { merge: true });
   } catch (e) {
-    if (e?.code === 'permission-denied') {
-      logoutUser();
-    } else {
+    if (e?.code !== 'permission-denied') {
       console.error("FAILED TO SYNC TO CLOUD:", e);
     }
   }
