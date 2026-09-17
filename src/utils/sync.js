@@ -96,29 +96,6 @@ export const syncDataToCloud = async (userId, data) => {
 export const subscribeToCloudData = (userId, onUpdate, onError) => {
   if (!userId) return () => {};
   
-  console.log("SUBSCRIBING FOR USER:", userId);
-  
-  if (auth.currentUser) {
-    auth.currentUser.getIdToken(true).then((token) => {
-      console.log("Token acquired, length:", token.length);
-      
-      // Test REST API to see if it's an SDK issue or a token issue
-      fetch(`https://firestore.googleapis.com/v1/projects/bashamark/databases/(default)/documents/users/${userId}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
-      .then(res => res.json())
-      .then(data => console.log("REST API Response:", data))
-      .catch(err => console.log("REST API Fetch Error:", err));
-      
-    }).catch(e => {
-      console.log("Failed to get token:", e);
-    });
-  } else {
-    console.log("auth.currentUser is null when subscribing!");
-  }
-
   const userDoc = doc(db, 'users', userId);
   return onSnapshot(userDoc, (docSnap) => {
     if (docSnap.exists()) {
@@ -128,8 +105,10 @@ export const subscribeToCloudData = (userId, onUpdate, onError) => {
       onUpdate(null);
     }
   }, (error) => {
-    // Using console.log instead of error/warn so Edge doesn't flag it as an extension issue
-    console.log("FIRESTORE SYNC ERROR:", error?.code, error?.message);
+    // Expected in Edge when tracking prevention blocks auth refresh initially
+    if (error?.code !== 'permission-denied') {
+      console.error("ERROR SUBSCRIBING TO CLOUD:", error);
+    }
     if (onError) onError(error);
   });
 };
