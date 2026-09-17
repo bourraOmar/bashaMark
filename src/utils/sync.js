@@ -85,10 +85,11 @@ export const syncDataToCloud = async (userId, data) => {
     const userDoc = doc(db, 'users', userId);
     await setDoc(userDoc, data, { merge: true });
   } catch (e) {
-    console.error("FAILED TO SYNC TO CLOUD:", e);
     if (e?.code === 'permission-denied') {
-      console.warn("Permissions denied by Firestore on write. Logging out user.");
+      console.warn("Permissions denied by Firestore on write. Expected in Edge. Logging out user.");
       logoutUser();
+    } else {
+      console.error("FAILED TO SYNC TO CLOUD:", e);
     }
   }
 };
@@ -105,7 +106,11 @@ export const subscribeToCloudData = (userId, onUpdate, onError) => {
       onUpdate(null);
     }
   }, (error) => {
-    console.error("ERROR SUBSCRIBING TO CLOUD:", error);
+    if (error?.code === 'permission-denied') {
+      console.warn("Permissions denied by Firestore on read. Expected in Edge when tracking prevention blocks auth refresh.");
+    } else {
+      console.error("ERROR SUBSCRIBING TO CLOUD:", error);
+    }
     if (onError) onError(error);
   });
 };
