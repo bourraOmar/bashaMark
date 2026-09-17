@@ -105,9 +105,8 @@ export const subscribeToCloudData = (userId, onUpdate, onError) => {
       onUpdate(null);
     }
   }, (error) => {
-    if (error?.code !== 'permission-denied') {
-      console.error("ERROR SUBSCRIBING TO CLOUD:", error);
-    }
+    // Using console.log instead of error/warn so Edge doesn't flag it as an extension issue
+    console.log("FIRESTORE SYNC ERROR:", error?.code, error?.message);
     if (onError) onError(error);
   });
 };
