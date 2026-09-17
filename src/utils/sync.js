@@ -101,6 +101,17 @@ export const subscribeToCloudData = (userId, onUpdate, onError) => {
   if (auth.currentUser) {
     auth.currentUser.getIdToken(true).then((token) => {
       console.log("Token acquired, length:", token.length);
+      
+      // Test REST API to see if it's an SDK issue or a token issue
+      fetch(`https://firestore.googleapis.com/v1/projects/bashamark/databases/(default)/documents/users/${userId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      .then(res => res.json())
+      .then(data => console.log("REST API Response:", data))
+      .catch(err => console.log("REST API Fetch Error:", err));
+      
     }).catch(e => {
       console.log("Failed to get token:", e);
     });
