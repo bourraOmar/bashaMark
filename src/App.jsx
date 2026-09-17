@@ -68,6 +68,11 @@ function App() {
             syncDataToCloud(user.uid, { boards, pages });
           });
         }
+      }, (error) => {
+        if (error?.code === 'permission-denied') {
+          console.warn("Permissions denied by Firestore. Logging out user.");
+          import('./utils/sync').then(({ logoutUser }) => logoutUser());
+        }
       });
       return () => unsubscribe();
     }

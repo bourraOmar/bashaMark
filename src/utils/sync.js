@@ -86,10 +86,14 @@ export const syncDataToCloud = async (userId, data) => {
     await setDoc(userDoc, data, { merge: true });
   } catch (e) {
     console.error("FAILED TO SYNC TO CLOUD:", e);
+    if (e?.code === 'permission-denied') {
+      console.warn("Permissions denied by Firestore on write. Logging out user.");
+      logoutUser();
+    }
   }
 };
 
-export const subscribeToCloudData = (userId, onUpdate) => {
+export const subscribeToCloudData = (userId, onUpdate, onError) => {
   if (!userId) return () => {};
   
   const userDoc = doc(db, 'users', userId);
@@ -102,5 +106,6 @@ export const subscribeToCloudData = (userId, onUpdate) => {
     }
   }, (error) => {
     console.error("ERROR SUBSCRIBING TO CLOUD:", error);
+    if (onError) onError(error);
   });
 };
