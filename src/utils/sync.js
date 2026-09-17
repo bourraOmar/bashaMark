@@ -96,6 +96,18 @@ export const syncDataToCloud = async (userId, data) => {
 export const subscribeToCloudData = (userId, onUpdate, onError) => {
   if (!userId) return () => {};
   
+  console.log("SUBSCRIBING FOR USER:", userId);
+  
+  if (auth.currentUser) {
+    auth.currentUser.getIdToken(true).then((token) => {
+      console.log("Token acquired, length:", token.length);
+    }).catch(e => {
+      console.log("Failed to get token:", e);
+    });
+  } else {
+    console.log("auth.currentUser is null when subscribing!");
+  }
+
   const userDoc = doc(db, 'users', userId);
   return onSnapshot(userDoc, (docSnap) => {
     if (docSnap.exists()) {
