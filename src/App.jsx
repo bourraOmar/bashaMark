@@ -636,7 +636,7 @@ function App() {
         />
       )}
       {isWidgetsMenuOpen && <WidgetsMenu isOpen={isWidgetsMenuOpen} onClose={() => setIsWidgetsMenuOpen(false)} addBoard={(config, slot) => addBoard(config, slot, TOTAL_SLOTS, currentPageId)} />}
-      {isSettingsModalOpen && <SettingsModal isOpen={isSettingsModalOpen} onClose={() => setIsSettingsModalOpen(false)} settings={settings} setSettings={setSettings} boards={boards} user={user} />}
+      {isSettingsModalOpen && <SettingsModal isOpen={isSettingsModalOpen} onClose={() => setIsSettingsModalOpen(false)} settings={settings} setSettings={setSettings} boards={boards} user={user} windowWidth={windowWidth} />}
       {isTrashModalOpen && (
         <TrashModal 
           isOpen={isTrashModalOpen}
