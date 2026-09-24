@@ -28,7 +28,7 @@ export default function StylePicker({ styleType, styleColor, onChange }) {
   };
 
   return (
-    <div style={{ padding: '4px 8px', borderTop: '1px solid var(--dropdown-border)', borderBottom: '1px solid var(--dropdown-border)', margin: '4px 0' }}>
+    <div style={{ padding: '4px 8px', margin: '4px 0' }}>
       <button 
         onClick={(e) => { e.preventDefault(); e.stopPropagation(); setExpanded(!expanded); }}
         style={{ 
