@@ -113,7 +113,7 @@ import { extractColorsFromImage } from '../utils/colorMatcher';
             <div style={{ position: 'fixed', inset: 0, zIndex: 100 }} onClick={() => setIsOpen(false)} />
             <div style={{
               position: 'absolute', top: '100%', right: 0, marginTop: '4px',
-              backgroundColor: 'var(--glass-bg)',
+              backgroundColor: 'var(--dropdown-bg)',
               backdropFilter: 'var(--glass-blur)',
               WebkitBackdropFilter: 'var(--glass-blur)',
               border: '1px solid var(--dropdown-border)',
