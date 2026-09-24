@@ -1,16 +1,13 @@
-import { useState, useEffect, useRef } from 'react';
-import { X, ChevronDown } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { X, User, Sliders, Image as ImageIcon, Globe, Info, Download, ChevronDown } from 'lucide-react';
 import { defaultSettings } from '../hooks/useSettings';
 import { useBackground } from '../hooks/useBackground';
-import { signInWithGoogle, logoutUser, onAuthStateChange } from '../utils/sync';
-
+import { signInWithGoogle, logoutUser } from '../utils/sync';
 import { extractColorsFromImage } from '../utils/colorMatcher';
 
 export default function SettingsModal({ isOpen, onClose, settings, setSettings, boards, user }) {
-  // Local state for fast updates without triggering full app re-renders immediately
+  const [activeTab, setActiveTab] = useState('Account');
   const [shortcutLabel, setShortcutLabel] = useState('Not set');
-  const [columnAlertMessage, setColumnAlertMessage] = useState(null);
-  
   const { background } = useBackground();
 
   useEffect(() => {
@@ -31,11 +28,7 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
   };
 
   const handleSignIn = async () => {
-    try {
-      await signInWithGoogle();
-    } catch (error) {
-      console.error('Sign in error:', error);
-    }
+    try { await signInWithGoogle(); } catch (error) { console.error(error); }
   };
 
   const handleSignOut = async () => {
@@ -48,607 +41,364 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
         chrome.storage.local.remove(['boards', 'pendingBookmarks']);
       }
       window.location.reload();
-    } catch (error) {
-      console.error('Sign out error:', error);
-    }
+    } catch (error) { console.error(error); }
   };
 
   const handleReset = async () => {
-    let newSettings = { 
-      ...settings, 
-      opacity: defaultSettings.opacity, 
-      blur: defaultSettings.blur 
-    };
-
+    let newSettings = { ...settings, opacity: defaultSettings.opacity, blur: defaultSettings.blur };
     if (background) {
       try {
         const { primary, board } = await extractColorsFromImage(background);
         newSettings.primaryColor = primary;
         newSettings.boardColor = board;
       } catch (e) {
-        console.warn("Could not extract color from wallpaper", e);
         newSettings.primaryColor = defaultSettings.primaryColor;
         newSettings.boardColor = defaultSettings.boardColor;
       }
+    }
+    setSettings(newSettings);
+  };
+
+  const handleDownload = () => {
+    const data = { boards, settings };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'bashamark_data.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleSetShortcut = () => {
+    if (typeof chrome !== 'undefined' && chrome.tabs) {
+      chrome.tabs.create({ url: 'chrome://extensions/shortcuts' });
     } else {
-      newSettings.primaryColor = defaultSettings.primaryColor;
-      newSettings.boardColor = defaultSettings.boardColor;
+      alert('Open your browser extensions shortcuts page to configure this.');
     }
-
-    setSettings(newSettings);
   };
 
-  const getAbsoluteMaxColumns = () => {
-    const screenWidth = window.innerWidth;
-    // App.jsx uses padding = 140, gap = 18. Formula: (screenWidth - 140 + 18) / (boardWidth + 18)
-    const availableWidth = screenWidth - 140 + 18;
-    // Min allowed width is 190, gap is 18
-    return Math.max(1, Math.floor(availableWidth / (190 + 18)));
-  };
+  const TabButton = ({ icon, label, active, onClick }) => (
+    <button
+      onClick={onClick}
+      style={{
+        display: 'flex', alignItems: 'center', gap: '12px',
+        width: '100%', padding: '10px 16px',
+        borderRadius: '8px', border: 'none',
+        backgroundColor: active ? '#4f8096' : 'transparent',
+        color: active ? '#ffffff' : '#64748b',
+        fontWeight: active ? 500 : 400,
+        fontSize: '0.9rem', cursor: 'pointer',
+        textAlign: 'left', transition: 'all 0.15s ease'
+      }}
+      onMouseEnter={(e) => { if (!active) e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.05)'; }}
+      onMouseLeave={(e) => { if (!active) e.currentTarget.style.backgroundColor = 'transparent'; }}
+    >
+      {icon}
+      <span>{label}</span>
+    </button>
+  );
 
-  const getRawMaxWidth = (cols) => {
-    const screenWidth = window.innerWidth;
-    const availableWidth = screenWidth - 140 + 18;
-    return Math.floor((availableWidth / cols) - 18);
-  };
+  const SectionTitle = ({ children }) => (
+    <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#8892a0', letterSpacing: '0.05em', marginBottom: '16px', marginTop: '24px' }}>
+      {children}
+    </div>
+  );
 
-  const getMinBoardWidth = (cols = settings.numberOfColumns) => {
-    if (cols === 'Auto') return 190;
-    const numCols = parseInt(cols, 10);
-    // Min width to ensure it doesn't fit numCols + 1
-    return Math.max(190, getRawMaxWidth(numCols + 1) + 1);
-  };
+  const Row = ({ label, children }) => (
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+      <span style={{ fontSize: '0.9rem', color: '#475569' }}>{label}</span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>{children}</div>
+    </div>
+  );
 
-  const getMaxBoardWidth = (cols = settings.numberOfColumns) => {
-    if (cols === 'Auto') return 380;
-    const numCols = parseInt(cols, 10);
-    // Max width to ensure it still fits numCols
-    return Math.min(380, getRawMaxWidth(numCols));
-  };
+  const Toggle = ({ checked, onChange }) => (
+    <div 
+      onClick={() => onChange(!checked)}
+      style={{
+        width: '40px', height: '22px', borderRadius: '11px',
+        backgroundColor: checked ? '#4f8096' : '#cbd5e1',
+        position: 'relative', cursor: 'pointer', transition: 'all 0.2s'
+      }}
+    >
+      <div style={{
+        width: '18px', height: '18px', borderRadius: '50%', backgroundColor: 'white',
+        position: 'absolute', top: '2px', left: checked ? '20px' : '2px',
+        transition: 'all 0.2s', boxShadow: '0 1px 3px rgba(0,0,0,0.2)'
+      }} />
+    </div>
+  );
 
-  const handleColumnsChange = (val) => {
-    setColumnAlertMessage(null); // Clear previous alerts
-    let newSettings = { ...settings };
+  const Slider = ({ value, onChange, min = 0, max = 100, suffix = '' }) => (
+    <div style={{ width: '100%' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+        <span style={{ fontSize: '0.8rem', color: '#64748b' }}></span>
+        <span style={{ fontSize: '0.8rem', color: '#64748b' }}>{value}{suffix}</span>
+      </div>
+      <input 
+        type="range" min={min} max={max} value={value} 
+        onChange={(e) => onChange(parseInt(e.target.value, 10))}
+        style={{ width: '100%', accentColor: '#4f8096', height: '4px' }}
+      />
+    </div>
+  );
 
-    if (val !== 'Auto') {
-      let num = parseInt(val, 10);
-      const absMax = getAbsoluteMaxColumns();
-      if (num > absMax) {
-        setColumnAlertMessage(`Your screen fits up to ${absMax} columns.`);
-        num = absMax;
-        val = String(num);
-      }
-      
-      // Clamp board width into the exact bounds for this new column count
-      const newMin = getMinBoardWidth(val);
-      const newMax = getMaxBoardWidth(val);
-      let newWidth = settings.boardWidth;
-      
-      if (newWidth > newMax) newWidth = newMax;
-      if (newWidth < newMin) newWidth = newMin;
-      
-      newSettings.boardWidth = newWidth;
-    }
-    
-    newSettings.numberOfColumns = val;
-    setSettings(newSettings);
-  };
+  const SegmentedControl = ({ options, value, onChange }) => (
+    <div style={{ display: 'flex', backgroundColor: '#e2e8f0', borderRadius: '8px', padding: '2px' }}>
+      {options.map(opt => (
+        <button
+          key={opt.value}
+          onClick={() => onChange(opt.value)}
+          style={{
+            flex: 1, border: 'none', background: value === opt.value ? '#cbd5e1' : 'transparent',
+            padding: '4px 12px', borderRadius: '6px', fontSize: '0.85rem',
+            color: value === opt.value ? '#1e293b' : '#64748b', cursor: 'pointer', fontWeight: value === opt.value ? 500 : 400
+          }}
+        >
+          {opt.label}
+        </button>
+      ))}
+    </div>
+  );
 
-  const getSliderBackground = (value, min, max) => {
-    const percentage = ((value - min) / (max - min)) * 100;
-    return `linear-gradient(to right, var(--primary-color) ${percentage}%, rgba(255,255,255,0.12) ${percentage}%)`;
-  };
+  const SelectDropdown = ({ value, options, onChange }) => (
+    <div style={{ position: 'relative' }}>
+      <select 
+        value={value} 
+        onChange={(e) => onChange(e.target.value)}
+        style={{
+          appearance: 'none', backgroundColor: '#e2e8f0', border: 'none',
+          padding: '6px 32px 6px 12px', borderRadius: '8px', fontSize: '0.9rem',
+          color: '#475569', cursor: 'pointer', outline: 'none'
+        }}
+      >
+        {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+      </select>
+      <ChevronDown size={14} style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: '#64748b' }} />
+    </div>
+  );
 
   return (
-    <div className="modal-overlay" onClick={onClose} style={{
-      position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center'
-    }}>
-      <div className="glass-panel hide-scrollbar" onClick={e => e.stopPropagation()} style={{
-        width: '480px',
-        maxHeight: '90vh',
-        overflowY: 'auto',
-        backgroundColor: 'rgba(20, 20, 25, 0.85)', // Darker background based on screenshot
-        padding: '24px',
-        borderRadius: '16px',
-        color: '#f1f1f1',
-        boxShadow: '0 20px 40px rgba(0,0,0,0.3)'
+    <div style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(2px)' }} onClick={onClose} />
+      
+      <div style={{
+        position: 'relative', width: '850px', height: '700px',
+        backgroundColor: '#f1f3f5', borderRadius: '16px',
+        display: 'flex', flexDirection: 'column', overflow: 'hidden',
+        boxShadow: '0 20px 40px rgba(0,0,0,0.2)', color: '#334155'
       }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-          <h2 style={{ fontSize: '1.2rem', fontWeight: 600 }}>Settings</h2>
-          <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: '#8892a0', cursor: 'pointer' }}>
-            <X size={20} />
-          </button>
+        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '16px 24px', borderBottom: '1px solid #e2e8f0' }}>
+          <h2 style={{ fontSize: '1.1rem', fontWeight: 600, margin: 0 }}>Settings</h2>
+          <button onClick={onClose} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#94a3b8' }}><X size={20} /></button>
         </div>
 
-        {/* ACCOUNT SECTION */}
-        <div className="settings-section" style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '20px', marginTop: '-10px', marginBottom: '20px' }}>
-          <SectionTitle>ACCOUNT</SectionTitle>
-          {!user ? (
-            <>
-              <p style={{ color: '#8892a0', fontSize: '0.9rem', marginBottom: '16px' }}>
-                Sign in to sync your boards and widgets across devices.
-              </p>
-              <button 
-                onClick={handleSignIn}
-                style={{ 
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px',
-                  width: '100%', padding: '10px', borderRadius: '8px', 
-                  backgroundColor: '#f1f1f1', color: '#111', 
-                  fontWeight: 600, cursor: 'pointer', border: 'none',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-                }}
-              >
-                <img src="https://www.google.com/favicon.ico" alt="Google" style={{ width: '18px', height: '18px' }} />
-                Sign in with Google
-              </button>
-            </>
-          ) : (
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{ 
-                  width: '44px', height: '44px', borderRadius: '50%', 
-                  backgroundColor: '#e65100', color: 'white', 
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: '1.2rem', fontWeight: 600
-                }}>
-                  {user.displayName ? user.displayName.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase()}
+        <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+          <div style={{ width: '220px', backgroundColor: '#e9ecef', display: 'flex', flexDirection: 'column', borderRight: '1px solid #e2e8f0' }}>
+            <div style={{ padding: '16px 12px', flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <TabButton icon={<User size={18}/>} label="Account" active={activeTab === 'Account'} onClick={() => setActiveTab('Account')} />
+              <TabButton icon={<Sliders size={18}/>} label="General" active={activeTab === 'General'} onClick={() => setActiveTab('General')} />
+              <TabButton icon={<ImageIcon size={18}/>} label="Appearance" active={activeTab === 'Appearance'} onClick={() => setActiveTab('Appearance')} />
+              <TabButton icon={<Globe size={18}/>} label="Language & Region" active={activeTab === 'Language & Region'} onClick={() => setActiveTab('Language & Region')} />
+              <TabButton icon={<Info size={18}/>} label="Support" active={activeTab === 'Support'} onClick={() => setActiveTab('Support')} />
+            </div>
+            <div style={{ padding: '16px 12px' }}>
+              <TabButton icon={<Download size={18}/>} label="Download data" onClick={handleDownload} />
+            </div>
+          </div>
+
+          <div style={{ flex: 1, overflowY: 'auto', padding: '0 32px 32px 32px', backgroundColor: '#f1f3f5' }}>
+            
+            {activeTab === 'Account' && (
+              <div>
+                <SectionTitle>ACCOUNT</SectionTitle>
+                <div style={{ marginBottom: '24px' }}>
+                  {!user ? (
+                    <>
+                      <p style={{ fontSize: '0.9rem', color: '#8892a0', marginBottom: '16px' }}>Sign in to sync your boards and license across devices.</p>
+                      <button 
+                        onClick={handleSignIn}
+                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', width: '100%', padding: '12px', borderRadius: '8px', backgroundColor: '#ffffff', border: '1px solid #e2e8f0', color: '#334155', fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}
+                      >
+                        <img src="https://www.google.com/favicon.ico" alt="Google" style={{ width: '18px', height: '18px' }} />
+                        Sign in with Google
+                      </button>
+                    </>
+                  ) : (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#ffffff', padding: '16px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#4f8096', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', fontWeight: 600 }}>
+                          {user.displayName ? user.displayName.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <div style={{ fontWeight: 600, fontSize: '0.95rem' }}>{user.displayName || 'User'}</div>
+                          <div style={{ color: '#8892a0', fontSize: '0.85rem' }}>{user.email}</div>
+                        </div>
+                      </div>
+                      <button onClick={handleSignOut} style={{ padding: '6px 16px', borderRadius: '6px', backgroundColor: '#e2e8f0', color: '#475569', border: 'none', cursor: 'pointer', fontWeight: 500 }}>Sign out</button>
+                    </div>
+                  )}
                 </div>
-                <div>
-                  <div style={{ fontWeight: 600, fontSize: '0.95rem' }}>{user.displayName || 'User'}</div>
-                  <div style={{ color: '#8892a0', fontSize: '0.85rem' }}>{user.email}</div>
+
+                <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '8px' }}>
+                  <SectionTitle>PLAN & BILLING</SectionTitle>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+                    <span style={{ backgroundColor: '#e0f2fe', color: '#0ea5e9', padding: '4px 12px', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 600 }}>Free trial</span>
+                    <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>7 days left</span>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <button style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid #cbd5e1', backgroundColor: '#cbd5e1', color: '#1e293b', fontWeight: 600, cursor: 'pointer' }}>Yearly · $9</button>
+                    <button style={{ width: '100%', padding: '14px', borderRadius: '8px', border: 'none', backgroundColor: '#2f3136', color: '#ffffff', fontWeight: 600, cursor: 'pointer' }}>Lifetime · $25</button>
+                  </div>
                 </div>
               </div>
-              <button 
-                onClick={handleSignOut}
-                style={{ 
-                  padding: '6px 16px', borderRadius: '6px', 
-                  backgroundColor: 'rgba(255,255,255,0.1)', color: '#f1f1f1', 
-                  border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer'
-                }}
-              >
-                Sign out
-              </button>
-            </div>
-          )}
-        </div>
+            )}
 
-        {/* APPEARANCE SECTION */}
-        <div className="settings-section">
-          <SectionTitle>APPEARANCE</SectionTitle>
-          
-          <div style={{ display: 'flex', gap: '16px', marginBottom: '16px' }}>
-            <div style={{ flex: 1 }}>
-              <label style={labelStyle}>Primary color</label>
-              <div style={{ display: 'flex', height: '36px', borderRadius: '8px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
-                <input 
-                  type="color" 
-                  value={settings.primaryColor} 
-                  onChange={(e) => handleChange('primaryColor', e.target.value)}
-                  className="color-picker-input"
-                />
+            {activeTab === 'General' && (
+              <div>
+                <SectionTitle>BEHAVIOR</SectionTitle>
+                <Row label="Open links in new tab">
+                  <Toggle checked={settings.openLinksInNewTab} onChange={(v) => handleChange('openLinksInNewTab', v)} />
+                </Row>
+                <Row label="Hide extra bookmarks">
+                  <Toggle checked={settings.hideExtraBookmarksEnabled} onChange={(v) => handleChange('hideExtraBookmarksEnabled', v)} />
+                </Row>
+                <Row label="Show descriptions">
+                  <Toggle checked={settings.showDescriptions} onChange={(v) => handleChange('showDescriptions', v)} />
+                </Row>
+
+                <div style={{ borderTop: '1px solid #e2e8f0', marginTop: '16px' }} />
+                <SectionTitle>LAYOUT</SectionTitle>
+                <Row label="Number of columns">
+                  <SelectDropdown 
+                    value={settings.numberOfColumns} 
+                    onChange={(v) => handleChange('numberOfColumns', v)}
+                    options={[{label:'Auto', value:'Auto'},{label:'4',value:'4'},{label:'5',value:'5'},{label:'6',value:'6'},{label:'7',value:'7'},{label:'8',value:'8'}]}
+                  />
+                </Row>
+                <div style={{ marginBottom: '16px' }}>
+                  <Row label="Board width"><span style={{fontSize:'0.85rem', color:'#64748b'}}>{settings.boardWidth}px</span></Row>
+                  <Slider value={settings.boardWidth} min={190} max={400} onChange={(v) => handleChange('boardWidth', v)} />
+                </div>
+
+                <div style={{ borderTop: '1px solid #e2e8f0', marginTop: '16px' }} />
+                <SectionTitle>SIDEBAR</SectionTitle>
+                <Row label="Always show all buttons">
+                  <Toggle checked={settings.alwaysShowAllButtons} onChange={(v) => handleChange('alwaysShowAllButtons', v)} />
+                </Row>
+
+                <div style={{ borderTop: '1px solid #e2e8f0', marginTop: '16px' }} />
+                <SectionTitle>QUICK SAVE</SectionTitle>
+                <Row label="Shortcut">
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <span style={{ backgroundColor: '#e2e8f0', padding: '4px 10px', borderRadius: '6px', fontSize: '0.8rem', color: '#64748b' }}>{shortcutLabel}</span>
+                    <button onClick={handleSetShortcut} style={{ backgroundColor: '#e2e8f0', border: 'none', padding: '4px 12px', borderRadius: '6px', fontSize: '0.85rem', cursor: 'pointer', color: '#475569' }}>Change</button>
+                  </div>
+                </Row>
               </div>
-            </div>
-            <div style={{ flex: 1 }}>
-              <label style={labelStyle}>Board color</label>
-              <div style={{ display: 'flex', height: '36px', borderRadius: '8px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
-                <input 
-                  type="color" 
-                  value={settings.boardColor} 
-                  onChange={(e) => handleChange('boardColor', e.target.value)}
-                  className="color-picker-input"
-                />
+            )}
+
+            {activeTab === 'Appearance' && (
+              <div>
+                <SectionTitle>BOARD</SectionTitle>
+                <div style={{ display: 'flex', gap: '16px', marginBottom: '24px' }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '8px' }}>Primary color</div>
+                    <input type="color" value={settings.primaryColor} onChange={(e) => handleChange('primaryColor', e.target.value)} style={{ width: '100%', height: '40px', border: 'none', borderRadius: '8px', cursor: 'pointer', padding: 0 }} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '8px' }}>Board color</div>
+                    <input type="color" value={settings.boardColor} onChange={(e) => handleChange('boardColor', e.target.value)} style={{ width: '100%', height: '40px', border: 'none', borderRadius: '8px', cursor: 'pointer', padding: 0 }} />
+                  </div>
+                </div>
+                
+                <Row label="Opacity"><span style={{fontSize:'0.85rem', color:'#64748b'}}>{settings.opacity}%</span></Row>
+                <div style={{ marginTop: '-12px', marginBottom: '24px' }}><Slider value={settings.opacity} min={0} max={100} onChange={(v) => handleChange('opacity', v)} /></div>
+                
+                <Row label="Blur"><span style={{fontSize:'0.85rem', color:'#64748b'}}>{settings.blur}px</span></Row>
+                <div style={{ marginTop: '-12px', marginBottom: '24px' }}><Slider value={settings.blur} min={0} max={40} onChange={(v) => handleChange('blur', v)} /></div>
+                
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+                  <button onClick={() => onClose()} style={{ padding: '6px 16px', borderRadius: '6px', border: '1px solid #cbd5e1', backgroundColor: '#cbd5e1', color: '#334155', cursor: 'pointer' }}>Cancel</button>
+                  <button onClick={handleReset} style={{ padding: '6px 16px', borderRadius: '6px', border: '1px solid #cbd5e1', backgroundColor: '#e2e8f0', color: '#334155', cursor: 'pointer' }}>Reset</button>
+                </div>
+
+                <div style={{ borderTop: '1px solid #e2e8f0', marginTop: '16px' }} />
+                <SectionTitle>SEARCH BAR</SectionTitle>
+                <div style={{ marginBottom: '24px' }}>
+                  <div style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '8px' }}>Search bar color</div>
+                  <input type="color" value="#ffffff" onChange={()=>{}} style={{ width: '100%', height: '40px', border: 'none', borderRadius: '8px', cursor: 'pointer', padding: 0 }} />
+                </div>
+                <Row label="Opacity"><span style={{fontSize:'0.85rem', color:'#64748b'}}>60%</span></Row>
+                <div style={{ marginTop: '-12px', marginBottom: '24px' }}><Slider value={60} min={0} max={100} onChange={()=>{}} /></div>
+                
+                <Row label="Blur"><span style={{fontSize:'0.85rem', color:'#64748b'}}>12px</span></Row>
+                <div style={{ marginTop: '-12px', marginBottom: '24px' }}><Slider value={12} min={0} max={40} onChange={()=>{}} /></div>
+
+                <Row label="Width"><span style={{fontSize:'0.85rem', color:'#64748b'}}>340px</span></Row>
+                <div style={{ marginTop: '-12px', marginBottom: '24px' }}><Slider value={340} min={100} max={800} onChange={()=>{}} /></div>
+
+                <Row label="Match board style"><span style={{fontSize:'0.85rem', color:'#94a3b8'}}></span></Row>
+
+
+                <div style={{ borderTop: '1px solid #e2e8f0', marginTop: '16px' }} />
+                <SectionTitle>BOARD TEXT</SectionTitle>
+                <Row label="Size">
+                  <SegmentedControl options={[{label:'S',value:'S'},{label:'M',value:'M'},{label:'L',value:'L'}]} value={settings.textSize} onChange={(v) => handleChange('textSize', v)} />
+                </Row>
+                <Row label="Weight">
+                  <SegmentedControl options={[{label:'Normal',value:'Normal'},{label:'Bold',value:'Bold'}]} value={settings.textWeight} onChange={(v) => handleChange('textWeight', v)} />
+                </Row>
+
+                <div style={{ borderTop: '1px solid #e2e8f0', marginTop: '16px' }} />
+                <SectionTitle>ST.BULKOUTLINE</SectionTitle>
+                <div style={{ marginBottom: '24px' }}>
+                  <div style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '8px' }}>st.outlineColor</div>
+                  <input type="color" value="#ffffff" onChange={()=>{}} style={{ width: '100%', height: '40px', border: 'none', borderRadius: '8px', cursor: 'pointer', padding: 0 }} />
+                </div>
+                <Row label="Opacity"><span style={{fontSize:'0.85rem', color:'#64748b'}}>75%</span></Row>
+                <div style={{ marginTop: '-12px', marginBottom: '24px' }}><Slider value={75} min={0} max={100} onChange={()=>{}} /></div>
+                <Row label="Match board style"><span style={{fontSize:'0.85rem', color:'#94a3b8'}}>st.outlineRemoveAll</span></Row>
+
               </div>
-            </div>
-          </div>
-          
+            )}
 
-          <div style={{ marginBottom: '16px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <label style={labelStyle}>Opacity</label>
-              <span style={valueStyle}>{settings.opacity}%</span>
-            </div>
-            <input 
-              type="range" 
-              min="0" max="100" 
-              value={settings.opacity} 
-              onChange={(e) => handleChange('opacity', parseInt(e.target.value, 10))}
-              className="custom-slider"
-              style={{ background: getSliderBackground(settings.opacity, 0, 100) }}
-            />
-          </div>
+            {activeTab === 'Language & Region' && (
+              <div>
+                <SectionTitle>LANGUAGE</SectionTitle>
+                <SegmentedControl options={[{label:'English',value:'en'},{label:'Deutsch',value:'de'},{label:'Русский',value:'ru'}]} value="en" onChange={()=>{}} />
+                
+                <div style={{ borderTop: '1px solid #e2e8f0', marginTop: '24px' }} />
+                <SectionTitle>FORMATTING</SectionTitle>
+                <div style={{ marginBottom: '24px' }}><button style={{ padding: '6px 16px', borderRadius: '6px', border: '1px solid #cbd5e1', backgroundColor: '#cbd5e1', color: '#334155', cursor: 'pointer' }}>Auto-detect</button></div>
+                
+                <Row label="Time format">
+                  <SegmentedControl options={[{label:'24h',value:'24'},{label:'12h AM/PM',value:'12'}]} value="12" onChange={()=>{}} />
+                </Row>
+                <Row label="Date format">
+                  <SegmentedControl options={[{label:'DD/MM/YY',value:'dmy'},{label:'MM/DD/YY',value:'mdy'},{label:'YY-MM-DD',value:'ymd'}]} value="mdy" onChange={()=>{}} />
+                </Row>
+                <Row label="Week starts on">
+                  <SegmentedControl options={[{label:'Monday',value:'mon'},{label:'Sunday',value:'sun'}]} value="mon" onChange={()=>{}} />
+                </Row>
+                <Row label="Temperature">
+                  <SegmentedControl options={[{label:'°C',value:'c'},{label:'°F',value:'f'}]} value="c" onChange={()=>{}} />
+                </Row>
+              </div>
+            )}
 
-          <div style={{ marginBottom: '24px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <label style={labelStyle}>Blur</label>
-              <span style={valueStyle}>{settings.blur}px</span>
-            </div>
-            <input 
-              type="range" 
-              min="0" max="64" 
-              value={settings.blur} 
-              onChange={(e) => handleChange('blur', parseInt(e.target.value, 10))}
-              className="custom-slider"
-              style={{ background: getSliderBackground(settings.blur, 0, 64) }}
-            />
-          </div>
+            {activeTab === 'Support' && (
+              <div>
+                <SectionTitle>SUPPORT</SectionTitle>
+                <p style={{ color: '#475569', fontSize: '0.95rem', lineHeight: '1.5' }}>
+                  If you need help or want to report an issue, please contact us at support@bashamark.com or visit our GitHub repository.
+                </p>
+              </div>
+            )}
 
-          <div style={{ display: 'flex', gap: '12px' }}>
-            <button onClick={onClose} style={btnOutlineStyle}>Cancel</button>
-            <button onClick={handleReset} style={btnOutlineStyle}>Reset</button>
           </div>
         </div>
-
-        <div style={dividerStyle} />
-
-        {/* BOARD TEXT SECTION */}
-        <div className="settings-section">
-          <SectionTitle>BOARD TEXT</SectionTitle>
-          
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <label style={labelStyle}>Size</label>
-            <div style={toggleGroupStyle}>
-              {['S', 'M', 'L'].map(size => (
-                <button 
-                  key={size}
-                  onClick={() => handleChange('textSize', size)}
-                  style={toggleBtnStyle(settings.textSize === size)}
-                >
-                  {size}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <label style={labelStyle}>Weight</label>
-            <div style={toggleGroupStyle}>
-              {['Normal', 'Bold'].map(weight => (
-                <button 
-                  key={weight}
-                  onClick={() => handleChange('textWeight', weight)}
-                  style={toggleBtnStyle(settings.textWeight === weight)}
-                >
-                  {weight}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div style={dividerStyle} />
-
-        {/* BOARDS SECTION */}
-        <div className="settings-section">
-          <SectionTitle>BOARDS</SectionTitle>
-          
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <label style={labelStyle}>Number of columns</label>
-            <CustomSelect 
-              value={settings.numberOfColumns}
-              onChange={(val) => handleColumnsChange(val)}
-              options={[
-                { value: 'Auto', label: 'Auto' },
-                ...[4, 5, 6, 7, 8, 9]
-                  .filter(num => num <= getAbsoluteMaxColumns())
-                  .map(num => ({ value: String(num), label: String(num) }))
-              ]}
-            />
-          </div>
-          
-          {columnAlertMessage && (
-            <div style={{
-              display: 'flex', 
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              backgroundColor: 'rgba(255, 255, 255, 0.1)',
-              padding: '10px 14px',
-              borderRadius: '8px',
-              marginBottom: '16px',
-              fontSize: '0.85rem'
-            }}>
-              <span style={{ color: '#d1d5db' }}>{columnAlertMessage}</span>
-              <button 
-                onClick={() => setColumnAlertMessage(null)}
-                style={{ background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', display: 'flex' }}
-              >
-                <X size={14} />
-              </button>
-            </div>
-          )}
-
-          <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <label style={labelStyle}>Board width</label>
-              <span style={valueStyle}>{settings.boardWidth}px</span>
-            </div>
-            <input 
-              type="range" 
-              min={getMinBoardWidth()} 
-              max={getMaxBoardWidth()} 
-              value={settings.boardWidth} 
-              onChange={(e) => {
-                const val = parseInt(e.target.value, 10);
-                handleChange('boardWidth', Math.max(getMinBoardWidth(), Math.min(val, getMaxBoardWidth())));
-              }}
-              className="custom-slider"
-              style={{ background: getSliderBackground(settings.boardWidth, getMinBoardWidth(), getMaxBoardWidth()) }}
-            />
-          </div>
-        </div>
-
-        <div style={dividerStyle} />
-
-        {/* GENERAL SECTION */}
-        <div className="settings-section">
-          <SectionTitle>GENERAL</SectionTitle>
-          
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <label style={labelStyle}>Open links in new tab</label>
-            <ToggleSwitch 
-              checked={settings.openLinksInNewTab} 
-              onChange={(val) => handleChange('openLinksInNewTab', val)} 
-            />
-          </div>
-
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <label style={labelStyle}>Hide extra bookmarks</label>
-            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-              <CustomSelect 
-                value={settings.hideExtraBookmarks}
-                onChange={(val) => handleChange('hideExtraBookmarks', val)}
-                options={[
-                  { value: '10', label: 'Show 10' },
-                  { value: '20', label: 'Show 20' },
-                  { value: 'All', label: 'Show All' }
-                ]}
-              />
-              <ToggleSwitch 
-                checked={settings.hideExtraBookmarksEnabled} 
-                onChange={(val) => handleChange('hideExtraBookmarksEnabled', val)} 
-              />
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <label style={labelStyle}>Show descriptions</label>
-            <ToggleSwitch 
-              checked={settings.showDescriptions} 
-              onChange={(val) => handleChange('showDescriptions', val)} 
-            />
-          </div>
-        </div>
-
-        <div style={dividerStyle} />
-
-        {/* QUICK SAVE SECTION */}
-        <div className="settings-section">
-          <SectionTitle>QUICK SAVE</SectionTitle>
-          
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <label style={labelStyle}>Save to board</label>
-            <CustomSelect 
-              value={settings.quickSaveBoard}
-              onChange={(val) => handleChange('quickSaveBoard', val)}
-              options={[
-                { value: 'None', label: 'None' },
-                ...(boards?.filter(b => !b.type || b.type === 'board').map(b => ({ value: b.id, label: b.title })) || [])
-              ]}
-            />
-          </div>
-
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <label style={labelStyle}>Shortcut</label>
-            <div style={toggleGroupStyle}>
-              <button style={{ ...toggleBtnStyle(false), cursor: 'default' }}>
-                {shortcutLabel}
-              </button>
-              <button 
-                onClick={() => {
-                  if (typeof chrome !== 'undefined' && chrome.tabs) {
-                    chrome.tabs.create({ url: 'chrome://extensions/shortcuts' });
-                  } else {
-                    alert("Please open chrome://extensions/shortcuts in your browser.");
-                  }
-                }} 
-                style={toggleBtnStyle(false)}
-              >
-                Change
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div style={dividerStyle} />
-
-
-
-        {/* SIDEBAR SECTION */}
-        <div className="settings-section">
-          <SectionTitle>SIDEBAR</SectionTitle>
-          
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <label style={labelStyle}>Always show all buttons</label>
-            <ToggleSwitch 
-              checked={settings.alwaysShowAllButtons} 
-              onChange={(val) => handleChange('alwaysShowAllButtons', val)} 
-            />
-          </div>
-        </div>
-
-        <div style={dividerStyle} />
-
-        {/* SUPPORT SECTION */}
-        <div className="settings-section">
-          <SectionTitle>SUPPORT</SectionTitle>
-          
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <label style={labelStyle}>Version</label>
-            <span style={valueStyle}>{typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.getManifest ? chrome.runtime.getManifest().version : '1.0.1'}</span>
-          </div>
-          
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <label style={labelStyle}>Contact</label>
-            <a href="mailto:obourra662@gmail.com" style={{ ...valueStyle, textDecoration: 'none' }}>
-              obourra662@gmail.com
-            </a>
-          </div>
-        </div>
-
       </div>
     </div>
   );
 }
-
-const SectionTitle = ({ children }) => (
-  <h3 style={{ fontSize: '0.75rem', fontWeight: 700, color: '#8892a0', letterSpacing: '0.05em', marginBottom: '16px', textTransform: 'uppercase' }}>
-    {children}
-  </h3>
-);
-
-const labelStyle = { fontSize: '0.9rem', color: '#cbd5e0', marginBottom: '8px', display: 'block' };
-const valueStyle = { fontSize: '0.85rem', color: '#8892a0' };
-
-const dividerStyle = { height: '1px', backgroundColor: 'rgba(255,255,255,0.05)', margin: '24px 0' };
-
-const toggleGroupStyle = {
-  display: 'flex',
-  backgroundColor: 'rgba(0,0,0,0.2)',
-  borderRadius: '8px',
-  padding: '4px'
-};
-
-const toggleBtnStyle = (active) => ({
-  backgroundColor: active ? 'rgba(255,255,255,0.15)' : 'transparent',
-  color: active ? '#fff' : '#8892a0',
-  border: 'none',
-  padding: '4px 12px',
-  borderRadius: '6px',
-  fontSize: '0.85rem',
-  fontWeight: active ? 600 : 500,
-  cursor: 'pointer',
-  transition: 'all 0.2s'
-});
-
-const selectStyle = {
-  backgroundColor: 'rgba(0,0,0,0.2)',
-  color: '#cbd5e0',
-  border: 'none',
-  padding: '6px 12px',
-  borderRadius: '6px',
-  fontSize: '0.9rem',
-  outline: 'none',
-  cursor: 'pointer'
-};
-
-const btnOutlineStyle = {
-  backgroundColor: 'rgba(255,255,255,0.05)',
-  color: '#cbd5e0',
-  border: '1px solid rgba(255,255,255,0.1)',
-  padding: '6px 16px',
-  borderRadius: '8px',
-  fontSize: '0.85rem',
-  fontWeight: 500,
-  cursor: 'pointer'
-};
-
-const ToggleSwitch = ({ checked, onChange }) => (
-  <div 
-    onClick={() => onChange(!checked)}
-    style={{
-      width: '40px',
-      height: '22px',
-      backgroundColor: checked ? 'var(--primary-color)' : 'rgba(100, 116, 139, 0.45)',
-      borderRadius: '11px',
-      position: 'relative',
-      cursor: 'pointer',
-      transition: 'background-color 0.2s',
-      flexShrink: 0
-    }}
-  >
-    <div 
-      style={{
-        width: '18px',
-        height: '18px',
-        backgroundColor: '#fff',
-        borderRadius: '50%',
-        position: 'absolute',
-        top: '2px',
-        left: checked ? '20px' : '2px',
-        transition: 'left 0.2s',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
-      }}
-    />
-  </div>
-);
-
-const CustomSelect = ({ value, options, onChange }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const containerRef = useRef(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (containerRef.current && !containerRef.current.contains(event.target)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const selectedOption = options.find(opt => String(opt.value) === String(value)) || options[0];
-
-  return (
-    <div ref={containerRef} style={{ position: 'relative' }}>
-      <div 
-        onClick={() => setIsOpen(!isOpen)}
-        style={{ ...selectStyle, paddingRight: '32px', display: 'flex', alignItems: 'center', userSelect: 'none' }}
-      >
-        {selectedOption ? selectedOption.label : value}
-        <ChevronDown size={14} style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', color: '#cbd5e0', pointerEvents: 'none' }} />
-      </div>
-
-      {isOpen && (
-        <div style={{
-          position: 'absolute',
-          top: '100%',
-          right: 0,
-          marginTop: '4px',
-          backgroundColor: '#1e1e1e',
-          borderRadius: '6px',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
-          zIndex: 10000,
-          minWidth: '100%',
-          overflow: 'hidden',
-          whiteSpace: 'nowrap'
-        }}>
-          {options.map((opt) => (
-            <div 
-              key={opt.value}
-              onClick={() => {
-                onChange(opt.value);
-                setIsOpen(false);
-              }}
-              style={{
-                padding: '6px 12px',
-                fontSize: '0.9rem',
-                color: String(opt.value) === String(value) ? '#fff' : 'rgba(255,255,255,0.7)',
-                backgroundColor: String(opt.value) === String(value) ? 'var(--primary-color)' : 'transparent',
-                cursor: 'pointer',
-                transition: 'background-color 0.2s',
-                userSelect: 'none'
-              }}
-              onMouseEnter={(e) => {
-                if (String(opt.value) !== String(value)) e.target.style.backgroundColor = 'rgba(255,255,255,0.1)';
-              }}
-              onMouseLeave={(e) => {
-                if (String(opt.value) !== String(value)) e.target.style.backgroundColor = 'transparent';
-              }}
-            >
-              {opt.label}
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-};
