@@ -315,18 +315,18 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
                 <SectionTitle>SEARCH BAR</SectionTitle>
                 <div style={{ marginBottom: '24px' }}>
                   <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '8px' }}>Search bar color</div>
-                  <input type="color" className="custom-color-input" value="#ffffff" onChange={()=>{}} style={{ width: '100%', height: '40px', border: 'none', borderRadius: '8px', cursor: 'pointer', padding: 0 }} />
+                  <input type="color" className="custom-color-input" value={settings.searchBarColor} onChange={(e)=>handleChange('searchBarColor', e.target.value)} style={{ width: '100%', height: '40px', border: 'none', borderRadius: '8px', cursor: 'pointer', padding: 0 }} />
                 </div>
-                <Row label="Opacity"><span style={{fontSize:'0.85rem', color:'#64748b'}}>60%</span></Row>
-                <div style={{ marginTop: '-12px', marginBottom: '24px' }}><Slider value={60} min={0} max={100} onChange={()=>{}} /></div>
+                <Row label="Opacity"><span style={{fontSize:'0.85rem', color:'var(--text-muted)'}}>{settings.searchBarOpacity}%</span></Row>
+                <div style={{ marginTop: '-12px', marginBottom: '24px' }}><Slider value={settings.searchBarOpacity} min={0} max={100} onChange={(v)=>handleChange('searchBarOpacity', v)} /></div>
                 
-                <Row label="Blur"><span style={{fontSize:'0.85rem', color:'#64748b'}}>12px</span></Row>
-                <div style={{ marginTop: '-12px', marginBottom: '24px' }}><Slider value={12} min={0} max={40} onChange={()=>{}} /></div>
+                <Row label="Blur"><span style={{fontSize:'0.85rem', color:'var(--text-muted)'}}>{settings.searchBarBlur}px</span></Row>
+                <div style={{ marginTop: '-12px', marginBottom: '24px' }}><Slider value={settings.searchBarBlur} min={0} max={40} onChange={(v)=>handleChange('searchBarBlur', v)} /></div>
 
-                <Row label="Width"><span style={{fontSize:'0.85rem', color:'#64748b'}}>340px</span></Row>
-                <div style={{ marginTop: '-12px', marginBottom: '24px' }}><Slider value={340} min={100} max={800} onChange={()=>{}} /></div>
+                <Row label="Width"><span style={{fontSize:'0.85rem', color:'var(--text-muted)'}}>{settings.searchBarWidth}px</span></Row>
+                <div style={{ marginTop: '-12px', marginBottom: '24px' }}><Slider value={settings.searchBarWidth} min={100} max={800} onChange={(v)=>handleChange('searchBarWidth', v)} /></div>
 
-                <Row label="Match board style"><span style={{fontSize:'0.85rem', color:'#94a3b8'}}></span></Row>
+                <Row label="Match board style"><Toggle checked={settings.searchBarMatchBoard} onChange={(v)=>handleChange('searchBarMatchBoard', v)} /></Row>
 
 
                 <div style={{ borderTop: '1px solid var(--dropdown-border)', marginTop: '16px' }} />
@@ -342,11 +342,11 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
                 <SectionTitle>ST.BULKOUTLINE</SectionTitle>
                 <div style={{ marginBottom: '24px' }}>
                   <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '8px' }}>st.outlineColor</div>
-                  <input type="color" className="custom-color-input" value="#ffffff" onChange={()=>{}} style={{ width: '100%', height: '40px', border: 'none', borderRadius: '8px', cursor: 'pointer', padding: 0 }} />
+                  <input type="color" className="custom-color-input" value={settings.stOutlineColor} onChange={(e)=>handleChange('stOutlineColor', e.target.value)} style={{ width: '100%', height: '40px', border: 'none', borderRadius: '8px', cursor: 'pointer', padding: 0 }} />
                 </div>
-                <Row label="Opacity"><span style={{fontSize:'0.85rem', color:'#64748b'}}>75%</span></Row>
-                <div style={{ marginTop: '-12px', marginBottom: '24px' }}><Slider value={75} min={0} max={100} onChange={()=>{}} /></div>
-                <Row label="Match board style"><span style={{fontSize:'0.85rem', color:'#94a3b8'}}>st.outlineRemoveAll</span></Row>
+                <Row label="Opacity"><span style={{fontSize:'0.85rem', color:'var(--text-muted)'}}>{settings.stOutlineOpacity}%</span></Row>
+                <div style={{ marginTop: '-12px', marginBottom: '24px' }}><Slider value={settings.stOutlineOpacity} min={0} max={100} onChange={(v)=>handleChange('stOutlineOpacity', v)} /></div>
+                <Row label="Match board style"><Toggle checked={settings.stOutlineMatchBoard} onChange={(v)=>handleChange('stOutlineMatchBoard', v)} /></Row>
 
               </div>
             )}

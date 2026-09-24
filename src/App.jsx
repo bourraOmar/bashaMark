@@ -426,13 +426,16 @@ function App() {
       --font-weight-base: ${settings.textWeight === 'Bold' ? '600' : '400'};
       --text-color: ${isLightBoard ? '#1e293b' : '#f8fafc'};
       --text-muted: ${isLightBoard ? '#64748b' : '#94a3b8'};
+      --search-bg: ${settings.searchBarMatchBoard ? `rgba(${hexToRgb(settings.boardColor)}, ${settings.opacity / 100})` : `rgba(${hexToRgb(settings.searchBarColor || '#ffffff')}, ${(settings.searchBarOpacity ?? 60) / 100})`};
+      --search-blur: ${settings.searchBarMatchBoard ? `blur(${settings.blur}px)` : `blur(${settings.searchBarBlur ?? 12}px)`};
+      --search-width: ${settings.searchBarWidth ?? 340}px;
     }
     
-    .glass-panel, .tabs-container, .search-bar, .fab, .dropdown-menu, .placeholder-board:hover, .header-pill-widget {
+    .glass-panel, .tabs-container, .fab, .dropdown-menu, .placeholder-board:hover, .header-pill-widget {
       backdrop-filter: blur(${Math.max(16, settings.blur)}px) !important;
       -webkit-backdrop-filter: blur(${Math.max(16, settings.blur)}px) !important;
     }
-  `, [settings.primaryColor, settings.boardColor, settings.opacity, settings.blur, settings.boardWidth, settings.textSize, settings.textWeight, isLightBoard, hexToRgb]);
+  `, [settings.primaryColor, settings.boardColor, settings.opacity, settings.blur, settings.boardWidth, settings.textSize, settings.textWeight, settings.searchBarColor, settings.searchBarOpacity, settings.searchBarBlur, settings.searchBarWidth, settings.searchBarMatchBoard, isLightBoard, hexToRgb]);
 
   const clampedBoards = useMemo(() => {
     if (!boards) return [];

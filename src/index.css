@@ -250,14 +250,14 @@ a {
   display: flex;
   align-items: center;
   padding: 6px 16px;
-  background: var(--glass-bg);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
+  background: var(--search-bg, var(--glass-bg));
+  backdrop-filter: var(--search-blur, var(--glass-blur));
+  -webkit-backdrop-filter: var(--search-blur, var(--glass-blur));
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-pill);
-  width: 100%;
-  min-width: 320px;
-  max-width: 400px;
+  width: var(--search-width, 340px);
+  min-width: 100px;
+  max-width: 100%;
   height: 38px;
   box-shadow: var(--glass-shadow);
 }

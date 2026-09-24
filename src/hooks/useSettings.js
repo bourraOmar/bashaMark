@@ -17,7 +17,15 @@ export const defaultSettings = {
   quickSaveShortcut: 'Not set',
   region: 'Safi, Morocco',
   alwaysShowAllButtons: false,
-  hasCompletedTour: false
+  hasCompletedTour: false,
+  searchBarColor: '#ffffff',
+  searchBarOpacity: 60,
+  searchBarBlur: 12,
+  searchBarWidth: 300,
+  searchBarMatchBoard: false,
+  stOutlineColor: '#ffffff',
+  stOutlineOpacity: 75,
+  stOutlineMatchBoard: false
 };
 
 export function useSettings() {

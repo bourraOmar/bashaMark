@@ -145,7 +145,7 @@ export default function SearchBar() {
 
   return (
     <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }} ref={containerRef}>
-      <form className="search-bar glass-panel" onSubmit={handleSubmit}>
+      <form className="search-bar" onSubmit={handleSubmit}>
         <Search size={16} style={{ color: 'var(--text-muted)' }} />
         <input 
           type="text" 
