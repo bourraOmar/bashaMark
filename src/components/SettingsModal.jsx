@@ -96,11 +96,10 @@ import { extractColorsFromImage } from '../utils/colorMatcher';
         style={{
           appearance: 'none', backgroundColor: 'var(--item-hover-bg)', border: 'none',
           padding: '6px 32px 6px 12px', borderRadius: '8px', fontSize: '0.9rem',
-          color: 'var(--text-color)', cursor: 'pointer', outline: 'none',
-          colorScheme: 'var(--color-scheme)'
+          color: 'var(--text-color)', cursor: 'pointer', outline: 'none'
         }}
       >
-        {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+        {options.map(o => <option key={o.value} value={o.value} style={{ color: '#000000', backgroundColor: '#ffffff' }}>{o.label}</option>)}
       </select>
       <ChevronDown size={14} style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-muted)' }} />
     </div>
