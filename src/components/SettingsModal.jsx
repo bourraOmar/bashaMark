@@ -5,79 +5,6 @@ import { useBackground } from '../hooks/useBackground';
 import { signInWithGoogle, logoutUser } from '../utils/sync';
 import { extractColorsFromImage } from '../utils/colorMatcher';
 
-export default function SettingsModal({ isOpen, onClose, settings, setSettings, boards, user }) {
-  const [activeTab, setActiveTab] = useState('Account');
-  const [shortcutLabel, setShortcutLabel] = useState('Not set');
-  const { background } = useBackground();
-
-  useEffect(() => {
-    if (typeof chrome !== 'undefined' && chrome.commands) {
-      chrome.commands.getAll((commands) => {
-        const cmd = commands.find(c => c.name === 'quick-save');
-        if (cmd && cmd.shortcut) {
-          setShortcutLabel(cmd.shortcut);
-        }
-      });
-    }
-  }, []);
-
-  if (!isOpen) return null;
-
-  const handleChange = (key, value) => {
-    setSettings({ ...settings, [key]: value });
-  };
-
-  const handleSignIn = async () => {
-    try { await signInWithGoogle(); } catch (error) { console.error(error); }
-  };
-
-  const handleSignOut = async () => {
-    try {
-      await logoutUser();
-      localStorage.removeItem('boards');
-      localStorage.removeItem('pages');
-      localStorage.removeItem('currentPageId');
-      if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-        chrome.storage.local.remove(['boards', 'pendingBookmarks']);
-      }
-      window.location.reload();
-    } catch (error) { console.error(error); }
-  };
-
-  const handleReset = async () => {
-    let newSettings = { ...settings, opacity: defaultSettings.opacity, blur: defaultSettings.blur };
-    if (background) {
-      try {
-        const { primary, board } = await extractColorsFromImage(background);
-        newSettings.primaryColor = primary;
-        newSettings.boardColor = board;
-      } catch (e) {
-        newSettings.primaryColor = defaultSettings.primaryColor;
-        newSettings.boardColor = defaultSettings.boardColor;
-      }
-    }
-    setSettings(newSettings);
-  };
-
-  const handleDownload = () => {
-    const data = { boards, settings };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'bashamark_data.json';
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const handleSetShortcut = () => {
-    if (typeof chrome !== 'undefined' && chrome.tabs) {
-      chrome.tabs.create({ url: 'chrome://extensions/shortcuts' });
-    } else {
-      alert('Open your browser extensions shortcuts page to configure this.');
-    }
-  };
-
   const TabButton = ({ icon, label, active, onClick }) => (
     <button
       onClick={onClick}
@@ -178,6 +105,78 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
     </div>
   );
 
+export default function SettingsModal({ isOpen, onClose, settings, setSettings, boards, user }) {
+  const [activeTab, setActiveTab] = useState('Account');
+  const [shortcutLabel, setShortcutLabel] = useState('Not set');
+  const { background } = useBackground();
+
+  useEffect(() => {
+    if (typeof chrome !== 'undefined' && chrome.commands) {
+      chrome.commands.getAll((commands) => {
+        const cmd = commands.find(c => c.name === 'quick-save');
+        if (cmd && cmd.shortcut) {
+          setShortcutLabel(cmd.shortcut);
+        }
+      });
+    }
+  }, []);
+
+  if (!isOpen) return null;
+
+  const handleChange = (key, value) => {
+    setSettings({ ...settings, [key]: value });
+  };
+
+  const handleSignIn = async () => {
+    try { await signInWithGoogle(); } catch (error) { console.error(error); }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await logoutUser();
+      localStorage.removeItem('boards');
+      localStorage.removeItem('pages');
+      localStorage.removeItem('currentPageId');
+      if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+        chrome.storage.local.remove(['boards', 'pendingBookmarks']);
+      }
+      window.location.reload();
+    } catch (error) { console.error(error); }
+  };
+
+  const handleReset = async () => {
+    let newSettings = { ...settings, opacity: defaultSettings.opacity, blur: defaultSettings.blur };
+    if (background) {
+      try {
+        const { primary, board } = await extractColorsFromImage(background);
+        newSettings.primaryColor = primary;
+        newSettings.boardColor = board;
+      } catch (e) {
+        newSettings.primaryColor = defaultSettings.primaryColor;
+        newSettings.boardColor = defaultSettings.boardColor;
+      }
+    }
+    setSettings(newSettings);
+  };
+
+  const handleDownload = () => {
+    const data = { boards, settings };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'bashamark_data.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleSetShortcut = () => {
+    if (typeof chrome !== 'undefined' && chrome.tabs) {
+      chrome.tabs.create({ url: 'chrome://extensions/shortcuts' });
+    } else {
+      alert('Open your browser extensions shortcuts page to configure this.');
+    }
+  };
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(2px)' }} onClick={onClose} />
