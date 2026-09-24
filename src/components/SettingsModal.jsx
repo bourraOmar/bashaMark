@@ -96,7 +96,8 @@ import { extractColorsFromImage } from '../utils/colorMatcher';
         style={{
           appearance: 'none', backgroundColor: 'var(--item-hover-bg)', border: 'none',
           padding: '6px 32px 6px 12px', borderRadius: '8px', fontSize: '0.9rem',
-          color: 'var(--text-color)', cursor: 'pointer', outline: 'none'
+          color: 'var(--text-color)', cursor: 'pointer', outline: 'none',
+          colorScheme: 'var(--color-scheme)'
         }}
       >
         {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}

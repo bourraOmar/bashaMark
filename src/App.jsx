@@ -413,6 +413,7 @@ function App() {
 
   const dynamicCSS = useMemo(() => `
     :root {
+      color-scheme: ${isLightBoard ? 'light' : 'dark'};
       --primary-color: ${settings.primaryColor};
       --glass-bg: rgba(${hexToRgb(settings.boardColor)}, ${settings.opacity / 100});
       --glass-bg-hover: rgba(${hexToRgb(settings.boardColor)}, ${Math.min(1, (settings.opacity / 100) + 0.15)});
@@ -426,6 +427,7 @@ function App() {
       --font-weight-base: ${settings.textWeight === 'Bold' ? '600' : '400'};
       --text-color: ${isLightBoard ? '#1e293b' : '#f8fafc'};
       --text-muted: ${isLightBoard ? '#64748b' : '#94a3b8'};
+      --color-scheme: ${isLightBoard ? 'light' : 'dark'};
       --search-bg: ${settings.searchBarMatchBoard ? `rgba(${hexToRgb(settings.boardColor)}, ${settings.opacity / 100})` : `rgba(${hexToRgb(settings.searchBarColor || '#ffffff')}, ${(settings.searchBarOpacity ?? 60) / 100})`};
       --search-blur: ${settings.searchBarMatchBoard ? `blur(${settings.blur}px)` : `blur(${settings.searchBarBlur ?? 12}px)`};
       --search-width: ${settings.searchBarWidth ?? 340}px;
