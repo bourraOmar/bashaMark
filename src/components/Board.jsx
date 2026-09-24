@@ -273,25 +273,7 @@ export default memo(function Board({ id, title, bookmarks, onAddBookmark, onRena
                   Open all links
                 </button>
                 
-                {pages && pages.length > 1 && (
-                  <>
-                    <div className="dropdown-divider"></div>
-                    <div style={{ padding: '4px 12px', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Move to tab</div>
-                    {pages.map(page => (
-                      <button 
-                        key={page.id}
-                        className="dropdown-item" 
-                        onClick={() => {
-                          onUpdate(id, { pageId: page.id });
-                          setIsMenuOpen(false);
-                        }}
-                        style={{ paddingLeft: '24px' }}
-                      >
-                        {page.title}
-                      </button>
-                    ))}
-                  </>
-                )}
+                
 
                 <div className="dropdown-divider"></div>
                 <StylePicker 
