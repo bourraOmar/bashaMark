@@ -236,24 +236,24 @@ export default function PagesTabs({
 
   return (
     <>
-      <div 
-        ref={containerRef}
-        className="tabs-container"
-        style={{ 
-          maxWidth: '100%', 
-          overflowX: 'auto',
-          overflowY: 'hidden',
-          position: 'relative',
-          zIndex: 50
-        }}
+      <DndContext
+        sensors={sensors}
+        modifiers={[restrictToHorizontalAxis]}
+        collisionDetection={closestCenter}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+        onDragCancel={() => setActiveDragId(null)}
       >
-        <DndContext
-          sensors={sensors}
-          modifiers={[restrictToHorizontalAxis]}
-          collisionDetection={closestCenter}
-          onDragStart={handleDragStart}
-          onDragEnd={handleDragEnd}
-          onDragCancel={() => setActiveDragId(null)}
+        <div 
+          ref={containerRef}
+          className="tabs-container"
+          style={{ 
+            maxWidth: '100%', 
+            overflowX: 'auto',
+            overflowY: 'hidden',
+            position: 'relative',
+            zIndex: 50
+          }}
         >
           <SortableContext
             items={pages.map(p => p.id)}
@@ -280,6 +280,18 @@ export default function PagesTabs({
               );
             })}
           </SortableContext>
+
+          <button 
+            className="tab-add-btn" 
+            onClick={handleAddClick} 
+            title="New Page"
+            style={{ cursor: 'pointer' }}
+          >
+            <Plus size={18} />
+          </button>
+        </div>
+
+        {createPortal(
           <DragOverlay 
             modifiers={[restrictToHorizontalAxis]}
             dropAnimation={{ duration: 200, easing: 'cubic-bezier(0.18, 0.67, 0.6, 1.22)' }}
@@ -287,7 +299,7 @@ export default function PagesTabs({
             {activeDragId ? (
               <div style={{ display: 'inline-flex' }}>
                 <button
-                  className="tab-btn"
+                  className="tab-btn active"
                   style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -305,18 +317,10 @@ export default function PagesTabs({
                 </button>
               </div>
             ) : null}
-          </DragOverlay>
-        </DndContext>
-
-        <button 
-          className="tab-add-btn" 
-          onClick={handleAddClick} 
-          title="New Page"
-          style={{ cursor: 'pointer' }}
-        >
-          <Plus size={18} />
-        </button>
-      </div>
+          </DragOverlay>,
+          document.body
+        )}
+      </DndContext>
 
       {/* React Portal Context Menu - rendered directly in document.body to prevent clipping from overflow container */}
       {menu && createPortal(
