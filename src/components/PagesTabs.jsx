@@ -2,6 +2,107 @@ import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Plus, Type, Trash2, AlertCircle } from 'lucide-react';
 import ConfirmModal from './ConfirmModal';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  horizontalListSortingStrategy,
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+
+function SortableTab({
+  page,
+  isActive,
+  isEditing,
+  editingTitle,
+  setEditingTitle,
+  handleSaveRename,
+  setEditingPageId,
+  handleTabClick,
+  handleContextMenu,
+  handleDoubleClick,
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: page.id, disabled: isEditing });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    zIndex: isDragging ? 100 : 1,
+    opacity: isDragging ? 0.8 : 1,
+    position: 'relative',
+    display: 'inline-flex',
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+      <button
+        className={`tab-btn ${isActive ? 'active' : ''}`}
+        onClick={(e) => handleTabClick(page, e)}
+        onContextMenu={(e) => handleContextMenu(page, e)}
+        onDoubleClick={(e) => handleDoubleClick(page, e)}
+        onPointerDown={(e) => isEditing && e.stopPropagation()}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: isEditing ? 'text' : isDragging ? 'grabbing' : 'pointer',
+          whiteSpace: 'nowrap',
+          userSelect: 'none'
+        }}
+      >
+        {isEditing ? (
+          <input
+            ref={(el) => {
+              if (el && !el.dataset.focused) {
+                el.focus();
+                el.select();
+                el.dataset.focused = 'true';
+              }
+            }}
+            value={editingTitle}
+            onChange={(e) => setEditingTitle(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleSaveRename(page.id);
+              if (e.key === 'Escape') setEditingPageId(null);
+            }}
+            onBlur={() => handleSaveRename(page.id)}
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: 'rgba(0, 0, 0, 0.25)',
+              border: '1px solid rgba(255, 255, 255, 0.35)',
+              borderRadius: '8px',
+              color: '#ffffff',
+              outline: 'none',
+              fontWeight: 600,
+              fontSize: '0.86rem',
+              width: `${Math.max(70, editingTitle.length * 8 + 16)}px`,
+              textAlign: 'center',
+              padding: '2px 6px',
+              boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.3)'
+            }}
+          />
+        ) : (
+          <span>{page.title}</span>
+        )}
+      </button>
+    </div>
+  );
+}
 
 export default function PagesTabs({
   pages,
@@ -9,7 +110,8 @@ export default function PagesTabs({
   onSelectPage,
   onAddPage,
   onRenamePage,
-  onDeletePage
+  onDeletePage,
+  onReorderPages
 }) {
   const [editingPageId, setEditingPageId] = useState(null);
   const [editingTitle, setEditingTitle] = useState('');
@@ -17,6 +119,20 @@ export default function PagesTabs({
   const [confirmDelete, setConfirmDelete] = useState(null); // { pageId, title }
   const [cannotDeleteAlert, setCannotDeleteAlert] = useState(false);
   const containerRef = useRef(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor)
+  );
+
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+    if (active.id !== over?.id && onReorderPages) {
+      const oldIndex = pages.findIndex((p) => p.id === active.id);
+      const newIndex = pages.findIndex((p) => p.id === over.id);
+      onReorderPages(arrayMove(pages, oldIndex, newIndex));
+    }
+  };
 
   // Close dropdown menu when clicking anywhere on the document outside the open menu
   useEffect(() => {
@@ -121,64 +237,37 @@ export default function PagesTabs({
           zIndex: 50
         }}
       >
-        {pages.map((page) => {
-          const isActive = currentPageId === page.id;
-          const isEditing = editingPageId === page.id;
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext
+            items={pages.map(p => p.id)}
+            strategy={horizontalListSortingStrategy}
+          >
+            {pages.map((page) => {
+              const isActive = currentPageId === page.id;
+              const isEditing = editingPageId === page.id;
 
-          return (
-            <div key={page.id} style={{ position: 'relative', display: 'inline-flex' }}>
-              <button
-                className={`tab-btn ${isActive ? 'active' : ''}`}
-                onClick={(e) => handleTabClick(page, e)}
-                onContextMenu={(e) => handleContextMenu(page, e)}
-                onDoubleClick={(e) => handleDoubleClick(page, e)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: isEditing ? 'text' : 'pointer',
-                  whiteSpace: 'nowrap',
-                  userSelect: 'none'
-                }}
-              >
-                {isEditing ? (
-                  <input
-                    ref={(el) => {
-                      if (el && !el.dataset.focused) {
-                        el.focus();
-                        el.select();
-                        el.dataset.focused = 'true';
-                      }
-                    }}
-                    value={editingTitle}
-                    onChange={(e) => setEditingTitle(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') handleSaveRename(page.id);
-                      if (e.key === 'Escape') setEditingPageId(null);
-                    }}
-                    onBlur={() => handleSaveRename(page.id)}
-                    onClick={(e) => e.stopPropagation()}
-                    style={{
-                      background: 'rgba(0, 0, 0, 0.25)',
-                      border: '1px solid rgba(255, 255, 255, 0.35)',
-                      borderRadius: '8px',
-                      color: '#ffffff',
-                      outline: 'none',
-                      fontWeight: 600,
-                      fontSize: '0.86rem',
-                      width: `${Math.max(70, editingTitle.length * 8 + 16)}px`,
-                      textAlign: 'center',
-                      padding: '2px 6px',
-                      boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.3)'
-                    }}
-                  />
-                ) : (
-                  <span>{page.title}</span>
-                )}
-              </button>
-            </div>
-          );
-        })}
+              return (
+                <SortableTab
+                  key={page.id}
+                  page={page}
+                  isActive={isActive}
+                  isEditing={isEditing}
+                  editingTitle={editingTitle}
+                  setEditingTitle={setEditingTitle}
+                  handleSaveRename={handleSaveRename}
+                  setEditingPageId={setEditingPageId}
+                  handleTabClick={handleTabClick}
+                  handleContextMenu={handleContextMenu}
+                  handleDoubleClick={handleDoubleClick}
+                />
+              );
+            })}
+          </SortableContext>
+        </DndContext>
 
         <button 
           className="tab-add-btn" 

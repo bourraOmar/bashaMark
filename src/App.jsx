@@ -495,6 +495,7 @@ function App() {
             onAddPage={() => addPage()}
             onRenamePage={renamePage}
             onDeletePage={handleDeletePage}
+            onReorderPages={savePages}
           />
         </div>
         <div className="search-container">
