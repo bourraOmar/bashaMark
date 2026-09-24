@@ -280,7 +280,10 @@ export default function PagesTabs({
               );
             })}
           </SortableContext>
-          <DragOverlay dropAnimation={{ duration: 200, easing: 'cubic-bezier(0.18, 0.67, 0.6, 1.22)' }}>
+          <DragOverlay 
+            modifiers={[restrictToHorizontalAxis]}
+            dropAnimation={{ duration: 200, easing: 'cubic-bezier(0.18, 0.67, 0.6, 1.22)' }}
+          >
             {activeDragId ? (
               <div style={{ display: 'inline-flex' }}>
                 <button
