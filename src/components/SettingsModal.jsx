@@ -184,7 +184,7 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
       
       <div style={{
         position: 'relative', width: '850px', height: '700px',
-        backgroundColor: 'var(--dropdown-bg)', borderRadius: '16px',
+        backgroundColor: 'var(--glass-bg)', borderRadius: '16px',
         display: 'flex', flexDirection: 'column', overflow: 'hidden', backdropFilter: 'var(--glass-blur)', WebkitBackdropFilter: 'var(--glass-blur)',
         boxShadow: '0 20px 40px rgba(0,0,0,0.2)', color: 'var(--text-color)'
       }}>
@@ -207,7 +207,7 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
             </div>
           </div>
 
-          <div style={{ flex: 1, overflowY: 'auto', padding: '0 32px 32px 32px', backgroundColor: 'var(--dropdown-bg)' }}>
+          <div style={{ flex: 1, overflowY: 'auto', padding: '0 32px 32px 32px', backgroundColor: 'transparent' }}>
             
             {activeTab === 'Account' && (
               <div>
