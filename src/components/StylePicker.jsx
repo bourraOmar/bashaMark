@@ -62,10 +62,8 @@ export default function StylePicker({ styleType, styleColor, onChange }) {
                 width: '32px', height: '24px', borderRadius: '4px', border: '1px solid var(--dropdown-border)',
                 position: 'relative', overflow: 'hidden'
               }}>
-                <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '4px', backgroundColor: styleColor || 'var(--text-muted)' }} />
-              </div>
-              Corner
-            </button>
+                <div style={{ position: 'absolute', left: 0, top: 0, right: 0, height: '6px', backgroundColor: styleColor || 'var(--text-muted)' }} />
+              </div>Header</button>
 
             {/* Outline Button */}
             <button 

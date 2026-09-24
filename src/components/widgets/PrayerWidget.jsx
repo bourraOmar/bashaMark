@@ -130,8 +130,8 @@ export default memo(function PrayerWidget({ id, board, onUpdate, onDelete, pages
     <div ref={setNodeRef} style={style} className="board glass-panel">
       {board?.styleType === 'corner' && (
         <div style={{
-          position: 'absolute', top: 0, left: 0, bottom: 0, width: '6px',
-          backgroundColor: board.styleColor, borderTopLeftRadius: '12px', borderBottomLeftRadius: '12px',
+          position: 'absolute', top: 0, left: 0, right: 0, height: '6px',
+          backgroundColor: board.styleColor, borderTopLeftRadius: '12px', borderTopRightRadius: '12px',
           zIndex: 0
         }} />
       )}
