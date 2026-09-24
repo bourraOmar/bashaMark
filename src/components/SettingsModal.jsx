@@ -263,7 +263,7 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
                       let newWidth = settings.boardWidth;
                       if (v !== 'Auto' && windowWidth) {
                         const cols = parseInt(v, 10);
-                        const computedMax = Math.floor((windowWidth - 64 - (cols - 1) * 18) / cols);
+                        const computedMax = Math.floor((windowWidth - 140 - (cols - 1) * 18) / cols);
                         if (newWidth > computedMax) {
                           newWidth = Math.max(190, computedMax);
                         }
@@ -279,7 +279,7 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
                     if (settings.numberOfColumns !== 'Auto' && windowWidth) {
                       const cols = parseInt(settings.numberOfColumns, 10);
                       const gap = 18;
-                      const padding = 64;
+                      const padding = 140;
                       const computedMax = Math.floor((windowWidth - padding - (cols - 1) * gap) / cols);
                       maxBoardWidth = Math.max(190, Math.min(400, computedMax));
                     }
