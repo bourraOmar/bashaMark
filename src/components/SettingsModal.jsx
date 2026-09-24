@@ -88,22 +88,62 @@ import { extractColorsFromImage } from '../utils/colorMatcher';
     </div>
   );
 
-  const SelectDropdown = ({ value, options, onChange }) => (
-    <div style={{ position: 'relative' }}>
-      <select 
-        value={value} 
-        onChange={(e) => onChange(e.target.value)}
-        style={{
-          appearance: 'none', backgroundColor: 'var(--item-hover-bg)', border: 'none',
-          padding: '6px 32px 6px 12px', borderRadius: '8px', fontSize: '0.9rem',
-          color: 'var(--text-color)', cursor: 'pointer', outline: 'none'
-        }}
-      >
-        {options.map(o => <option key={o.value} value={o.value} style={{ color: '#000000', backgroundColor: '#ffffff' }}>{o.label}</option>)}
-      </select>
-      <ChevronDown size={14} style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-muted)' }} />
-    </div>
-  );
+  const SelectDropdown = ({ value, options, onChange }) => {
+    const [isOpen, setIsOpen] = React.useState(false);
+    const selectedOption = options.find(o => o.value === value) || options[0];
+    
+    return (
+      <div style={{ position: 'relative' }}>
+        <button 
+          onClick={() => setIsOpen(!isOpen)}
+          style={{
+            appearance: 'none', backgroundColor: 'var(--item-hover-bg)', border: 'none',
+            padding: '6px 32px 6px 12px', borderRadius: '8px', fontSize: '0.9rem',
+            color: 'var(--text-color)', cursor: 'pointer', outline: 'none',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            minWidth: '80px', width: '100%'
+          }}
+        >
+          {selectedOption ? selectedOption.label : ''}
+          <ChevronDown size={14} style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-muted)' }} />
+        </button>
+
+        {isOpen && (
+          <>
+            <div style={{ position: 'fixed', inset: 0, zIndex: 100 }} onClick={() => setIsOpen(false)} />
+            <div style={{
+              position: 'absolute', top: '100%', right: 0, marginTop: '4px',
+              backgroundColor: 'var(--glass-bg)',
+              backdropFilter: 'var(--glass-blur)',
+              WebkitBackdropFilter: 'var(--glass-blur)',
+              border: '1px solid var(--dropdown-border)',
+              borderRadius: '8px', padding: '4px', zIndex: 101,
+              minWidth: '100%', boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+              display: 'flex', flexDirection: 'column', gap: '2px',
+              maxHeight: '200px', overflowY: 'auto'
+            }}>
+              {options.map(o => (
+                <button
+                  key={o.value}
+                  onClick={() => { onChange(o.value); setIsOpen(false); }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--item-hover-bg)'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                  style={{
+                    padding: '6px 12px', border: 'none', backgroundColor: 'transparent',
+                    color: o.value === value ? 'var(--primary-color)' : 'var(--text-color)',
+                    fontSize: '0.9rem', cursor: 'pointer', textAlign: 'left',
+                    borderRadius: '4px', fontWeight: o.value === value ? 600 : 400
+                  }}
+                >
+                  {o.label}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+    );
+  };
 
 export default function SettingsModal({ isOpen, onClose, settings, setSettings, boards, user, windowWidth }) {
   const [activeTab, setActiveTab] = useState('Account');
