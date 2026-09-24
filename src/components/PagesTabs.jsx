@@ -9,6 +9,7 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
+  DragOverlay
 } from '@dnd-kit/core';
 import {
   arrayMove,
@@ -42,8 +43,10 @@ function SortableTab({
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    zIndex: isDragging ? 100 : 1,
-    opacity: isDragging ? 0.8 : 1,
+    zIndex: isDragging ? 10 : 1,
+    opacity: isDragging ? 0.3 : 1,
+    background: isDragging ? 'rgba(0,0,0,0.1)' : 'transparent',
+    borderRadius: '12px',
     position: 'relative',
     display: 'inline-flex',
   };
@@ -115,6 +118,7 @@ export default function PagesTabs({
 }) {
   const [editingPageId, setEditingPageId] = useState(null);
   const [editingTitle, setEditingTitle] = useState('');
+  const [activeDragId, setActiveDragId] = useState(null);
   const [menu, setMenu] = useState(null); // { pageId, title, x, y }
   const [confirmDelete, setConfirmDelete] = useState(null); // { pageId, title }
   const [cannotDeleteAlert, setCannotDeleteAlert] = useState(false);
@@ -125,7 +129,12 @@ export default function PagesTabs({
     useSensor(KeyboardSensor)
   );
 
+  const handleDragStart = (event) => {
+    setActiveDragId(event.active.id);
+  };
+
   const handleDragEnd = (event) => {
+    setActiveDragId(null);
     const { active, over } = event;
     if (active.id !== over?.id && onReorderPages) {
       const oldIndex = pages.findIndex((p) => p.id === active.id);
@@ -240,7 +249,9 @@ export default function PagesTabs({
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
+          onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
+          onDragCancel={() => setActiveDragId(null)}
         >
           <SortableContext
             items={pages.map(p => p.id)}
@@ -267,6 +278,29 @@ export default function PagesTabs({
               );
             })}
           </SortableContext>
+          <DragOverlay dropAnimation={{ duration: 200, easing: 'cubic-bezier(0.18, 0.67, 0.6, 1.22)' }}>
+            {activeDragId ? (
+              <div style={{ display: 'inline-flex' }}>
+                <button
+                  className="tab-btn"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'grabbing',
+                    whiteSpace: 'nowrap',
+                    userSelect: 'none',
+                    background: 'var(--glass-bg-hover)',
+                    boxShadow: '0 8px 30px rgba(0,0,0,0.2), 0 0 0 1px var(--glass-border)',
+                    color: 'var(--text-color)',
+                    transform: 'scale(1.05)'
+                  }}
+                >
+                  <span>{pages.find(p => p.id === activeDragId)?.title}</span>
+                </button>
+              </div>
+            ) : null}
+          </DragOverlay>
         </DndContext>
 
         <button 
