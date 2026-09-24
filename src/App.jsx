@@ -43,6 +43,7 @@ import { onAuthStateChange, subscribeToCloudData } from './utils/sync';
 
 function App() {
   const [user, setUser] = useState(null);
+  const activeDragIdRef = useRef(null);
   
   // Listen to Auth State
   useEffect(() => {
@@ -491,7 +492,16 @@ function App() {
           <PagesTabs
             pages={pages}
             currentPageId={currentPageId}
-            onSelectPage={(id) => setCurrentPageId(id)}
+            onSelectPage={(id) => {
+              if (isDragging && activeDragIdRef.current) {
+                const activeId = activeDragIdRef.current.toString();
+                if (activeId.startsWith('board-')) {
+                  // Move the dragged board to the new page IMMEDIATELY
+                  setBoards(prev => prev.map(b => b.id === activeId ? { ...b, pageId: id } : b));
+                }
+              }
+              setCurrentPageId(id);
+            }}
             onAddPage={() => addPage()}
             onRenamePage={renamePage}
             onDeletePage={handleDeletePage}
@@ -512,17 +522,20 @@ function App() {
           sensors={sensors} 
           collisionDetection={customCollisionDetection} 
           modifiers={[customRestrictToWindowMargins]}
-          onDragStart={() => {
+          onDragStart={(event) => {
+            activeDragIdRef.current = event.active.id;
             setIsDragging(true);
             wasDraggingRef.current = true;
           }}
           onDragOver={handleDragOver}
           onDragEnd={(event) => {
+            activeDragIdRef.current = null;
             setIsDragging(false);
             handleDragEnd(event);
             setTimeout(() => { wasDraggingRef.current = false; }, 100);
           }}
           onDragCancel={() => {
+            activeDragIdRef.current = null;
             setIsDragging(false);
             setTimeout(() => { wasDraggingRef.current = false; }, 100);
           }}
