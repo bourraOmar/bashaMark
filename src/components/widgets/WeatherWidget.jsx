@@ -3,6 +3,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Cloud, Settings, MoreHorizontal, Trash2, MapPin, Check, RefreshCw, Wind, WifiOff } from 'lucide-react';
 import ConfirmModal from '../ConfirmModal';
+import StylePicker from '../StylePicker';
 
 function getSamsungWeatherIcon(iconCode, size = 'large') {
   const isLarge = size === 'large';
@@ -296,6 +297,13 @@ export default memo(function WeatherWidget({ id, board, onUpdate, onDelete, page
 
   return (
     <div ref={setNodeRef} style={style} className="board glass-panel">
+      {board?.styleType === 'corner' && (
+        <div style={{
+          position: 'absolute', top: 0, left: 0, bottom: 0, width: '6px',
+          backgroundColor: board.styleColor, borderTopLeftRadius: '12px', borderBottomLeftRadius: '12px',
+          zIndex: 0
+        }} />
+      )}
       {/* Dynamic Day/Night Samsung One UI Atmospheric Aura */}
       {atmosphereGlow && (
         <div style={{
@@ -372,6 +380,12 @@ export default memo(function WeatherWidget({ id, board, onUpdate, onDelete, page
                 marginRight: dropdownPosition === 'left' ? '8px' : 0, 
                 marginTop: 0 
               }}>
+                <StylePicker 
+                  styleType={board?.styleType} 
+                  styleColor={board?.styleColor} 
+                  onChange={(updates) => onUpdate(id, updates)} 
+                />
+                <div className="dropdown-divider"></div>
                 <button className="dropdown-item danger" onClick={() => { setIsConfirmOpen(true); setIsMenuOpen(false); }}>
                   <Trash2 size={16} />
                   Delete widget

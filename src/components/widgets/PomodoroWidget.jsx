@@ -3,6 +3,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Play, Pause, RotateCcw, SkipForward, Settings, MoreHorizontal, Trash2 } from 'lucide-react';
 import ConfirmModal from '../ConfirmModal';
+import StylePicker from '../StylePicker';
 
 const MODES = {
   FOCUS: { label: 'Focus', time: 25 * 60 },
@@ -53,7 +54,8 @@ export default memo(function PomodoroWidget({ id, onDelete, settings: appSetting
     cursor: 'default',
     display: 'flex',
     flexDirection: 'column',
-    padding: '14px 14px'
+    padding: '14px 14px',
+    ...(board?.styleType === 'outline' ? { border: `2px solid ${board.styleColor}`, outline: 'none' } : {}),
   };
 
   useEffect(() => {
@@ -123,6 +125,13 @@ export default memo(function PomodoroWidget({ id, onDelete, settings: appSetting
 
   return (
     <div ref={setNodeRef} style={style} className="board glass-panel">
+      {board?.styleType === 'corner' && (
+        <div style={{
+          position: 'absolute', top: 0, left: 0, bottom: 0, width: '6px',
+          backgroundColor: board.styleColor, borderTopLeftRadius: '12px', borderBottomLeftRadius: '12px',
+          zIndex: 0
+        }} />
+      )}
       {/* Header / Drag Handle */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
         <div 
@@ -224,6 +233,12 @@ export default memo(function PomodoroWidget({ id, onDelete, settings: appSetting
                     <div className="dropdown-divider"></div>
                   </>
                 )}
+                <StylePicker 
+                  styleType={board?.styleType} 
+                  styleColor={board?.styleColor} 
+                  onChange={(updates) => onUpdate(id, updates)} 
+                />
+                <div className="dropdown-divider"></div>
                 <button className="dropdown-item danger" onClick={() => { setIsConfirmOpen(true); setIsMenuOpen(false); }}>
                   <Trash2 size={16} />
                   Delete widget

@@ -3,6 +3,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { ChevronLeft, ChevronRight, MoreHorizontal, Trash2 } from 'lucide-react';
 import ConfirmModal from '../ConfirmModal';
+import StylePicker from '../StylePicker';
 
 export default memo(function CalendarWidget({ id, onDelete, settings, pages, onUpdate, board }) {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -31,7 +32,8 @@ export default memo(function CalendarWidget({ id, onDelete, settings, pages, onU
     zIndex: isDragging ? 1000 : (isMenuOpen || isConfirmOpen) ? 100 : undefined,
     position: 'relative',
     cursor: 'default',
-    padding: '14px 14px'
+    padding: '14px 14px',
+    ...(board?.styleType === 'outline' ? { border: `2px solid ${board.styleColor}`, outline: 'none' } : {}),
   };
 
   const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
@@ -54,6 +56,13 @@ export default memo(function CalendarWidget({ id, onDelete, settings, pages, onU
 
   return (
     <div ref={setNodeRef} style={style} className="board glass-panel">
+      {board?.styleType === 'corner' && (
+        <div style={{
+          position: 'absolute', top: 0, left: 0, bottom: 0, width: '6px',
+          backgroundColor: board.styleColor, borderTopLeftRadius: '12px', borderBottomLeftRadius: '12px',
+          zIndex: 0
+        }} />
+      )}
       {/* Header / Drag Handle */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -116,6 +125,12 @@ export default memo(function CalendarWidget({ id, onDelete, settings, pages, onU
                     <div className="dropdown-divider"></div>
                   </>
                 )}
+                <StylePicker 
+                  styleType={board?.styleType} 
+                  styleColor={board?.styleColor} 
+                  onChange={(updates) => onUpdate(id, updates)} 
+                />
+                <div className="dropdown-divider"></div>
                 <button className="dropdown-item danger" onClick={() => { setIsConfirmOpen(true); setIsMenuOpen(false); }}>
                   <Trash2 size={16} />
                   Delete widget

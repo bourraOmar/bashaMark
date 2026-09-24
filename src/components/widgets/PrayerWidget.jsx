@@ -3,6 +3,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Compass, Settings, MoreHorizontal, Trash2, MapPin, Check, WifiOff } from 'lucide-react';
 import ConfirmModal from '../ConfirmModal';
+import StylePicker from '../StylePicker';
 
 const CALCULATION_METHODS = [
   { id: 0, name: 'Shia Ithna-Ashari' },
@@ -127,6 +128,13 @@ export default memo(function PrayerWidget({ id, board, onUpdate, onDelete, pages
 
   return (
     <div ref={setNodeRef} style={style} className="board glass-panel">
+      {board?.styleType === 'corner' && (
+        <div style={{
+          position: 'absolute', top: 0, left: 0, bottom: 0, width: '6px',
+          backgroundColor: board.styleColor, borderTopLeftRadius: '12px', borderBottomLeftRadius: '12px',
+          zIndex: 0
+        }} />
+      )}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
         <div 
           {...attributes} 
@@ -182,6 +190,12 @@ export default memo(function PrayerWidget({ id, board, onUpdate, onDelete, pages
                 marginRight: dropdownPosition === 'left' ? '8px' : 0, 
                 marginTop: 0 
               }}>
+                <StylePicker 
+                  styleType={board?.styleType} 
+                  styleColor={board?.styleColor} 
+                  onChange={(updates) => onUpdate(id, updates)} 
+                />
+                <div className="dropdown-divider"></div>
                 <button className="dropdown-item danger" onClick={() => { setIsConfirmOpen(true); setIsMenuOpen(false); }}>
                   <Trash2 size={16} />
                   Delete widget

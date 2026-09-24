@@ -4,6 +4,7 @@ import { CSS } from '@dnd-kit/utilities';
 import BookmarkItem from './BookmarkItem';
 import { Plus, MoreHorizontal, Type, Layers, Trash2 } from 'lucide-react';
 import ConfirmModal from './ConfirmModal';
+import StylePicker from './StylePicker';
 
 function extractTitleFromUrl(inputUrl) {
   if (!inputUrl) return "New Link";
@@ -32,7 +33,7 @@ function extractTitleFromUrl(inputUrl) {
   }
 }
 
-export default memo(function Board({ id, title, bookmarks, onAddBookmark, onRenameBoard, onDeleteBoard, onEditBookmark, onDeleteBookmark, onUpdate, settings, pages }) {
+export default memo(function Board({ id, title, bookmarks, onAddBookmark, onRenameBoard, onDeleteBoard, onEditBookmark, onDeleteBookmark, onUpdate, settings, pages, board }) {
   const [isAdding, setIsAdding] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -56,6 +57,7 @@ export default memo(function Board({ id, title, bookmarks, onAddBookmark, onRena
     opacity: isDragging ? 0.4 : 1,
     zIndex: isDragging ? 1000 : (isMenuOpen || isAdding || isConfirmOpen || childMenuOpen) ? 100 : undefined,
     position: 'relative',
+    ...(board?.styleType === 'outline' ? { border: `2px solid ${board.styleColor}`, outline: 'none' } : {}),
   };
 
   useEffect(() => {
@@ -128,6 +130,13 @@ export default memo(function Board({ id, title, bookmarks, onAddBookmark, onRena
 
   return (
     <div ref={setNodeRef} style={style} className="board glass-panel">
+      {board?.styleType === 'corner' && (
+        <div style={{
+          position: 'absolute', top: 0, left: 0, bottom: 0, width: '6px',
+          backgroundColor: board.styleColor, borderTopLeftRadius: '12px', borderBottomLeftRadius: '12px',
+          zIndex: 0
+        }} />
+      )}
       <div className="board-header" {...attributes} {...listeners}>
         {isRenaming ? (
           <form onSubmit={handleRename} style={{ flex: 1, display: 'flex', gap: '8px' }}>
@@ -284,6 +293,12 @@ export default memo(function Board({ id, title, bookmarks, onAddBookmark, onRena
                   </>
                 )}
 
+                <div className="dropdown-divider"></div>
+                <StylePicker 
+                  styleType={board?.styleType} 
+                  styleColor={board?.styleColor} 
+                  onChange={(updates) => onUpdate(id, updates)} 
+                />
                 <div className="dropdown-divider"></div>
                 <button className="dropdown-item danger" onClick={handleDelete}>
                   <Trash2 size={16} />

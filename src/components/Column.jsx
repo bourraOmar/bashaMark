@@ -81,6 +81,7 @@ export default memo(function Column({ id, slotIndex, boards, pages, addBoard, ad
               onUpdate={updateBoard}
               settings={settings}
               pages={pages}
+              board={board}
             />
           );
         })}

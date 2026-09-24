@@ -3,6 +3,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { MoreHorizontal, Trash2 } from 'lucide-react';
 import ConfirmModal from '../ConfirmModal';
+import StylePicker from '../StylePicker';
 
 export default memo(function NotesWidget({ id, initialText = '', board, onUpdate, onDelete, settings, pages }) {
   const [text, setText] = useState(initialText);
@@ -35,7 +36,8 @@ export default memo(function NotesWidget({ id, initialText = '', board, onUpdate
     display: 'flex',
     flexDirection: 'column',
     height: 'auto',
-    minHeight: '120px'
+    minHeight: '120px',
+    ...(board?.styleType === 'outline' ? { border: `2px solid ${board.styleColor}`, outline: 'none' } : {}),
   };
 
   // Debounced auto-save
@@ -50,6 +52,13 @@ export default memo(function NotesWidget({ id, initialText = '', board, onUpdate
 
   return (
     <div ref={setNodeRef} style={style} className="board glass-panel">
+      {board?.styleType === 'corner' && (
+        <div style={{
+          position: 'absolute', top: 0, left: 0, bottom: 0, width: '6px',
+          backgroundColor: board.styleColor, borderTopLeftRadius: '12px', borderBottomLeftRadius: '12px',
+          zIndex: 0
+        }} />
+      )}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
         <div 
           {...attributes} 
@@ -102,6 +111,12 @@ export default memo(function NotesWidget({ id, initialText = '', board, onUpdate
                   <div className="dropdown-divider"></div>
                 </>
               )}
+              <StylePicker 
+                styleType={board?.styleType} 
+                styleColor={board?.styleColor} 
+                onChange={(updates) => onUpdate(id, updates)} 
+              />
+              <div className="dropdown-divider"></div>
               <button className="dropdown-item danger" onClick={() => { setIsConfirmOpen(true); setIsMenuOpen(false); }}>
                 <Trash2 size={16} />
                 Delete board
