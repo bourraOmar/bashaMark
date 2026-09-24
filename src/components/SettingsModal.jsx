@@ -218,16 +218,16 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
                       <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginBottom: '16px' }}>Sign in to sync your boards and license across devices.</p>
                       <button 
                         onClick={handleSignIn}
-                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', width: '100%', padding: '12px', borderRadius: '8px', backgroundColor: '#ffffff', border: '1px solid var(--dropdown-border)', color: 'var(--text-color)', fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}
+                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', width: '100%', padding: '12px', borderRadius: '8px', backgroundColor: 'transparent', border: '1px solid var(--dropdown-border)', color: 'var(--text-color)', fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}
                       >
                         <img src="https://www.google.com/favicon.ico" alt="Google" style={{ width: '18px', height: '18px' }} />
                         Sign in with Google
                       </button>
                     </>
                   ) : (
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#ffffff', padding: '16px', borderRadius: '8px', border: '1px solid var(--dropdown-border)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'transparent', padding: '16px', borderRadius: '8px', border: '1px solid var(--dropdown-border)' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#4f8096', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', fontWeight: 600 }}>
+                        <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'var(--primary-color)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', fontWeight: 600 }}>
                           {user.displayName ? user.displayName.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase()}
                         </div>
                         <div>
@@ -238,18 +238,6 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
                       <button onClick={handleSignOut} style={{ padding: '6px 16px', borderRadius: '6px', backgroundColor: 'var(--item-hover-bg)', color: 'var(--text-color)', border: 'none', cursor: 'pointer', fontWeight: 500 }}>Sign out</button>
                     </div>
                   )}
-                </div>
-
-                <div style={{ borderTop: '1px solid var(--dropdown-border)', paddingTop: '8px' }}>
-                  <SectionTitle>PLAN & BILLING</SectionTitle>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-                    <span style={{ backgroundColor: '#e0f2fe', color: '#0ea5e9', padding: '4px 12px', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 600 }}>Free trial</span>
-                    <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>7 days left</span>
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    <button style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid var(--dropdown-border)', backgroundColor: 'var(--item-hover-bg)', color: 'var(--text-color)', fontWeight: 600, cursor: 'pointer' }}>Yearly · $9</button>
-                    <button style={{ width: '100%', padding: '14px', borderRadius: '8px', border: 'none', backgroundColor: '#2f3136', color: '#ffffff', fontWeight: 600, cursor: 'pointer' }}>Lifetime · $25</button>
-                  </div>
                 </div>
               </div>
             )}
@@ -304,11 +292,11 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
                 <div style={{ display: 'flex', gap: '16px', marginBottom: '24px' }}>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '8px' }}>Primary color</div>
-                    <input type="color" value={settings.primaryColor} onChange={(e) => handleChange('primaryColor', e.target.value)} style={{ width: '100%', height: '40px', border: 'none', borderRadius: '8px', cursor: 'pointer', padding: 0 }} />
+                    <input type="color" className="custom-color-input" value={settings.primaryColor} onChange={(e) => handleChange('primaryColor', e.target.value)} style={{ width: '100%', height: '40px', border: 'none', borderRadius: '8px', cursor: 'pointer', padding: 0 }} />
                   </div>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '8px' }}>Board color</div>
-                    <input type="color" value={settings.boardColor} onChange={(e) => handleChange('boardColor', e.target.value)} style={{ width: '100%', height: '40px', border: 'none', borderRadius: '8px', cursor: 'pointer', padding: 0 }} />
+                    <input type="color" className="custom-color-input" value={settings.boardColor} onChange={(e) => handleChange('boardColor', e.target.value)} style={{ width: '100%', height: '40px', border: 'none', borderRadius: '8px', cursor: 'pointer', padding: 0 }} />
                   </div>
                 </div>
                 
@@ -327,7 +315,7 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
                 <SectionTitle>SEARCH BAR</SectionTitle>
                 <div style={{ marginBottom: '24px' }}>
                   <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '8px' }}>Search bar color</div>
-                  <input type="color" value="#ffffff" onChange={()=>{}} style={{ width: '100%', height: '40px', border: 'none', borderRadius: '8px', cursor: 'pointer', padding: 0 }} />
+                  <input type="color" className="custom-color-input" value="#ffffff" onChange={()=>{}} style={{ width: '100%', height: '40px', border: 'none', borderRadius: '8px', cursor: 'pointer', padding: 0 }} />
                 </div>
                 <Row label="Opacity"><span style={{fontSize:'0.85rem', color:'#64748b'}}>60%</span></Row>
                 <div style={{ marginTop: '-12px', marginBottom: '24px' }}><Slider value={60} min={0} max={100} onChange={()=>{}} /></div>
@@ -354,7 +342,7 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
                 <SectionTitle>ST.BULKOUTLINE</SectionTitle>
                 <div style={{ marginBottom: '24px' }}>
                   <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '8px' }}>st.outlineColor</div>
-                  <input type="color" value="#ffffff" onChange={()=>{}} style={{ width: '100%', height: '40px', border: 'none', borderRadius: '8px', cursor: 'pointer', padding: 0 }} />
+                  <input type="color" className="custom-color-input" value="#ffffff" onChange={()=>{}} style={{ width: '100%', height: '40px', border: 'none', borderRadius: '8px', cursor: 'pointer', padding: 0 }} />
                 </div>
                 <Row label="Opacity"><span style={{fontSize:'0.85rem', color:'#64748b'}}>75%</span></Row>
                 <div style={{ marginTop: '-12px', marginBottom: '24px' }}><Slider value={75} min={0} max={100} onChange={()=>{}} /></div>

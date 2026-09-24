@@ -101,6 +101,28 @@ body {
   background: var(--item-hover-bg);
 }
 
+.custom-color-input {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 0;
+}
+.custom-color-input::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+.custom-color-input::-webkit-color-swatch {
+  border: none;
+  border-radius: 5px;
+}
+.custom-color-input::-moz-color-swatch {
+  border: none;
+  border-radius: 5px;
+}
+
 button {
   cursor: pointer;
   border: none;
