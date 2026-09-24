@@ -85,7 +85,7 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
         display: 'flex', alignItems: 'center', gap: '12px',
         width: '100%', padding: '10px 16px',
         borderRadius: '8px', border: 'none',
-        backgroundColor: active ? '#4f8096' : 'transparent',
+        backgroundColor: active ? 'var(--primary-color)' : 'transparent',
         color: active ? '#ffffff' : '#64748b',
         fontWeight: active ? 500 : 400,
         fontSize: '0.9rem', cursor: 'pointer',
@@ -100,14 +100,14 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
   );
 
   const SectionTitle = ({ children }) => (
-    <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#8892a0', letterSpacing: '0.05em', marginBottom: '16px', marginTop: '24px' }}>
+    <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.05em', marginBottom: '16px', marginTop: '24px' }}>
       {children}
     </div>
   );
 
   const Row = ({ label, children }) => (
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-      <span style={{ fontSize: '0.9rem', color: '#475569' }}>{label}</span>
+      <span style={{ fontSize: '0.9rem', color: 'var(--text-color)' }}>{label}</span>
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>{children}</div>
     </div>
   );
@@ -117,7 +117,7 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
       onClick={() => onChange(!checked)}
       style={{
         width: '40px', height: '22px', borderRadius: '11px',
-        backgroundColor: checked ? '#4f8096' : '#cbd5e1',
+        backgroundColor: checked ? 'var(--primary-color)' : '#cbd5e1',
         position: 'relative', cursor: 'pointer', transition: 'all 0.2s'
       }}
     >
@@ -132,27 +132,27 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
   const Slider = ({ value, onChange, min = 0, max = 100, suffix = '' }) => (
     <div style={{ width: '100%' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-        <span style={{ fontSize: '0.8rem', color: '#64748b' }}></span>
-        <span style={{ fontSize: '0.8rem', color: '#64748b' }}>{value}{suffix}</span>
+        <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}></span>
+        <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{value}{suffix}</span>
       </div>
       <input 
         type="range" min={min} max={max} value={value} 
         onChange={(e) => onChange(parseInt(e.target.value, 10))}
-        style={{ width: '100%', accentColor: '#4f8096', height: '4px' }}
+        style={{ width: '100%', accentColor: 'var(--primary-color)', height: '4px' }}
       />
     </div>
   );
 
   const SegmentedControl = ({ options, value, onChange }) => (
-    <div style={{ display: 'flex', backgroundColor: '#e2e8f0', borderRadius: '8px', padding: '2px' }}>
+    <div style={{ display: 'flex', backgroundColor: 'var(--item-hover-bg)', borderRadius: '8px', padding: '2px' }}>
       {options.map(opt => (
         <button
           key={opt.value}
           onClick={() => onChange(opt.value)}
           style={{
-            flex: 1, border: 'none', background: value === opt.value ? '#cbd5e1' : 'transparent',
+            flex: 1, border: 'none', background: value === opt.value ? 'var(--primary-color)' : 'transparent',
             padding: '4px 12px', borderRadius: '6px', fontSize: '0.85rem',
-            color: value === opt.value ? '#1e293b' : '#64748b', cursor: 'pointer', fontWeight: value === opt.value ? 500 : 400
+            color: value === opt.value ? '#ffffff' : 'var(--text-muted)', cursor: 'pointer', fontWeight: value === opt.value ? 500 : 400
           }}
         >
           {opt.label}
@@ -167,14 +167,14 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
         value={value} 
         onChange={(e) => onChange(e.target.value)}
         style={{
-          appearance: 'none', backgroundColor: '#e2e8f0', border: 'none',
+          appearance: 'none', backgroundColor: 'var(--item-hover-bg)', border: 'none',
           padding: '6px 32px 6px 12px', borderRadius: '8px', fontSize: '0.9rem',
-          color: '#475569', cursor: 'pointer', outline: 'none'
+          color: 'var(--text-color)', cursor: 'pointer', outline: 'none'
         }}
       >
         {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
       </select>
-      <ChevronDown size={14} style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: '#64748b' }} />
+      <ChevronDown size={14} style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-muted)' }} />
     </div>
   );
 
@@ -184,17 +184,17 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
       
       <div style={{
         position: 'relative', width: '850px', height: '700px',
-        backgroundColor: '#f1f3f5', borderRadius: '16px',
-        display: 'flex', flexDirection: 'column', overflow: 'hidden',
-        boxShadow: '0 20px 40px rgba(0,0,0,0.2)', color: '#334155'
+        backgroundColor: 'var(--dropdown-bg)', borderRadius: '16px',
+        display: 'flex', flexDirection: 'column', overflow: 'hidden', backdropFilter: 'var(--glass-blur)', WebkitBackdropFilter: 'var(--glass-blur)',
+        boxShadow: '0 20px 40px rgba(0,0,0,0.2)', color: 'var(--text-color)'
       }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '16px 24px', borderBottom: '1px solid #e2e8f0' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '16px 24px', borderBottom: '1px solid var(--dropdown-border)' }}>
           <h2 style={{ fontSize: '1.1rem', fontWeight: 600, margin: 0 }}>Settings</h2>
-          <button onClick={onClose} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#94a3b8' }}><X size={20} /></button>
+          <button onClick={onClose} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}><X size={20} /></button>
         </div>
 
         <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-          <div style={{ width: '220px', backgroundColor: '#e9ecef', display: 'flex', flexDirection: 'column', borderRight: '1px solid #e2e8f0' }}>
+          <div style={{ width: '220px', backgroundColor: 'var(--glass-bg-hover)', display: 'flex', flexDirection: 'column', borderRight: '1px solid var(--dropdown-border)' }}>
             <div style={{ padding: '16px 12px', flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
               <TabButton icon={<User size={18}/>} label="Account" active={activeTab === 'Account'} onClick={() => setActiveTab('Account')} />
               <TabButton icon={<Sliders size={18}/>} label="General" active={activeTab === 'General'} onClick={() => setActiveTab('General')} />
@@ -207,7 +207,7 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
             </div>
           </div>
 
-          <div style={{ flex: 1, overflowY: 'auto', padding: '0 32px 32px 32px', backgroundColor: '#f1f3f5' }}>
+          <div style={{ flex: 1, overflowY: 'auto', padding: '0 32px 32px 32px', backgroundColor: 'var(--dropdown-bg)' }}>
             
             {activeTab === 'Account' && (
               <div>
@@ -215,39 +215,39 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
                 <div style={{ marginBottom: '24px' }}>
                   {!user ? (
                     <>
-                      <p style={{ fontSize: '0.9rem', color: '#8892a0', marginBottom: '16px' }}>Sign in to sync your boards and license across devices.</p>
+                      <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginBottom: '16px' }}>Sign in to sync your boards and license across devices.</p>
                       <button 
                         onClick={handleSignIn}
-                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', width: '100%', padding: '12px', borderRadius: '8px', backgroundColor: '#ffffff', border: '1px solid #e2e8f0', color: '#334155', fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}
+                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', width: '100%', padding: '12px', borderRadius: '8px', backgroundColor: '#ffffff', border: '1px solid var(--dropdown-border)', color: 'var(--text-color)', fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}
                       >
                         <img src="https://www.google.com/favicon.ico" alt="Google" style={{ width: '18px', height: '18px' }} />
                         Sign in with Google
                       </button>
                     </>
                   ) : (
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#ffffff', padding: '16px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#ffffff', padding: '16px', borderRadius: '8px', border: '1px solid var(--dropdown-border)' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                         <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#4f8096', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', fontWeight: 600 }}>
                           {user.displayName ? user.displayName.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase()}
                         </div>
                         <div>
                           <div style={{ fontWeight: 600, fontSize: '0.95rem' }}>{user.displayName || 'User'}</div>
-                          <div style={{ color: '#8892a0', fontSize: '0.85rem' }}>{user.email}</div>
+                          <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{user.email}</div>
                         </div>
                       </div>
-                      <button onClick={handleSignOut} style={{ padding: '6px 16px', borderRadius: '6px', backgroundColor: '#e2e8f0', color: '#475569', border: 'none', cursor: 'pointer', fontWeight: 500 }}>Sign out</button>
+                      <button onClick={handleSignOut} style={{ padding: '6px 16px', borderRadius: '6px', backgroundColor: 'var(--item-hover-bg)', color: 'var(--text-color)', border: 'none', cursor: 'pointer', fontWeight: 500 }}>Sign out</button>
                     </div>
                   )}
                 </div>
 
-                <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '8px' }}>
+                <div style={{ borderTop: '1px solid var(--dropdown-border)', paddingTop: '8px' }}>
                   <SectionTitle>PLAN & BILLING</SectionTitle>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
                     <span style={{ backgroundColor: '#e0f2fe', color: '#0ea5e9', padding: '4px 12px', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 600 }}>Free trial</span>
-                    <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>7 days left</span>
+                    <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>7 days left</span>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    <button style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid #cbd5e1', backgroundColor: '#cbd5e1', color: '#1e293b', fontWeight: 600, cursor: 'pointer' }}>Yearly · $9</button>
+                    <button style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid var(--dropdown-border)', backgroundColor: 'var(--item-hover-bg)', color: 'var(--text-color)', fontWeight: 600, cursor: 'pointer' }}>Yearly · $9</button>
                     <button style={{ width: '100%', padding: '14px', borderRadius: '8px', border: 'none', backgroundColor: '#2f3136', color: '#ffffff', fontWeight: 600, cursor: 'pointer' }}>Lifetime · $25</button>
                   </div>
                 </div>
@@ -267,7 +267,7 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
                   <Toggle checked={settings.showDescriptions} onChange={(v) => handleChange('showDescriptions', v)} />
                 </Row>
 
-                <div style={{ borderTop: '1px solid #e2e8f0', marginTop: '16px' }} />
+                <div style={{ borderTop: '1px solid var(--dropdown-border)', marginTop: '16px' }} />
                 <SectionTitle>LAYOUT</SectionTitle>
                 <Row label="Number of columns">
                   <SelectDropdown 
@@ -281,18 +281,18 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
                   <Slider value={settings.boardWidth} min={190} max={400} onChange={(v) => handleChange('boardWidth', v)} />
                 </div>
 
-                <div style={{ borderTop: '1px solid #e2e8f0', marginTop: '16px' }} />
+                <div style={{ borderTop: '1px solid var(--dropdown-border)', marginTop: '16px' }} />
                 <SectionTitle>SIDEBAR</SectionTitle>
                 <Row label="Always show all buttons">
                   <Toggle checked={settings.alwaysShowAllButtons} onChange={(v) => handleChange('alwaysShowAllButtons', v)} />
                 </Row>
 
-                <div style={{ borderTop: '1px solid #e2e8f0', marginTop: '16px' }} />
+                <div style={{ borderTop: '1px solid var(--dropdown-border)', marginTop: '16px' }} />
                 <SectionTitle>QUICK SAVE</SectionTitle>
                 <Row label="Shortcut">
                   <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                    <span style={{ backgroundColor: '#e2e8f0', padding: '4px 10px', borderRadius: '6px', fontSize: '0.8rem', color: '#64748b' }}>{shortcutLabel}</span>
-                    <button onClick={handleSetShortcut} style={{ backgroundColor: '#e2e8f0', border: 'none', padding: '4px 12px', borderRadius: '6px', fontSize: '0.85rem', cursor: 'pointer', color: '#475569' }}>Change</button>
+                    <span style={{ backgroundColor: 'var(--item-hover-bg)', padding: '4px 10px', borderRadius: '6px', fontSize: '0.8rem', color: 'var(--text-muted)' }}>{shortcutLabel}</span>
+                    <button onClick={handleSetShortcut} style={{ backgroundColor: 'var(--item-hover-bg)', border: 'none', padding: '4px 12px', borderRadius: '6px', fontSize: '0.85rem', cursor: 'pointer', color: 'var(--text-color)' }}>Change</button>
                   </div>
                 </Row>
               </div>
@@ -303,11 +303,11 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
                 <SectionTitle>BOARD</SectionTitle>
                 <div style={{ display: 'flex', gap: '16px', marginBottom: '24px' }}>
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '8px' }}>Primary color</div>
+                    <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '8px' }}>Primary color</div>
                     <input type="color" value={settings.primaryColor} onChange={(e) => handleChange('primaryColor', e.target.value)} style={{ width: '100%', height: '40px', border: 'none', borderRadius: '8px', cursor: 'pointer', padding: 0 }} />
                   </div>
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '8px' }}>Board color</div>
+                    <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '8px' }}>Board color</div>
                     <input type="color" value={settings.boardColor} onChange={(e) => handleChange('boardColor', e.target.value)} style={{ width: '100%', height: '40px', border: 'none', borderRadius: '8px', cursor: 'pointer', padding: 0 }} />
                   </div>
                 </div>
@@ -319,14 +319,14 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
                 <div style={{ marginTop: '-12px', marginBottom: '24px' }}><Slider value={settings.blur} min={0} max={40} onChange={(v) => handleChange('blur', v)} /></div>
                 
                 <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
-                  <button onClick={() => onClose()} style={{ padding: '6px 16px', borderRadius: '6px', border: '1px solid #cbd5e1', backgroundColor: '#cbd5e1', color: '#334155', cursor: 'pointer' }}>Cancel</button>
-                  <button onClick={handleReset} style={{ padding: '6px 16px', borderRadius: '6px', border: '1px solid #cbd5e1', backgroundColor: '#e2e8f0', color: '#334155', cursor: 'pointer' }}>Reset</button>
+                  <button onClick={() => onClose()} style={{ padding: '6px 16px', borderRadius: '6px', border: '1px solid var(--dropdown-border)', backgroundColor: 'var(--item-hover-bg)', color: 'var(--text-color)', cursor: 'pointer' }}>Cancel</button>
+                  <button onClick={handleReset} style={{ padding: '6px 16px', borderRadius: '6px', border: '1px solid var(--dropdown-border)', backgroundColor: 'var(--item-hover-bg)', color: 'var(--text-color)', cursor: 'pointer' }}>Reset</button>
                 </div>
 
-                <div style={{ borderTop: '1px solid #e2e8f0', marginTop: '16px' }} />
+                <div style={{ borderTop: '1px solid var(--dropdown-border)', marginTop: '16px' }} />
                 <SectionTitle>SEARCH BAR</SectionTitle>
                 <div style={{ marginBottom: '24px' }}>
-                  <div style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '8px' }}>Search bar color</div>
+                  <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '8px' }}>Search bar color</div>
                   <input type="color" value="#ffffff" onChange={()=>{}} style={{ width: '100%', height: '40px', border: 'none', borderRadius: '8px', cursor: 'pointer', padding: 0 }} />
                 </div>
                 <Row label="Opacity"><span style={{fontSize:'0.85rem', color:'#64748b'}}>60%</span></Row>
@@ -341,7 +341,7 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
                 <Row label="Match board style"><span style={{fontSize:'0.85rem', color:'#94a3b8'}}></span></Row>
 
 
-                <div style={{ borderTop: '1px solid #e2e8f0', marginTop: '16px' }} />
+                <div style={{ borderTop: '1px solid var(--dropdown-border)', marginTop: '16px' }} />
                 <SectionTitle>BOARD TEXT</SectionTitle>
                 <Row label="Size">
                   <SegmentedControl options={[{label:'S',value:'S'},{label:'M',value:'M'},{label:'L',value:'L'}]} value={settings.textSize} onChange={(v) => handleChange('textSize', v)} />
@@ -350,10 +350,10 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
                   <SegmentedControl options={[{label:'Normal',value:'Normal'},{label:'Bold',value:'Bold'}]} value={settings.textWeight} onChange={(v) => handleChange('textWeight', v)} />
                 </Row>
 
-                <div style={{ borderTop: '1px solid #e2e8f0', marginTop: '16px' }} />
+                <div style={{ borderTop: '1px solid var(--dropdown-border)', marginTop: '16px' }} />
                 <SectionTitle>ST.BULKOUTLINE</SectionTitle>
                 <div style={{ marginBottom: '24px' }}>
-                  <div style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '8px' }}>st.outlineColor</div>
+                  <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '8px' }}>st.outlineColor</div>
                   <input type="color" value="#ffffff" onChange={()=>{}} style={{ width: '100%', height: '40px', border: 'none', borderRadius: '8px', cursor: 'pointer', padding: 0 }} />
                 </div>
                 <Row label="Opacity"><span style={{fontSize:'0.85rem', color:'#64748b'}}>75%</span></Row>
@@ -368,9 +368,9 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
                 <SectionTitle>LANGUAGE</SectionTitle>
                 <SegmentedControl options={[{label:'English',value:'en'},{label:'Deutsch',value:'de'},{label:'Русский',value:'ru'}]} value="en" onChange={()=>{}} />
                 
-                <div style={{ borderTop: '1px solid #e2e8f0', marginTop: '24px' }} />
+                <div style={{ borderTop: '1px solid var(--dropdown-border)', marginTop: '24px' }} />
                 <SectionTitle>FORMATTING</SectionTitle>
-                <div style={{ marginBottom: '24px' }}><button style={{ padding: '6px 16px', borderRadius: '6px', border: '1px solid #cbd5e1', backgroundColor: '#cbd5e1', color: '#334155', cursor: 'pointer' }}>Auto-detect</button></div>
+                <div style={{ marginBottom: '24px' }}><button style={{ padding: '6px 16px', borderRadius: '6px', border: '1px solid var(--dropdown-border)', backgroundColor: 'var(--item-hover-bg)', color: 'var(--text-color)', cursor: 'pointer' }}>Auto-detect</button></div>
                 
                 <Row label="Time format">
                   <SegmentedControl options={[{label:'24h',value:'24'},{label:'12h AM/PM',value:'12'}]} value="12" onChange={()=>{}} />
@@ -390,7 +390,7 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
             {activeTab === 'Support' && (
               <div>
                 <SectionTitle>SUPPORT</SectionTitle>
-                <p style={{ color: '#475569', fontSize: '0.95rem', lineHeight: '1.5' }}>
+                <p style={{ color: 'var(--text-color)', fontSize: '0.95rem', lineHeight: '1.5' }}>
                   If you need help or want to report an issue, please contact us at support@bashamark.com or visit our GitHub repository.
                 </p>
               </div>
