@@ -299,11 +299,14 @@ export default function SettingsModal({ isOpen, onClose, settings, setSettings, 
                   </div>
                 </div>
                 
-                <Row label="Opacity"><span style={{fontSize:'0.85rem', color:'#64748b'}}>{settings.opacity}%</span></Row>
+                <Row label="Opacity"><span style={{fontSize:'0.85rem', color:'var(--text-muted)'}}>{settings.opacity}%</span></Row>
                 <div style={{ marginTop: '-12px', marginBottom: '24px' }}><Slider value={settings.opacity} min={0} max={100} onChange={(v) => handleChange('opacity', v)} /></div>
                 
-                <Row label="Blur"><span style={{fontSize:'0.85rem', color:'#64748b'}}>{settings.blur}px</span></Row>
+                <Row label="Blur"><span style={{fontSize:'0.85rem', color:'var(--text-muted)'}}>{settings.blur}px</span></Row>
                 <div style={{ marginTop: '-12px', marginBottom: '24px' }}><Slider value={settings.blur} min={0} max={40} onChange={(v) => handleChange('blur', v)} /></div>
+
+                <Row label="Width"><span style={{fontSize:'0.85rem', color:'var(--text-muted)'}}>{settings.boardWidth}px</span></Row>
+                <div style={{ marginTop: '-12px', marginBottom: '24px' }}><Slider value={settings.boardWidth} min={200} max={600} onChange={(v) => handleChange('boardWidth', v)} /></div>
                 
                 <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
                   <button onClick={() => onClose()} style={{ padding: '6px 16px', borderRadius: '6px', border: '1px solid var(--dropdown-border)', backgroundColor: 'var(--item-hover-bg)', color: 'var(--text-color)', cursor: 'pointer' }}>Cancel</button>
