@@ -307,7 +307,7 @@ export default memo(function PomodoroWidget({ id, onDelete, settings: appSetting
       <ConfirmModal 
         isOpen={isConfirmOpen} 
         onClose={() => setIsConfirmOpen(false)}
-        onConfirm={onDelete}
+        onConfirm={() => onDelete(id)}
         title="Delete Pomodoro"
         message="Are you sure you want to delete this Pomodoro widget?"
       />

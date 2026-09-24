@@ -352,7 +352,7 @@ export default memo(function PrayerWidget({ id, board, onUpdate, onDelete, pages
       <ConfirmModal 
         isOpen={isConfirmOpen} 
         onClose={() => setIsConfirmOpen(false)}
-        onConfirm={onDelete}
+        onConfirm={() => onDelete(id)}
         title="Delete Prayer Times"
         message="Are you sure you want to delete this Prayer Times widget?"
       />

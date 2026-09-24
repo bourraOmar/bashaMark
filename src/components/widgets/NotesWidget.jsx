@@ -137,7 +137,7 @@ export default memo(function NotesWidget({ id, initialText = '', board, onUpdate
       <ConfirmModal 
         isOpen={isConfirmOpen} 
         onClose={() => setIsConfirmOpen(false)}
-        onConfirm={onDelete}
+        onConfirm={() => onDelete(id)}
         title="Delete Notes"
         message="Are you sure you want to delete this Notes widget? The text will be lost."
       />

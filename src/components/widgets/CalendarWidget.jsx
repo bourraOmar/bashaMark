@@ -168,7 +168,7 @@ export default memo(function CalendarWidget({ id, onDelete, settings, pages, onU
       <ConfirmModal 
         isOpen={isConfirmOpen} 
         onClose={() => setIsConfirmOpen(false)}
-        onConfirm={onDelete}
+        onConfirm={() => onDelete(id)}
         title="Delete Calendar"
         message="Are you sure you want to delete this Calendar widget?"
       />
