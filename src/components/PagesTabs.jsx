@@ -18,6 +18,7 @@ import {
   useSortable,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { restrictToHorizontalAxis } from '@dnd-kit/modifiers';
 
 function SortableTab({
   page,
@@ -248,6 +249,7 @@ export default function PagesTabs({
       >
         <DndContext
           sensors={sensors}
+          modifiers={[restrictToHorizontalAxis]}
           collisionDetection={closestCenter}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
