@@ -31,7 +31,23 @@ function SortableTab({
   handleTabClick,
   handleContextMenu,
   handleDoubleClick,
+  isDraggingWidget,
+  onHoverDuringWidgetDrag,
 }) {
+  const hoverTimeoutRef = useRef(null);
+  const handlePointerEnter = () => {
+    if (isDraggingWidget) {
+      hoverTimeoutRef.current = setTimeout(() => {
+        onHoverDuringWidgetDrag();
+      }, 350);
+    }
+  };
+  const handlePointerLeave = () => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+    }
+  };
+
   const {
     attributes,
     listeners,
@@ -60,6 +76,8 @@ function SortableTab({
         onContextMenu={(e) => handleContextMenu(page, e)}
         onDoubleClick={(e) => handleDoubleClick(page, e)}
         onPointerDown={(e) => isEditing && e.stopPropagation()}
+        onPointerEnter={handlePointerEnter}
+        onPointerLeave={handlePointerLeave}
         style={{
           display: 'flex',
           alignItems: 'center',
@@ -115,7 +133,8 @@ export default function PagesTabs({
   onAddPage,
   onRenamePage,
   onDeletePage,
-  onReorderPages
+  onReorderPages,
+  isDraggingWidget
 }) {
   const [editingPageId, setEditingPageId] = useState(null);
   const [editingTitle, setEditingTitle] = useState('');
@@ -276,6 +295,8 @@ export default function PagesTabs({
                   handleTabClick={handleTabClick}
                   handleContextMenu={handleContextMenu}
                   handleDoubleClick={handleDoubleClick}
+                  isDraggingWidget={isDraggingWidget}
+                  onHoverDuringWidgetDrag={() => { if (currentPageId !== page.id) onSelectPage(page.id); }}
                 />
               );
             })}

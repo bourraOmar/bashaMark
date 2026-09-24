@@ -496,6 +496,7 @@ function App() {
             onRenamePage={renamePage}
             onDeletePage={handleDeletePage}
             onReorderPages={savePages}
+            isDraggingWidget={isDragging}
           />
         </div>
         <div className="search-container">
