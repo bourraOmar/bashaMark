@@ -132,8 +132,8 @@ export default memo(function Board({ id, title, bookmarks, onAddBookmark, onRena
     <div ref={setNodeRef} style={style} className="board glass-panel">
       {board?.styleType === 'corner' && (
         <div style={{
-          position: 'absolute', top: 0, left: 0, width: '6px', height: '32px',
-          backgroundColor: board.styleColor, borderTopLeftRadius: '12px', borderBottomRightRadius: '8px',
+          position: 'absolute', top: '16px', left: '-4px', width: '8px', height: '24px',
+          backgroundColor: board.styleColor, borderRadius: '4px',
           zIndex: 0
         }} />
       )}
