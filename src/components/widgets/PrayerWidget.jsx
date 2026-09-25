@@ -61,7 +61,8 @@ export default memo(function PrayerWidget({ id, board, onUpdate, onDelete, pages
     padding: '14px 14px',
     display: 'flex',
     flexDirection: 'column',
-    minHeight: 'auto'
+    minHeight: 'auto',
+    ...((board?.styleType || '').includes('outline') ? { border: `2px solid ${board.styleColor}`, outline: 'none' } : {})
   };
 
   const fetchPrayerTimes = async () => {

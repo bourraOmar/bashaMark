@@ -167,7 +167,8 @@ export default memo(function WeatherWidget({ id, board, onUpdate, onDelete, page
     padding: '16px',
     display: 'flex',
     flexDirection: 'column',
-    minHeight: 'auto'
+    minHeight: 'auto',
+    ...((board?.styleType || '').includes('outline') ? { border: `2px solid ${board.styleColor}`, outline: 'none' } : {})
   };
 
   const fetchWeather = async () => {
