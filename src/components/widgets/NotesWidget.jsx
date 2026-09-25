@@ -1,12 +1,14 @@
 import { useState, useRef, useEffect, memo } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { MoreHorizontal, Trash2 } from 'lucide-react';
+import { MoreHorizontal, Trash2, Type } from 'lucide-react';
 import ConfirmModal from '../ConfirmModal';
 import StylePicker from '../StylePicker';
 
 export default memo(function NotesWidget({ id, initialText = '', board, onUpdate, onDelete, settings, pages }) {
   const [text, setText] = useState(initialText);
+  const [isRenaming, setIsRenaming] = useState(false);
+  const [renameTitle, setRenameTitle] = useState(board?.title || 'Notes');
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState('right');
@@ -40,6 +42,14 @@ export default memo(function NotesWidget({ id, initialText = '', board, onUpdate
     ...(board?.styleType === 'outline' ? { border: `2px solid ${board.styleColor}`, outline: 'none' } : {}),
   };
 
+  const handleRename = (e) => {
+    e.preventDefault();
+    if (renameTitle.trim()) {
+      onUpdate(id, { title: renameTitle.trim() });
+      setIsRenaming(false);
+    }
+  };
+
   // Debounced auto-save
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -71,7 +81,22 @@ export default memo(function NotesWidget({ id, initialText = '', board, onUpdate
             flex: 1
           }}
         >
-          Notes
+          {isRenaming ? (
+            <form onSubmit={handleRename} style={{ display: 'flex', gap: '8px' }}>
+              <input 
+                type="text" 
+                value={renameTitle} 
+                onChange={(e) => setRenameTitle(e.target.value)}
+                className="glass-input"
+                autoFocus
+                onKeyDown={(e) => e.stopPropagation()}
+                style={{ flex: 1, padding: '2px 8px' }}
+                onBlur={() => setIsRenaming(false)}
+              />
+            </form>
+          ) : (
+            board?.title || 'Notes'
+          )}
         </div>
         <div className="board-header-actions" style={{ position: 'relative' }} ref={menuRef} onPointerDown={(e) => e.stopPropagation()}>
           <button onClick={() => {
@@ -93,6 +118,10 @@ export default memo(function NotesWidget({ id, initialText = '', board, onUpdate
               marginTop: 0 
             }}>
               
+              <button className="dropdown-item" onClick={() => { setIsRenaming(true); setIsMenuOpen(false); }}>
+                <Type size={16} />
+                Rename
+              </button>
               <StylePicker 
                 styleType={board?.styleType} 
                 styleColor={board?.styleColor} 
