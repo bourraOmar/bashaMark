@@ -127,7 +127,7 @@ export default memo(function PomodoroWidget({ id, onDelete, settings: appSetting
     <div ref={setNodeRef} style={style} className="board glass-panel">
       {board?.styleType === 'corner' && (
         <div style={{
-          position: 'absolute', top: '16px', left: '-4px', width: '8px', height: '24px',
+          position: 'absolute', top: '14px', left: '-4px', width: '6px', height: '18px',
           backgroundColor: board.styleColor, borderRadius: '4px',
           zIndex: 0
         }} />
