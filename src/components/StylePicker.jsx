@@ -62,7 +62,7 @@ export default function StylePicker({ styleType, styleColor, onChange }) {
                 width: '32px', height: '24px', borderRadius: '4px', border: '1px solid var(--dropdown-border)',
                 position: 'relative', overflow: 'hidden'
               }}>
-                <div style={{ position: 'absolute', left: '-2px', top: '4px', width: '3px', height: '9px', backgroundColor: styleColor || 'var(--text-muted)', borderRadius: '3px' }} />
+                <div style={{ position: 'absolute', left: 0, top: '4px', width: '4px', height: '12px', backgroundColor: styleColor || 'var(--text-muted)', borderTopRightRadius: '4px', borderBottomRightRadius: '4px' }} />
               </div>
               Corner
             </button>
