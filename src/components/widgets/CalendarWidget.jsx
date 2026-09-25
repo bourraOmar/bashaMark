@@ -33,7 +33,7 @@ export default memo(function CalendarWidget({ id, onDelete, settings, pages, onU
     position: 'relative',
     cursor: 'default',
     padding: '14px 14px',
-    ...(board?.styleType === 'outline' ? { border: `2px solid ${board.styleColor}`, outline: 'none' } : {}),
+    ...((board?.styleType || '').includes('outline') ? { border: `2px solid ${board.styleColor}`, outline: 'none' } : {}),
   };
 
   const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
@@ -56,7 +56,7 @@ export default memo(function CalendarWidget({ id, onDelete, settings, pages, onU
 
   return (
     <div ref={setNodeRef} style={style} className="board glass-panel">
-      {board?.styleType === 'corner' && (
+      {(board?.styleType || '').includes('corner') && (
         <div style={{
           position: 'absolute', top: '14px', left: 0, width: '6px', height: '24px',
           backgroundColor: board.styleColor, borderTopRightRadius: '6px', borderBottomRightRadius: '6px',

@@ -55,7 +55,7 @@ export default memo(function PomodoroWidget({ id, onDelete, settings: appSetting
     display: 'flex',
     flexDirection: 'column',
     padding: '14px 14px',
-    ...(board?.styleType === 'outline' ? { border: `2px solid ${board.styleColor}`, outline: 'none' } : {}),
+    ...((board?.styleType || '').includes('outline') ? { border: `2px solid ${board.styleColor}`, outline: 'none' } : {}),
   };
 
   useEffect(() => {
@@ -125,7 +125,7 @@ export default memo(function PomodoroWidget({ id, onDelete, settings: appSetting
 
   return (
     <div ref={setNodeRef} style={style} className="board glass-panel">
-      {board?.styleType === 'corner' && (
+      {(board?.styleType || '').includes('corner') && (
         <div style={{
           position: 'absolute', top: '14px', left: 0, width: '6px', height: '24px',
           backgroundColor: board.styleColor, borderTopRightRadius: '6px', borderBottomRightRadius: '6px',

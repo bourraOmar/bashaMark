@@ -39,7 +39,7 @@ export default memo(function NotesWidget({ id, initialText = '', board, onUpdate
     flexDirection: 'column',
     height: 'auto',
     minHeight: '120px',
-    ...(board?.styleType === 'outline' ? { border: `2px solid ${board.styleColor}`, outline: 'none' } : {}),
+    ...((board?.styleType || '').includes('outline') ? { border: `2px solid ${board.styleColor}`, outline: 'none' } : {}),
   };
 
   const handleRename = (e) => {
@@ -62,7 +62,7 @@ export default memo(function NotesWidget({ id, initialText = '', board, onUpdate
 
   return (
     <div ref={setNodeRef} style={style} className="board glass-panel">
-      {board?.styleType === 'corner' && (
+      {(board?.styleType || '').includes('corner') && (
         <div style={{
           position: 'absolute', top: '14px', left: 0, width: '6px', height: '24px',
           backgroundColor: board.styleColor, borderTopRightRadius: '6px', borderBottomRightRadius: '6px',

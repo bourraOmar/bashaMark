@@ -297,7 +297,7 @@ export default memo(function WeatherWidget({ id, board, onUpdate, onDelete, page
 
   return (
     <div ref={setNodeRef} style={style} className="board glass-panel">
-      {board?.styleType === 'corner' && (
+      {(board?.styleType || '').includes('corner') && (
         <div style={{
           position: 'absolute', top: '14px', left: 0, width: '6px', height: '24px',
           backgroundColor: board.styleColor, borderTopRightRadius: '6px', borderBottomRightRadius: '6px',

@@ -14,9 +14,13 @@ export default function StylePicker({ styleType, styleColor, onChange }) {
   const [expanded, setExpanded] = useState(false);
 
   const handleTypeChange = (type) => {
-    // If clicking the same type, toggle it off. Otherwise, set it.
-    // If turning on for the first time, set a default color if none exists.
-    const newType = styleType === type ? null : type;
+    let currentTypes = (styleType || '').split(',').filter(Boolean);
+    if (currentTypes.includes(type)) {
+      currentTypes = currentTypes.filter(t => t !== type);
+    } else {
+      currentTypes.push(type);
+    }
+    const newType = currentTypes.join(',') || null;
     const newColor = styleColor || PRESET_COLORS[0];
     onChange({ styleType: newType, styleColor: newColor });
   };
@@ -52,8 +56,8 @@ export default function StylePicker({ styleType, styleColor, onChange }) {
               onClick={() => handleTypeChange('corner')}
               style={{
                 flex: 1, padding: '12px 8px', borderRadius: '8px',
-                border: styleType === 'corner' ? '2px solid var(--primary-color)' : '1px solid var(--dropdown-border)',
-                background: styleType === 'corner' ? 'var(--item-hover-bg)' : 'transparent',
+                border: (styleType || '').includes('corner') ? '2px solid var(--primary-color)' : '1px solid var(--dropdown-border)',
+                background: (styleType || '').includes('corner') ? 'var(--item-hover-bg)' : 'transparent',
                 display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px',
                 cursor: 'pointer', color: 'var(--text-color)', fontSize: '0.8rem'
               }}
@@ -72,8 +76,8 @@ export default function StylePicker({ styleType, styleColor, onChange }) {
               onClick={() => handleTypeChange('outline')}
               style={{
                 flex: 1, padding: '12px 8px', borderRadius: '8px',
-                border: styleType === 'outline' ? '2px solid var(--primary-color)' : '1px solid var(--dropdown-border)',
-                background: styleType === 'outline' ? 'var(--item-hover-bg)' : 'transparent',
+                border: (styleType || '').includes('outline') ? '2px solid var(--primary-color)' : '1px solid var(--dropdown-border)',
+                background: (styleType || '').includes('outline') ? 'var(--item-hover-bg)' : 'transparent',
                 display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px',
                 cursor: 'pointer', color: 'var(--text-color)', fontSize: '0.8rem'
               }}
